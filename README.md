@@ -75,6 +75,16 @@ pip install -r requirements.txt
 ```
 
 3. Nokopē `.env.example` uz `.env` un norādi lokālās MySQL datubāzes parametrus.
+   MySQL un Railway konfigurēšana: [datubāzes instrukcija](docs/database-setup.md).
+   Datubāzē ir deviņas tabulas atbilstoši apstiprinātā dokumenta 2.3. sadaļai.
+   [Modeļu shēma un ierobežojumi](docs/database-schema.md).
+
+   Izveido tabulas un pārbaudi savienojumu:
+
+   ```powershell
+   python -m flask --app run db upgrade
+   python -m flask --app run db-check
+   ```
 
 4. Palaid lietotni:
 
