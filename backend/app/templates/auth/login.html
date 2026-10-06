@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="lv">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Pieslēgties | StockFlow</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body class="auth-page">
+    <main class="auth-card">
+        <a class="brand" href="{{ url_for('index') }}">Stock<span class="brand-accent">Flow</span></a>
+        <p class="section-kicker">StockFlow konts</p>
+        <h1>Pieslēgties</h1>
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% for category, message in messages %}<p class="flash flash-{{ category }}">{{ message }}</p>{% endfor %}
+        {% endwith %}
+        <form method="post" class="auth-form">
+            <input type="hidden" name="next" value="{{ next_url }}">
+            <label for="email">E-pasts</label>
+            <input id="email" name="email" type="email" value="{{ request.form.get('email', '') }}" required autocomplete="email">
+            <label for="password">Parole</label>
+            <input id="password" name="password" type="password" required autocomplete="current-password">
+            <button type="submit">Pieslēgties</button>
+        </form>
+        <p class="auth-switch">Vēl nav konta? <a href="{{ url_for('auth.register') }}">Reģistrēties</a></p>
+    </main>
+</body>
+</html>

@@ -27,11 +27,25 @@
                     <option value="ru">RU</option>
                 </select>
             </label>
-            <a class="login-link" href="{{ url_for('auth.login') }}">Pieslēgties <span aria-hidden="true">↗</span></a>
+            {% if current_user.is_authenticated %}
+                <span class="user-greeting">Sveiki, {{ current_user.full_name }}</span>
+                <a class="login-link" href="{{ url_for('auth.logout') }}">Iziet <span aria-hidden="true">↗</span></a>
+            {% else %}
+                <a class="login-link" href="{{ url_for('auth.login') }}">Pieslēgties <span aria-hidden="true">↗</span></a>
+            {% endif %}
         </div>
     </header>
 
     <main>
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <div class="flash-stack" role="status">
+                    {% for category, message in messages %}
+                        <p class="flash flash-{{ category }}">{{ message }}</p>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
         <section class="hero" aria-labelledby="hero-title">
             <div class="hero-copy">
                 <p class="eyebrow"><span class="eyebrow-dot"></span>B2B iepirkumu platforma</p>
