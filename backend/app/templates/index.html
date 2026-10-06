@@ -3,35 +3,23 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="StockFlow apvieno B2B piegādātāju piedāvājumus vienā pārskatāmā katalogā.">
-    <title>StockFlow | B2B iepirkumi vienuviet</title>
+    <meta name="description" content="StockFlow — vienkāršāks veids, kā atrast un salīdzināt piegādātāju piedāvājumus.">
+    <title>StockFlow | Sākumlapa</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
-<body>
-    <header class="site-header">
-        <a class="brand" href="/" aria-label="StockFlow sākumlapa">
+<body class="landing-page">
+    <header class="landing-header">
+        <a class="brand brand-logo" href="/" aria-label="StockFlow sākumlapa">
             <span class="brand-mark" aria-hidden="true"><span></span><span></span><span></span></span>
             <span>Stock<span class="brand-accent">Flow</span></span>
         </a>
-        <nav class="main-nav" aria-label="Galvenā navigācija">
-            <a href="#how-it-works">Kā tas darbojas</a>
-            <a href="#network">Piegādātāju tīkls</a>
-        </nav>
-        <div class="header-actions">
-            <label class="language-picker" for="language-select">
-                <span class="language-icon" aria-hidden="true">◎</span>
-                <span class="sr-only">Valoda</span>
-                <select id="language-select" aria-label="Izvēlieties valodu">
-                    <option value="lv">LV</option>
-                    <option value="en">EN</option>
-                    <option value="ru">RU</option>
-                </select>
-            </label>
+        <div class="landing-actions">
             {% if current_user.is_authenticated %}
-                <span class="user-greeting">Sveiki, {{ current_user.full_name }}</span>
-                <a class="login-link" href="{{ url_for('auth.logout') }}">Iziet <span aria-hidden="true">↗</span></a>
+                <span class="landing-user">Sveiki, {{ current_user.full_name }}</span>
+                <a href="{{ url_for('auth.logout') }}">Iziet</a>
             {% else %}
-                <a class="login-link" href="{{ url_for('auth.login') }}">Pieslēgties <span aria-hidden="true">↗</span></a>
+                <a href="{{ url_for('auth.login') }}">Pieslēgties</a>
+                <a class="outline-button" href="{{ url_for('auth.register') }}">Reģistrēties</a>
             {% endif %}
         </div>
     </header>
@@ -39,65 +27,37 @@
     <main>
         {% with messages = get_flashed_messages(with_categories=true) %}
             {% if messages %}
-                <div class="flash-stack" role="status">
+                <div class="flash-stack">
                     {% for category, message in messages %}
                         <p class="flash flash-{{ category }}">{{ message }}</p>
                     {% endfor %}
                 </div>
             {% endif %}
         {% endwith %}
-        <section class="hero" aria-labelledby="hero-title">
-            <div class="hero-copy">
-                <p class="eyebrow"><span class="eyebrow-dot"></span>B2B iepirkumu platforma</p>
-                <h1 id="hero-title">Noliktavu apvienošana<br><em>vienā mājaslapā.</em></h1>
-                <p class="hero-lede">Atrodi vajadzīgās preces pie dažādiem piegādātājiem, salīdzini to nosacījumus un sagatavo vienu pasūtījuma pieteikumu.</p>
-
-                <form class="search-form" id="product-search-form">
-                    <label class="sr-only" for="product-search">Meklēt preci vai SKU</label>
-                    <span class="search-icon" aria-hidden="true">⌕</span>
-                    <input id="product-search" name="query" type="search" placeholder="Meklēt preci, zīmolu vai SKU" autocomplete="off">
-                    <button type="submit">Meklēt tagad <span aria-hidden="true">→</span></button>
-                </form>
-                <p class="search-message" id="search-message" role="status" aria-live="polite"></p>
-                <p class="search-hint"><span aria-hidden="true">↳</span> Meklē vairāk nekā 1 200 katalogā pieejamu piedāvājumu</p>
-                <div class="hero-stats" aria-label="StockFlow kataloga kopsavilkums">
-                    <div><strong>1 200+</strong><span>piedāvājumi</span></div>
-                    <div><strong>4</strong><span>piegādātāji</span></div>
-                    <div><strong>1</strong><span>kopīgs pieteikums</span></div>
+        <section class="landing-hero">
+            <div class="landing-copy">
+                <h1>Atrodi labāko<br><strong>piedāvājumu.</strong></h1>
+                <p class="landing-lede">StockFlow palīdz uzņēmumiem ātri atrast, salīdzināt un izvēlēties preces no vairākiem piegādātājiem.</p>
+                <a class="landing-primary-button" href="#" aria-label="Atvērt preču katalogu">Atvērt katalogu <span>→</span></a>
+                <div class="landing-steps" aria-label="StockFlow darbības princips">
+                    <div><span>01</span><p>Meklē</p></div>
+                    <div><span>02</span><p>Salīdzini</p></div>
+                    <div><span>03</span><p>Izvēlies</p></div>
                 </div>
-            </div>
-
-            <div class="network-visual" id="network" aria-label="Piegādātāju tīkla vizualizācija">
-                <div class="visual-label visual-label-top">Piegādātāju tīkls <span>● Tiešsaistē</span></div>
-                <div class="network-stage">
-                    <div class="connection connection-one"></div>
-                    <div class="connection connection-two"></div>
-                    <div class="connection connection-three"></div>
-                    <div class="connection connection-four"></div>
-                    <div class="warehouse warehouse-one"><span class="warehouse-icon">▦</span><strong>NordTech</strong><small>234 piedāvājumi</small></div>
-                    <div class="warehouse warehouse-two"><span class="warehouse-icon">▦</span><strong>Riga Supply</strong><small>89 piedāvājumi</small></div>
-                    <div class="warehouse warehouse-three"><span class="warehouse-icon">▦</span><strong>Office Hub</strong><small>156 piedāvājumi</small></div>
-                    <div class="warehouse warehouse-four"><span class="warehouse-icon">▦</span><strong>TechnoLine</strong><small>73 piedāvājumi</small></div>
-                    <div class="flow-core"><span class="core-mark" aria-hidden="true"><i></i><i></i><i></i></span><strong>StockFlow</strong><small>Centralizēts katalogs</small></div>
-                </div>
-                <div class="visual-footer"><span class="pulse-dot"></span> Dati atjaunoti pirms 4 minūtēm <span class="footer-arrow">↗</span></div>
-            </div>
-        </section>
-
-        <section class="workflow" id="how-it-works" aria-labelledby="workflow-title">
-            <div>
-                <p class="section-kicker">Vienkāršāka iepirkumu ikdiena</p>
-                <h2 id="workflow-title">No vajadzības līdz pasūtījumam<br>trīs skaidros soļos.</h2>
-            </div>
-            <div class="steps">
-                <article class="step"><span class="step-number">01</span><h3>Meklē</h3><p>Atrodi vajadzīgo preci vienotā katalogā.</p></article>
-                <article class="step"><span class="step-number">02</span><h3>Salīdzini</h3><p>Redzi cenas, atlikumus un piegādes nosacījumus.</p></article>
-                <article class="step"><span class="step-number">03</span><h3>Pasūti</h3><p>Izveido vienu pieteikumu no vairākiem piegādātājiem.</p></article>
             </div>
         </section>
     </main>
-
-    <footer class="site-footer"><span>StockFlow</span></footer>
-    <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+    <footer class="landing-footer">
+        <div class="footer-main">
+            <div class="footer-brand">
+                <a class="footer-logo" href="/">Stock<span>Flow</span></a>
+                <p>Vienkāršāks veids, kā atrast un salīdzināt piegādātāju piedāvājumus.</p>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <span>© 2026 StockFlow</span>
+            <span>Preču katalogs tiek izstrādāts</span>
+        </div>
+    </footer>
 </body>
 </html>
