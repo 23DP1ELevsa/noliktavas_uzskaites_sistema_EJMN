@@ -50,7 +50,13 @@ Komandas paredzētas PowerShell un izpildei no projekta saknes mapes.
    Copy-Item .env.example .env
    ```
 
-2. `.env` failā nomaini `SECRET_KEY` pret nejaušu, slepenu vērtību. Piemērā norādītā datubāzes adrese un parole atbilst lokālajai `compose.yaml` konfigurācijai. `.env` failu neiekļauj versiju kontrolē.
+2. `.env` failā nomaini `SECRET_KEY` pret unikālu, nejaušu un slepenu vērtību. `SECRET_KEY` jābūt unikālai katrai videi, un to var uzģenerēt ar komandu:
+
+   ```powershell
+   python -c "import secrets; print(secrets.token_hex(32))"
+   ```
+
+   Piemērā norādītā datubāzes adrese un parole atbilst lokālajai `compose.yaml` konfigurācijai. `.env` failu neiekļauj versiju kontrolē.
 
 3. Palaid lokālo MySQL 8.4 konteineri un uzstādi Python atkarības:
 
