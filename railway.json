@@ -1,0 +1,12 @@
+{
+  "$schema": "https://railway.com/railway.schema.json",
+  "deploy": {
+    "preDeployCommand": [
+      "python -m flask --app run db upgrade",
+      "python -m flask --app run db-check"
+    ],
+    "startCommand": "gunicorn run:app --bind 0.0.0.0:$PORT",
+    "healthcheckPath": "/health",
+    "healthcheckTimeout": 120
+  }
+}
