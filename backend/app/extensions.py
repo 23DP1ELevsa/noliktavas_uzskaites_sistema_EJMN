@@ -23,6 +23,12 @@ def configure_engine(engine):
         try:
             if engine.dialect.name == "sqlite":
                 cursor.execute("PRAGMA foreign_keys=ON")
+                # SQLite's built-in lower() only covers ASCII. Match Latvian
+                # upper/lowercase text too when running local catalogue queries.
+                connection.create_function(
+                    "lower", 1, lambda value: value.lower() if value is not None else None,
+                    deterministic=True,
+                )
             elif engine.dialect.name in {"mysql", "mariadb"}:
                 cursor.execute("SET time_zone = '+00:00'")
         finally:

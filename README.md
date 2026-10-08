@@ -138,6 +138,13 @@ Preču kategorijas ar precēm un preces ar piedāvājumiem nevar dzēst. Pasūt�
 
 Lietojumprogrammas līmenī jānodrošina arī tas, ka piedāvājumu autori un pasūtījumu apstrādātāji ir administratori, pasūtījuma profils pieder pircējam, daudzums atbilst minimālajam pasūtījumam un atlikumam, pasūtījums nav tukšs un to nevar apstrādāt atkārtoti. Veidojot pasūtījumu, piedāvājuma vērtības un summas jāsaglabā vienā transakcijā. Pamatdatu shēma pati šos biznesa nosacījumus un summu aprēķinus automātiski nepārbauda.
 
+## Kataloga API
+
+`GET /catalog` nolasa aktīvās preces no datubāzes un atbalsta nosaukuma meklēšanu
+(`q`), kategoriju (`category_id`), cenu (`min_price`, `max_price`), piegādātāju
+(`supplier`) un pieejamību (`in_stock`). Filtrus var izmantot vienlaicīgi.
+Piemēri, atbildes un atlases noteikumi: [kataloga API](docs/catalog-api.md).
+
 ## Migrācijas
 
 Migrācijas atrodas `migrations/`. Pēc modeļu shēmas izmaiņām izveido un piemēro jaunu migrāciju:
