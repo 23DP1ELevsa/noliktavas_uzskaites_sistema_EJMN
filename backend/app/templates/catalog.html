@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="lv">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="StockFlow preču katalogs ar piegādātāju piedāvājumu salīdzināšanu.">
+    <title>StockFlow | Preču katalogs</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body class="marketplace-page" data-catalog-url="{{ url_for('catalog.get_catalog') }}">
+    <header class="market-header">
+        <div class="header-top">
+            <a class="brand" href="/" aria-label="StockFlow sākumlapa">
+                <span class="brand-mark" aria-hidden="true"><span></span><span></span><span></span></span>
+                <span>Stock<span class="brand-accent">Flow</span></span>
+            </a>
+            <div class="header-actions">
+                {% if current_user.is_authenticated %}
+                    <span class="user-greeting">Sveiki, {{ current_user.full_name }}</span>
+                    <a class="header-login" href="{{ url_for('auth.logout') }}">Iziet</a>
+                {% else %}
+                    <a class="header-login" href="{{ url_for('auth.login') }}">Pieslēgties</a>
+                    <a href="{{ url_for('auth.register') }}">Reģistrēties</a>
+                {% endif %}
+            </div>
+        </div>
+        <nav class="category-nav" aria-label="Kategorijas">
+            <a class="category-active" href="{{ url_for('catalog.catalog_page') }}" data-category="">Visas preces</a>
+            {% for category in categories %}
+                <a href="?category_id={{ category.id }}" data-category="{{ category.id }}">{{ category.name }}</a>
+            {% endfor %}
+        </nav>
+    </header>
+
+    <main>
+        <section class="market-hero">
+            <div class="breadcrumbs"><a href="/">StockFlow</a><span>/</span> Katalogs</div>
+            <div class="hero-banner">
+                <p class="hero-label">Piegādātāju katalogs</p>
+                <h1>Atrodi preci.<br><strong>Salīdzini piedāvājumus.</strong></h1>
+                <p>Meklē aktīvas preces un izvēlies sev piemērotāko cenu no pieejamajiem piegādātājiem.</p>
+                <form class="global-search catalog-page-search" id="catalog-search-form" role="search">
+                    <span aria-hidden="true">⌕</span>
+                    <label class="sr-only" for="catalog-search">Meklēt pēc preces nosaukuma</label>
+                    <input id="catalog-search" name="q" type="search"
+                           placeholder="Meklē pēc preces nosaukuma..." autocomplete="off">
+                    <button type="submit">Meklēt</button>
+                </form>
+                <div class="hero-shapes" aria-hidden="true"><span></span><span></span><span></span></div>
+            </div>
+        </section>
+
+        <section class="market-layout" aria-label="Preču katalogs">
+            <aside class="filters">
+                <div class="filter-heading">
+                    <h2>Filtri</h2>
+                    <button id="clear-filters" type="button">Notīrīt</button>
+                </div>
+                <div class="filter-divider"></div>
+                <label class="supplier-title" for="supplier-filter">Piegādātājs</label>
+                <input class="filter-input" id="supplier-filter" type="text" placeholder="Piem., North">
+                <div class="filter-divider"></div>
+                <p class="supplier-title">Cena, EUR</p>
+                <div class="price-fields">
+                    <label><span class="sr-only">Minimālā cena</span><input id="min-price" type="number" min="0" step="0.01" placeholder="No"></label>
+                    <span aria-hidden="true">—</span>
+                    <label><span class="sr-only">Maksimālā cena</span><input id="max-price" type="number" min="0" step="0.01" placeholder="Līdz"></label>
+                </div>
+                <label class="filter-check">
+                    <input id="stock-filter" type="checkbox">
+                    <span>Tikai pieejamās</span>
+                </label>
+                <button class="apply-filters" id="apply-filters" type="button">Piemērot filtrus</button>
+            </aside>
+
+            <div class="catalog-content">
+                <div class="catalog-toolbar">
+                    <div>
+                        <h2>Visas preces</h2>
+                        <p id="catalog-count" aria-live="polite">Ielādē katalogu...</p>
+                    </div>
+                    <label class="sort-control">Kārtot:
+                        <select id="sort-control">
+                            <option value="relevance">Atbilstība</option>
+                            <option value="price-asc">Cena: augošā</option>
+                            <option value="price-desc">Cena: dilstošā</option>
+                            <option value="name-asc">Nosaukums: A–Z</option>
+                            <option value="name-desc">Nosaukums: Z–A</option>
+                        </select>
+                    </label>
+                </div>
+                <p class="catalog-message" id="catalog-message" role="status"></p>
+                <div class="product-grid" id="product-grid" aria-live="polite"></div>
+            </div>
+        </section>
+    </main>
+    <footer class="site-footer">
+        <span>© 2026 StockFlow</span>
+        <span>Dati tiek ielādēti no katalogu datubāzes</span>
+    </footer>
+    <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+</body>
+</html>

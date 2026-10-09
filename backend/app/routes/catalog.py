@@ -1,9 +1,19 @@
-from flask import Blueprint, jsonify, request
+from flask import Blueprint, jsonify, render_template, request
 
+from ..extensions import db
+from ..models import Category
 from ..services.catalog import CatalogFilterError, CatalogFilters, search_catalog
 
 
 catalog_bp = Blueprint("catalog", __name__, url_prefix="/catalog")
+
+
+@catalog_bp.get("/page")
+def catalog_page():
+    categories = db.session.scalars(
+        db.select(Category).order_by(Category.name)
+    ).all()
+    return render_template("catalog.html", categories=categories)
 
 
 @catalog_bp.get("")

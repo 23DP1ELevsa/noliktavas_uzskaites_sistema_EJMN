@@ -39,52 +39,86 @@ requirements.txt    Python atkarības
 * Lokālai MySQL palaišanai ar Docker — Docker Desktop ar Compose atbalstu.
 * Ja izmanto jau instalētu datubāzi, MySQL 8.0.16 vai jaunāka versija (ieteicams MySQL 8.4).
 
-## Lokālā palaišana ar Docker
+## Kā palaist ar Docker
 
-Komandas paredzētas PowerShell un izpildei no projekta saknes mapes.
+Šajā projektā Docker Compose palaiž tikai MySQL 8.4 datubāzes konteineri. Flask lietotne darbojas lokāli ar Python virtuālajā vidē. Komandas paredzētas PowerShell un izpildei no projekta saknes mapes.
 
-1. Izveido virtuālo vidi un nokopē vides mainīgo paraugu. `.env` izveido tikai pirmajā palaišanas reizē; esošu konfigurācijas failu nepārraksti.
+### Pēc pirmās uzstādīšanas
+
+Ja virtuālā vide, `.env` fails, Python atkarības un datubāzes migrācijas jau ir sagatavotas, lietotni palaid šādi:
+
+```powershell
+docker compose up -d --wait
+.\.venv\Scripts\python.exe run.py
+```
+
+Pēc tam atver [http://127.0.0.1:5000/](http://127.0.0.1:5000/) pārlūkprogrammā. Flask process jāatstāj darbojoties atvērtajā PowerShell logā. Lai to apturētu, nospied `Ctrl+C`.
+
+### Pirmā palaišanas reize
+
+1. Pārliecinies, ka ir instalēts Python 3.11 vai jaunāks un Docker Desktop ar Compose atbalstu.
+
+2. Izveido virtuālo vidi un nokopē vides mainīgo paraugu. `.env` izveido tikai pirmajā palaišanas reizē; esošu konfigurācijas failu nepārraksti.
 
    ```powershell
    py -m venv .venv
    Copy-Item .env.example .env
    ```
 
-2. `.env` failā nomaini `SECRET_KEY` pret unikālu, nejaušu un slepenu vērtību. `SECRET_KEY` jābūt unikālai katrai videi, un to var uzģenerēt ar komandu:
+3. `.env` failā nomaini `SECRET_KEY` pret unikālu, nejaušu un slepenu vērtību:
 
    ```powershell
-   python -c "import secrets; print(secrets.token_hex(32))"
+   .\.venv\Scripts\python.exe -c "import secrets; print(secrets.token_hex(32))"
    ```
 
-   Piemērā norādītā datubāzes adrese un parole atbilst lokālajai `compose.yaml` konfigurācijai. `.env` failu neiekļauj versiju kontrolē.
+   Piemērā norādītā `DATABASE_URL` un parole atbilst `compose.yaml` noklusējuma konfigurācijai. `.env` failu neiekļauj versiju kontrolē.
 
-3. Palaid lokālo MySQL 8.4 konteineri un uzstādi Python atkarības:
+4. Uzstādi Python atkarības un palaid MySQL konteineri:
 
    ```powershell
-   docker compose up -d --wait
    .\.venv\Scripts\python.exe -m pip install -r requirements.txt
+   docker compose up -d --wait
    ```
 
-   Pirmajā reizē Docker lejupielādēs MySQL attēlu. Datubāze `stockflow` un lietotājs `stockflow` tiks izveidoti automātiski. Dati tiek glabāti Docker sējumā; datubāzes ports pieejams tikai lokālajā datorā (`127.0.0.1:3306`).
+   Pirmajā reizē Docker lejupielādēs MySQL attēlu. Datubāze `stockflow` un lietotājs `stockflow` tiks izveidoti automātiski. Dati tiek glabāti Docker sējumā, bet datubāzes ports ir pieejams tikai lokālajā datorā (`127.0.0.1:3306`).
 
-4. Izveido datubāzes tabulas ar migrācijām un pārbaudi savienojumu:
+5. Izveido datubāzes tabulas ar migrācijām un pārbaudi savienojumu:
 
    ```powershell
    .\.venv\Scripts\python.exe -m flask --app run db upgrade
    .\.venv\Scripts\python.exe -m flask --app run db-check
    ```
 
-   Veiksmīga `db-check` izpilde apstiprina savienojumu un visu deviņu lietotnes tabulu esamību. Lietotne pati tabulas neveido; pirms palaišanas migrācija ir jāizpilda.
+   Veiksmīga `db-check` izpilde apstiprina savienojumu un visu deviņu lietotnes tabulu esamību. Lietotne pati tabulas neveido, tāpēc migrācija jāizpilda pirms pirmās palaišanas.
 
-5. Palaid lietotni:
+6. Palaid Flask lietotni:
 
    ```powershell
    .\.venv\Scripts\python.exe run.py
    ```
 
-   Atver [http://127.0.0.1:5000/](http://127.0.0.1:5000/) pārlūkprogrammā. Veselības pārbaude: [http://127.0.0.1:5000/health](http://127.0.0.1:5000/health).
+   Atver [http://127.0.0.1:5000/](http://127.0.0.1:5000/) pārlūkprogrammā. Veselības pārbaude pieejama [http://127.0.0.1:5000/health](http://127.0.0.1:5000/health).
 
-Lai apturētu MySQL konteineri, saglabājot datus, izmanto `docker compose stop`. Lai to atkal palaistu, izmanto `docker compose start`.
+### Ikdienas Docker komandas
+
+```powershell
+# Pārbaudīt konteineru stāvokli
+docker compose ps
+
+# Apskatīt MySQL žurnālus
+docker compose logs -f mysql
+
+# Apturēt MySQL, saglabājot datubāzes datus
+docker compose stop
+
+# Atkal palaist iepriekš apturēto MySQL konteineri
+docker compose start
+
+# Apturēt un noņemt konteineri, saglabājot sējumu
+docker compose down
+```
+
+Lai pilnībā atiestatītu lokālo datubāzi, ieskaitot visus datus, izmanto `docker compose down -v` un pēc tam vēlreiz `docker compose up -d --wait`. Šo komandu izmanto tikai tad, ja datu zudums ir pieņemams.
 
 ## Palaišana ar jau instalētu MySQL
 
