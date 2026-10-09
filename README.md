@@ -179,6 +179,20 @@ Lietojumprogrammas līmenī jānodrošina arī tas, ka piedāvājumu autori un p
 (`supplier`) un pieejamību (`in_stock`). Filtrus var izmantot vienlaicīgi.
 Piemēri, atbildes un atlases noteikumi: [kataloga API](docs/catalog-api.md).
 
+## Demonstrācijas dati
+
+Pēc migrācijām demonstrācijas datubāzē izpildi:
+
+```powershell
+.\.venv\Scripts\python.exe -m flask --app run seed-demo
+```
+
+Komanda pievieno 4 kategorijas, 10 preces, 18 piedāvājumus no 3 piegādātājiem,
+administratora un pircēja testa kontus, uzņēmuma profilu un grozu ar 2 pozīcijām.
+Atkārtota palaišana neveido dublikātus un nepārraksta esošās paroles vai datus.
+Pēc ielādes atver `/catalog/page` vai galvenajā lapā spied **Atvērt katalogu**.
+[Testa konti, scenāriji un ielādes noteikumi](docs/demo-data.md).
+
 ## Migrācijas
 
 Migrācijas atrodas `migrations/`. Pēc modeļu shēmas izmaiņām izveido un piemēro jaunu migrāciju:

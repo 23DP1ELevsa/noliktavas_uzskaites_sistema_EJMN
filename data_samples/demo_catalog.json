@@ -1,0 +1,350 @@
+{
+  "categories": [
+    {
+      "name": "Elektronika",
+      "description": "Datoru piederumi un elektronika."
+    },
+    {
+      "name": "Biroja preces",
+      "description": "Papīrs, rakstāmpiederumi un dokumentu glabāšana."
+    },
+    {
+      "name": "Instrumenti",
+      "description": "Darbarīki un stiprinājumi."
+    },
+    {
+      "name": "Saimniecības preces",
+      "description": "Tīrīšanas un saimniecības piederumi."
+    }
+  ],
+  "products": [
+    {
+      "sku": "DEMO-USB-C-001",
+      "category": "Elektronika",
+      "name": "USB-C kabelis 1 m",
+      "brand": "DemoLink",
+      "model": "C100",
+      "unit": "gab.",
+      "description": "USB-C kabelis uzlādei un datu pārraidei.",
+      "is_active": true
+    },
+    {
+      "sku": "DEMO-MOUSE-001",
+      "category": "Elektronika",
+      "name": "Bezvadu pele",
+      "brand": "DemoLink",
+      "model": "M200",
+      "unit": "gab.",
+      "description": "Bezvadu pele ikdienas biroja darbam.",
+      "is_active": true
+    },
+    {
+      "sku": "DEMO-KEYBOARD-001",
+      "category": "Elektronika",
+      "name": "Tastatūra",
+      "brand": "DemoLink",
+      "model": "K300",
+      "unit": "gab.",
+      "description": "Pilna izmēra USB tastatūra.",
+      "is_active": true
+    },
+    {
+      "sku": "DEMO-PAPER-001",
+      "category": "Biroja preces",
+      "name": "A4 papīrs 500 lapas",
+      "brand": "DemoOffice",
+      "model": null,
+      "unit": "paka",
+      "description": "Balts biroja papīrs, 80 g/m², 500 lapas pakā.",
+      "is_active": true
+    },
+    {
+      "sku": "DEMO-PEN-001",
+      "category": "Biroja preces",
+      "name": "Lodīšu pildspalva",
+      "brand": "DemoOffice",
+      "model": null,
+      "unit": "gab.",
+      "description": "Zila pildspalva ar atšķirīgiem minimālajiem pasūtījuma daudzumiem.",
+      "is_active": true
+    },
+    {
+      "sku": "DEMO-BOX-001",
+      "category": "Biroja preces",
+      "name": "Arhīva kaste",
+      "brand": "DemoOffice",
+      "model": null,
+      "unit": "gab.",
+      "description": "Arhivēta demonstrācijas prece, kas nav redzama publiskajā katalogā.",
+      "is_active": false
+    },
+    {
+      "sku": "DEMO-DRILL-001",
+      "category": "Instrumenti",
+      "name": "Akumulatora urbjmašīna",
+      "brand": "DemoTools",
+      "model": "D18",
+      "unit": "gab.",
+      "description": "18 V urbjmašīnas demonstrācijas piedāvājumi.",
+      "is_active": true
+    },
+    {
+      "sku": "DEMO-SCREWS-001",
+      "category": "Instrumenti",
+      "name": "Skrūvju komplekts",
+      "brand": "DemoTools",
+      "model": null,
+      "unit": "komplekts",
+      "description": "Komplekts ar 100 skrūvēm.",
+      "is_active": true
+    },
+    {
+      "sku": "DEMO-CLEANER-001",
+      "category": "Saimniecības preces",
+      "name": "Virsmu tīrītājs 1 l",
+      "brand": "DemoHome",
+      "model": null,
+      "unit": "pudele",
+      "description": "Prece bez atlikuma piegādātāja noliktavā.",
+      "is_active": true
+    },
+    {
+      "sku": "DEMO-GLOVES-001",
+      "category": "Saimniecības preces",
+      "name": "Darba cimdi",
+      "brand": "DemoHome",
+      "model": "L",
+      "unit": "pāris",
+      "description": "Atlikums ir pozitīvs, bet mazāks par minimālo pasūtījuma daudzumu.",
+      "is_active": true
+    }
+  ],
+  "offers": [
+    {
+      "product_sku": "DEMO-USB-C-001",
+      "supplier_name": "Demo NordTech",
+      "supplier_sku": "DEMO-NT-USB",
+      "unit_price": "9.99",
+      "vat_included": true,
+      "min_order_qty": 1,
+      "stock_qty": 120,
+      "delivery_price": "3.50",
+      "delivery_days": 1,
+      "is_active": true
+    },
+    {
+      "product_sku": "DEMO-USB-C-001",
+      "supplier_name": "Demo Baltic Supply",
+      "supplier_sku": "DEMO-BS-USB",
+      "unit_price": "8.49",
+      "vat_included": true,
+      "min_order_qty": 5,
+      "stock_qty": 40,
+      "delivery_price": "5.00",
+      "delivery_days": 3,
+      "is_active": true
+    },
+    {
+      "product_sku": "DEMO-USB-C-001",
+      "supplier_name": "Demo Office Hub",
+      "supplier_sku": "DEMO-OH-USB",
+      "unit_price": "7.99",
+      "vat_included": true,
+      "min_order_qty": 10,
+      "stock_qty": 200,
+      "delivery_price": "2.50",
+      "delivery_days": 2,
+      "is_active": false
+    },
+    {
+      "product_sku": "DEMO-MOUSE-001",
+      "supplier_name": "Demo NordTech",
+      "supplier_sku": "DEMO-NT-MOUSE",
+      "unit_price": "19.90",
+      "vat_included": true,
+      "min_order_qty": 1,
+      "stock_qty": 30,
+      "delivery_price": "3.50",
+      "delivery_days": 1,
+      "is_active": true
+    },
+    {
+      "product_sku": "DEMO-MOUSE-001",
+      "supplier_name": "Demo Baltic Supply",
+      "supplier_sku": "DEMO-BS-MOUSE",
+      "unit_price": "17.50",
+      "vat_included": false,
+      "min_order_qty": 1,
+      "stock_qty": 0,
+      "delivery_price": "4.50",
+      "delivery_days": 4,
+      "is_active": true
+    },
+    {
+      "product_sku": "DEMO-KEYBOARD-001",
+      "supplier_name": "Demo NordTech",
+      "supplier_sku": "DEMO-NT-KEYBOARD",
+      "unit_price": "29.90",
+      "vat_included": true,
+      "min_order_qty": 1,
+      "stock_qty": 12,
+      "delivery_price": "3.50",
+      "delivery_days": 1,
+      "is_active": true
+    },
+    {
+      "product_sku": "DEMO-KEYBOARD-001",
+      "supplier_name": "Demo Baltic Supply",
+      "supplier_sku": "DEMO-BS-KEYBOARD",
+      "unit_price": "26.00",
+      "vat_included": true,
+      "min_order_qty": 5,
+      "stock_qty": 3,
+      "delivery_price": "5.00",
+      "delivery_days": 3,
+      "is_active": true
+    },
+    {
+      "product_sku": "DEMO-PAPER-001",
+      "supplier_name": "Demo Office Hub",
+      "supplier_sku": "DEMO-OH-PAPER",
+      "unit_price": "4.50",
+      "vat_included": true,
+      "min_order_qty": 1,
+      "stock_qty": 100,
+      "delivery_price": "2.50",
+      "delivery_days": 2,
+      "is_active": true
+    },
+    {
+      "product_sku": "DEMO-PAPER-001",
+      "supplier_name": "Demo Baltic Supply",
+      "supplier_sku": "DEMO-BS-PAPER",
+      "unit_price": "3.80",
+      "vat_included": true,
+      "min_order_qty": 10,
+      "stock_qty": 500,
+      "delivery_price": "5.00",
+      "delivery_days": 3,
+      "is_active": true
+    },
+    {
+      "product_sku": "DEMO-PEN-001",
+      "supplier_name": "Demo Office Hub",
+      "supplier_sku": "DEMO-OH-PEN",
+      "unit_price": "0.65",
+      "vat_included": true,
+      "min_order_qty": 10,
+      "stock_qty": 200,
+      "delivery_price": "2.50",
+      "delivery_days": 2,
+      "is_active": true
+    },
+    {
+      "product_sku": "DEMO-PEN-001",
+      "supplier_name": "Demo Baltic Supply",
+      "supplier_sku": "DEMO-BS-PEN",
+      "unit_price": "0.49",
+      "vat_included": true,
+      "min_order_qty": 50,
+      "stock_qty": 500,
+      "delivery_price": "5.00",
+      "delivery_days": 3,
+      "is_active": true
+    },
+    {
+      "product_sku": "DEMO-BOX-001",
+      "supplier_name": "Demo Office Hub",
+      "supplier_sku": "DEMO-OH-BOX",
+      "unit_price": "2.90",
+      "vat_included": true,
+      "min_order_qty": 5,
+      "stock_qty": 80,
+      "delivery_price": "2.50",
+      "delivery_days": 2,
+      "is_active": true
+    },
+    {
+      "product_sku": "DEMO-DRILL-001",
+      "supplier_name": "Demo NordTech",
+      "supplier_sku": "DEMO-NT-DRILL",
+      "unit_price": "79.90",
+      "vat_included": true,
+      "min_order_qty": 1,
+      "stock_qty": 8,
+      "delivery_price": "0.00",
+      "delivery_days": 2,
+      "is_active": true
+    },
+    {
+      "product_sku": "DEMO-DRILL-001",
+      "supplier_name": "Demo Baltic Supply",
+      "supplier_sku": "DEMO-BS-DRILL",
+      "unit_price": "74.00",
+      "vat_included": false,
+      "min_order_qty": 2,
+      "stock_qty": 6,
+      "delivery_price": "7.50",
+      "delivery_days": 5,
+      "is_active": true
+    },
+    {
+      "product_sku": "DEMO-SCREWS-001",
+      "supplier_name": "Demo NordTech",
+      "supplier_sku": "DEMO-NT-SCREWS",
+      "unit_price": "4.99",
+      "vat_included": true,
+      "min_order_qty": 1,
+      "stock_qty": 60,
+      "delivery_price": "3.50",
+      "delivery_days": 1,
+      "is_active": true
+    },
+    {
+      "product_sku": "DEMO-SCREWS-001",
+      "supplier_name": "Demo Baltic Supply",
+      "supplier_sku": "DEMO-BS-SCREWS",
+      "unit_price": "3.99",
+      "vat_included": true,
+      "min_order_qty": 10,
+      "stock_qty": 200,
+      "delivery_price": "5.00",
+      "delivery_days": 3,
+      "is_active": true
+    },
+    {
+      "product_sku": "DEMO-CLEANER-001",
+      "supplier_name": "Demo Office Hub",
+      "supplier_sku": "DEMO-OH-CLEANER",
+      "unit_price": "3.20",
+      "vat_included": true,
+      "min_order_qty": 1,
+      "stock_qty": 0,
+      "delivery_price": "2.50",
+      "delivery_days": 2,
+      "is_active": true
+    },
+    {
+      "product_sku": "DEMO-GLOVES-001",
+      "supplier_name": "Demo Baltic Supply",
+      "supplier_sku": "DEMO-BS-GLOVES",
+      "unit_price": "2.49",
+      "vat_included": true,
+      "min_order_qty": 5,
+      "stock_qty": 2,
+      "delivery_price": "5.00",
+      "delivery_days": 3,
+      "is_active": true
+    }
+  ],
+  "cart_items": [
+    {
+      "supplier_sku": "DEMO-NT-USB",
+      "quantity": 2
+    },
+    {
+      "supplier_sku": "DEMO-OH-PAPER",
+      "quantity": 5
+    }
+  ]
+}
