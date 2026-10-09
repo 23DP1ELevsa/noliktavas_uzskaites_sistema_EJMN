@@ -36,13 +36,19 @@ def test_environment_is_read_each_time_an_app_is_created(monkeypatch):
     assert create_app().config["SECRET_KEY"] == "second-test-secret"
 
 
-def test_unavailable_local_mysql_falls_back_to_sqlite(monkeypatch):
+def test_unavailable_local_mysql_does_not_fall_back_to_sqlite(monkeypatch):
     monkeypatch.setenv("DATABASE_URL", "mysql+pymysql://user:password@127.0.0.1:3306/stockflow")
-    monkeypatch.setattr("backend.app.config._local_mysql_is_available", lambda url: False)
+    def unavailable(*args, **kwargs):
+        raise OSError("MySQL is unavailable")
+
+    monkeypatch.setattr("socket.create_connection", unavailable)
 
     app = create_app()
 
-    assert app.config["SQLALCHEMY_DATABASE_URI"].drivername == "sqlite"
+    url = app.config["SQLALCHEMY_DATABASE_URI"]
+    assert url.drivername == "mysql+pymysql"
+    assert url.host == "127.0.0.1"
+    assert url.database == "stockflow"
 
 
 def test_url_object_is_supported():
