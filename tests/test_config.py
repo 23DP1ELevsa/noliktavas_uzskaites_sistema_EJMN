@@ -36,6 +36,15 @@ def test_environment_is_read_each_time_an_app_is_created(monkeypatch):
     assert create_app().config["SECRET_KEY"] == "second-test-secret"
 
 
+def test_unavailable_local_mysql_falls_back_to_sqlite(monkeypatch):
+    monkeypatch.setenv("DATABASE_URL", "mysql+pymysql://user:password@127.0.0.1:3306/stockflow")
+    monkeypatch.setattr("backend.app.config._local_mysql_is_available", lambda url: False)
+
+    app = create_app()
+
+    assert app.config["SQLALCHEMY_DATABASE_URI"].drivername == "sqlite"
+
+
 def test_url_object_is_supported():
     url = URL.create("mysql", username="user", password="p@ss", host="host", database="db")
     assert normalize_database_url(url).password == "p@ss"

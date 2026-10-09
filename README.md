@@ -193,6 +193,19 @@ Atkārtota palaišana neveido dublikātus un nepārraksta esošās paroles vai d
 Pēc ielādes atver `/catalog/page` vai galvenajā lapā spied **Atvērt katalogu**.
 [Testa konti, scenāriji un ielādes noteikumi](docs/demo-data.md).
 
+### Demonstrācijas konti
+
+Pēc veiksmīgas `seed-demo` izpildes pieejami šādi konti ar noklusējuma parolēm:
+
+| Loma | E-pasts | Parole |
+| --- | --- | --- |
+| Administrators | `admin.demo@stockflow.test` | `DemoAdmin123!` |
+| Pircējs | `user.demo@stockflow.test` | `DemoUser123!` |
+
+Ja kontu izveides laikā norādītas pielāgotas paroles ar `DEMO_ADMIN_PASSWORD`,
+`DEMO_USER_PASSWORD` vai komandas parametriem, izmanto tās. Atkārtota `seed-demo`
+palaišana esošo kontu paroles nemaina.
+
 ## Migrācijas
 
 Migrācijas atrodas `migrations/`. Pēc modeļu shēmas izmaiņām izveido un piemēro jaunu migrāciju:
