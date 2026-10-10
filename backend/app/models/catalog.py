@@ -23,6 +23,7 @@ class Product(IdentityMixin, CreatedMixin, db.Model):
     model = db.Column(db.String(100))
     description = db.Column(db.Text)
     unit = db.Column(db.String(30), nullable=False, default="gab.", server_default="gab.")
+    image_url = db.Column(db.String(2048))
     is_active = active_column()
 
     category = db.relationship("Category", back_populates="products")

@@ -1,0 +1,46 @@
+{% extends "admin/base.html" %}
+{% block title %}Preču pārvaldība{% endblock %}
+{% block content %}
+    <div class="admin-toolbar">
+        <p>Pārvaldiet StockFlow kopējā kataloga preces vienuviet.</p>
+        <a class="admin-primary-button" href="{{ url_for('admin.product_form') }}">＋ Pievienot preci</a>
+    </div>
+    <div class="inventory-stats" aria-label="Kataloga kopsavilkums">
+        <div><span>Visas preces</span><strong>{{ total }}</strong></div>
+        <div><span>Aktīvās preces</span><strong>{{ active }}</strong></div>
+        <div><span>Neaktīvās preces</span><strong>{{ total - active }}</strong></div>
+    </div>
+    <form class="inventory-filters" method="get" role="search">
+        <div><label for="product-search">Meklēt preces</label><input id="product-search" type="search" name="q" value="{{ q }}" maxlength="255" placeholder="Nosaukums vai SKU"></div>
+        <div><label for="product-status">Statuss</label><select id="product-status" name="status">
+            <option value="all" {% if status == 'all' %}selected{% endif %}>Visas preces</option>
+            <option value="active" {% if status == 'active' %}selected{% endif %}>Aktīvās</option>
+            <option value="inactive" {% if status == 'inactive' %}selected{% endif %}>Neaktīvās</option>
+        </select></div>
+        <button class="admin-primary-button" type="submit">Meklēt</button>
+        <a class="admin-secondary-button" href="{{ url_for('admin.products') }}">Notīrīt</a>
+    </form>
+    <p class="results-count" role="status">Atrastas {{ products|length }} preces</p>
+    <section class="inventory-list" aria-label="Preču saraksts">
+        {% for product in products %}
+            <article class="inventory-row">
+                <div class="inventory-thumbnail">
+                    {% if product.image_url %}<img src="{{ product.image_url }}" alt="{{ product.name }}" loading="lazy" referrerpolicy="no-referrer">{% else %}<span aria-hidden="true">{{ product.name[:1]|upper }}</span>{% endif %}
+                </div>
+                <div class="inventory-info">
+                    <span class="status-badge {% if not product.is_active %}status-inactive{% endif %}">{{ 'Aktīva' if product.is_active else 'Neaktīva' }}</span>
+                    <h2><a href="{{ url_for('admin.product_detail', product_id=product.id) }}">{{ product.name }}</a></h2>
+                    <p>SKU: {{ product.sku }} · {{ product.category.name }}</p>
+                    <small>{{ product.offers|length }} piedāvājumi · {{ product.unit }}</small>
+                </div>
+                <div class="category-row-actions">
+                    <a href="{{ url_for('admin.product_detail', product_id=product.id) }}">Skatīt<span class="sr-only"> {{ product.name }}</span></a>
+                    <a href="{{ url_for('admin.product_form', product_id=product.id) }}">Rediģēt<span class="sr-only"> {{ product.name }}</span></a>
+                    <a href="{{ url_for('admin.delete_product', product_id=product.id) }}">{{ 'Deaktivizēt' if product.offers else 'Dzēst' }}<span class="sr-only"> {{ product.name }}</span></a>
+                </div>
+            </article>
+        {% else %}
+            <div class="empty-state"><h2>Preces netika atrastas</h2><p>{% if q or status != 'all' %}Mainiet meklēšanas kritērijus.{% else %}Pievienojiet pirmo preci kopējam katalogam.{% endif %}</p></div>
+        {% endfor %}
+    </section>
+{% endblock %}

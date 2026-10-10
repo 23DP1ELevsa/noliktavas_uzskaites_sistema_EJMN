@@ -1,0 +1,25 @@
+{% extends "admin/base.html" %}
+{% block title %}Preces informācija{% endblock %}
+{% block content %}
+    <nav class="admin-breadcrumbs" aria-label="Atrašanās vieta"><a href="{{ url_for('admin.products') }}">Preces</a><span>/</span><span>{{ product.name }}</span></nav>
+    <section class="product-detail">
+        <div class="detail-image">{% if product.image_url %}<img src="{{ product.image_url }}" alt="{{ product.name }}" referrerpolicy="no-referrer">{% else %}<span aria-hidden="true">{{ product.name[:1]|upper }}</span>{% endif %}</div>
+        <div class="detail-copy">
+            <span class="status-badge {% if not product.is_active %}status-inactive{% endif %}">{{ 'Aktīva' if product.is_active else 'Neaktīva' }}</span>
+            <h2>{{ product.name }}</h2>
+            <p class="detail-description">{{ product.description or 'Apraksts nav pievienots.' }}</p>
+            <dl class="product-facts">
+                <div><dt>SKU</dt><dd>{{ product.sku }}</dd></div>
+                <div><dt>Kategorija</dt><dd>{{ product.category.name }}</dd></div>
+                <div><dt>Zīmols</dt><dd>{{ product.brand or 'Nav norādīts' }}</dd></div>
+                <div><dt>Modelis</dt><dd>{{ product.model or 'Nav norādīts' }}</dd></div>
+                <div><dt>Mērvienība</dt><dd>{{ product.unit }}</dd></div>
+                <div><dt>Piedāvājumi</dt><dd>{{ product.offers|length }}</dd></div>
+            </dl>
+            <div class="admin-form-actions">
+                <a class="admin-primary-button" href="{{ url_for('admin.product_form', product_id=product.id) }}">Rediģēt preci</a>
+                <a class="admin-secondary-button" href="{{ url_for('admin.delete_product', product_id=product.id) }}">{{ 'Deaktivizēt preci' if product.offers else 'Dzēst preci' }}</a>
+            </div>
+        </div>
+    </section>
+{% endblock %}

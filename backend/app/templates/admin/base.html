@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="lv">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{% block title %}Preču pārvaldība{% endblock %} | StockFlow</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body class="admin-page">
+    <a class="skip-link" href="#main-content">Pāriet uz saturu</a>
+    <main class="admin-shell" id="main-content">
+        <header class="admin-header">
+            <div class="admin-heading">
+                <a class="brand admin-brand" href="{{ url_for('index') }}" aria-label="StockFlow sākumlapa">
+                    <span class="brand-mark" aria-hidden="true"><span></span><span></span><span></span></span>
+                    <span>Stock<span class="brand-accent">Flow</span></span>
+                </a>
+                <p class="account-kicker">Administratora panelis</p>
+                <h1>{{ self.title() }}</h1>
+            </div>
+            <nav class="admin-header-actions" aria-label="Administratora navigācija">
+                <a href="{{ url_for('admin.products') }}" {% if request.endpoint in ['admin.products', 'admin.product_detail', 'admin.product_form', 'admin.delete_product'] %}aria-current="page"{% endif %}>Preces</a>
+                <a href="{{ url_for('admin.categories') }}">Kategorijas</a>
+                <a href="{{ url_for('catalog.catalog_page') }}">Katalogs</a>
+                <a href="{{ url_for('auth.profile') }}">Mans profils</a>
+                <a href="{{ url_for('auth.logout') }}">Iziet</a>
+            </nav>
+        </header>
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% for category, message in messages %}<p class="flash flash-{{ category }}" role="status">{{ message }}</p>{% endfor %}
+        {% endwith %}
+        {% block content %}{% endblock %}
+    </main>
+</body>
+</html>

@@ -3,6 +3,7 @@
 from dataclasses import dataclass
 from decimal import Decimal
 import re
+from flask import url_for
 
 from sqlalchemy import and_, func
 from sqlalchemy.orm import joinedload, selectinload
@@ -109,6 +110,7 @@ def _serialize_product(product):
     offers = sorted(product.offers, key=lambda offer: (offer.unit_price, offer.id))
     return {
         "id": product.id,
+        "detail_url": url_for("catalog.product_page", product_id=product.id),
         "sku": product.sku,
         "name": product.name,
         "category_id": product.category_id,
@@ -116,6 +118,7 @@ def _serialize_product(product):
         "brand": product.brand,
         "model": product.model,
         "description": product.description,
+        "image_url": product.image_url,
         "unit": product.unit,
         "active": product.is_active,
         # Keep the existing API's numeric price; no arithmetic is done in float.

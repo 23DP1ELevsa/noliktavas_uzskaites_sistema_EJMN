@@ -1,0 +1,42 @@
+{% extends "admin/base.html" %}
+{% block title %}{{ 'Rediģēt preci' if product else 'Pievienot preci' }}{% endblock %}
+{% block content %}
+    <nav class="admin-breadcrumbs" aria-label="Atrašanās vieta"><a href="{{ url_for('admin.products') }}">Preces</a><span>/</span><span>{{ self.title() }}</span></nav>
+    <section class="form-panel">
+        <p class="account-help">Ar * atzīmētie lauki ir obligāti. SKU jābūt unikālam visā katalogā.</p>
+        {% if errors %}<div class="flash flash-error" role="alert"><strong>Prece nav saglabāta.</strong> Pārbaudiet atzīmētos laukus.</div>{% endif %}
+        {% if not categories %}<p class="flash flash-error" role="alert">Vispirms <a href="{{ url_for('admin.create_category') }}">izveidojiet kategoriju</a>, lai varētu pievienot preci.</p>{% endif %}
+        {% macro field(name, label, limit, required=false, type='text') %}
+            <div class="form-field">
+                <label for="{{ name }}">{{ label }}{{ ' *' if required else '' }}</label>
+                <input id="{{ name }}" name="{{ name }}" type="{{ type }}" value="{{ form_data[name] }}" maxlength="{{ limit }}" {% if required %}required{% endif %} {% if errors.get(name) %}aria-invalid="true" aria-describedby="{{ name }}-error"{% endif %}>
+                {% if errors.get(name) %}<p class="field-error" id="{{ name }}-error">{{ errors[name] }}</p>{% endif %}
+            </div>
+        {% endmacro %}
+        <form method="post" class="admin-form product-form">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+            {{ field('name', 'Preces nosaukums', 255, true) }}
+            <div class="form-grid">
+                {{ field('sku', 'SKU', 100, true) }}
+                <div class="form-field"><label for="category_id">Kategorija *</label>
+                    <select id="category_id" name="category_id" required {% if errors.get('category_id') %}aria-invalid="true" aria-describedby="category_id-error"{% endif %}>
+                        <option value="">Izvēlieties kategoriju</option>
+                        {% for category in categories %}<option value="{{ category.id }}" {% if form_data.category_id|string == category.id|string %}selected{% endif %}>{{ category.name }}</option>{% endfor %}
+                    </select>
+                    {% if errors.get('category_id') %}<p class="field-error" id="category_id-error">{{ errors.category_id }}</p>{% endif %}
+                </div>
+                {{ field('brand', 'Zīmols', 100) }}
+                {{ field('model', 'Modelis', 100) }}
+            </div>
+            <div class="form-field"><label for="description">Apraksts</label><textarea id="description" name="description" rows="5">{{ form_data.description }}</textarea></div>
+            {{ field('image_url', 'Attēla saite', 2048, false, 'url') }}
+            <p class="field-hint">Pilna saite uz attēlu (https:// vai http://). Šo lauku var atstāt tukšu.</p>
+            {{ field('unit', 'Mērvienība', 30, true) }}
+            <label class="filter-check"><input type="checkbox" name="is_active" value="1" {% if form_data.is_active %}checked{% endif %}><span>Aktīva prece — redzama publiskajā katalogā</span></label>
+            <div class="admin-form-actions">
+                <a class="admin-secondary-button" href="{{ url_for('admin.product_detail', product_id=product.id) if product else url_for('admin.products') }}">Atcelt</a>
+                <button class="admin-primary-button" type="submit" {% if not categories %}disabled{% endif %}>{{ 'Saglabāt izmaiņas' if product else 'Izveidot preci' }}</button>
+            </div>
+        </form>
+    </section>
+{% endblock %}

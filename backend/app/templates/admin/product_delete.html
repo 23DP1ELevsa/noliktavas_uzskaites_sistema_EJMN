@@ -1,0 +1,22 @@
+{% extends "admin/base.html" %}
+{% block title %}{{ 'Deaktivizēt preci' if has_relations else 'Dzēst preci' }}{% endblock %}
+{% block content %}
+    <section class="form-panel confirmation-panel">
+        <p class="account-kicker">Darbības apstiprinājums</p>
+        <h2>{{ product.name }}</h2><p>SKU: {{ product.sku }}</p>
+        {% if has_relations %}
+            <p>Precei ir piesaistīti piedāvājumi. Tā tiks deaktivizēta un vairs nebūs redzama publiskajā katalogā. Saistītie dati tiks saglabāti.</p>
+            <p>Preci varēs atkal aktivizēt rediģēšanas formā.</p>
+        {% else %}
+            <p>Vai tiešām vēlaties dzēst šo preci? Precei nav saistītu piedāvājumu. Dzēšanu nevar atsaukt.</p>
+        {% endif %}
+        <form method="post">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+            <input type="hidden" name="confirmed" value="1">
+            <div class="admin-form-actions">
+                <a class="admin-secondary-button" href="{{ url_for('admin.product_detail', product_id=product.id) }}">Atcelt</a>
+                <button class="admin-primary-button" type="submit">{{ 'Apstiprināt deaktivizēšanu' if has_relations else 'Apstiprināt dzēšanu' }}</button>
+            </div>
+        </form>
+    </section>
+{% endblock %}

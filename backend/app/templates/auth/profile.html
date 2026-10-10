@@ -50,6 +50,8 @@
             <a href="{{ url_for('catalog.catalog_page') }}">Atvērt katalogu</a>
             {% if current_user.role == "admin" %}
                 <span aria-hidden="true"> · </span>
+                <a href="{{ url_for('admin.products') }}">Preces</a>
+                <span aria-hidden="true"> · </span>
                 <a href="{{ url_for('admin.categories') }}">Kategorijas</a>
             {% endif %}
             <span aria-hidden="true"> · </span>

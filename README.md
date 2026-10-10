@@ -91,8 +91,9 @@ Testa administratora piekļuve:
 | --- | --- | --- |
 | Administrators | `admin.demo@stockflow.test` | `DemoAdmin123!` |
 
-Pēc pieslēgšanās administratora sadaļa ir pieejama, izmantojot **Kategorijas** saiti
-galvenē vai tieši adresē `/admin/categories`. Komanda `seed-demo` izveido šo kontu,
+Pēc pieslēgšanās administratora sadaļas ir pieejamas, izmantojot **Preces** un **Kategorijas** saites
+galvenē vai tieši adresēs `/admin/products` un `/admin/categories`. [Preču pārvaldības apraksts](docs/product-management.md).
+Komanda `seed-demo` izveido šo kontu,
 ja tas vēl neeksistē; esoša konta parole netiek pārrakstīta.
 
 ## Noderīgas komandas

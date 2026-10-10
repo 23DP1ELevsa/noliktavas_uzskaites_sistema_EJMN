@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="lv">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{{ product.name }} | StockFlow</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body class="marketplace-page">
+    <header class="market-header"><div class="header-top">
+        <a class="brand" href="{{ url_for('index') }}">Stock<span class="brand-accent">Flow</span></a>
+        <nav class="header-actions" aria-label="Navigācija">
+            <a href="{{ url_for('catalog.catalog_page') }}">Katalogs</a>
+            {% if current_user.is_authenticated and current_user.role == 'admin' %}<a href="{{ url_for('admin.product_detail', product_id=product.id) }}">Pārvaldīt preci</a>{% endif %}
+        </nav>
+    </div></header>
+    <main class="admin-shell">
+        <nav class="breadcrumbs" aria-label="Atrašanās vieta"><a href="{{ url_for('catalog.catalog_page') }}">Katalogs</a><span>/</span><span>{{ product.name }}</span></nav>
+        <section class="product-detail">
+            <div class="detail-image">{% if product.image_url %}<img src="{{ product.image_url }}" alt="{{ product.name }}" referrerpolicy="no-referrer">{% else %}<span aria-hidden="true">{{ product.name[:1]|upper }}</span>{% endif %}</div>
+            <div class="detail-copy">
+                <p class="account-kicker">{{ product.category.name }}</p>
+                <h1>{{ product.name }}</h1>
+                <p class="detail-description">{{ product.description or 'Apraksts nav pievienots.' }}</p>
+                <dl class="product-facts">
+                    <div><dt>SKU</dt><dd>{{ product.sku }}</dd></div>
+                    <div><dt>Zīmols</dt><dd>{{ product.brand or 'Nav norādīts' }}</dd></div>
+                    <div><dt>Modelis</dt><dd>{{ product.model or 'Nav norādīts' }}</dd></div>
+                    <div><dt>Mērvienība</dt><dd>{{ product.unit }}</dd></div>
+                </dl>
+            </div>
+        </section>
+        <div class="admin-toolbar"><h2>Piegādātāju piedāvājumi</h2><p>{{ offers|length }} piedāvājumi, sakārtoti pēc cenas</p></div>
+        <section class="category-list" aria-label="Piedāvājumu salīdzinājums">
+            {% for offer in offers %}<article class="category-row">
+                <div><h3>{{ offer.supplier_name }}</h3>
+                    <p>{{ 'Pieejams' if offer.stock_qty >= offer.min_order_qty else 'Nav pieejams' }} · Noliktavā: {{ offer.stock_qty }} · Minimālais daudzums: {{ offer.min_order_qty }}</p>
+                    <p>Piegāde: {{ offer.delivery_days }} dienas · {{ '%.2f'|format(offer.delivery_price) }} €</p>
+                </div>
+                <div><p class="price">{{ '%.2f'|format(offer.unit_price) }} € / {{ product.unit }}</p><small>{{ 'Ar PVN' if offer.vat_included else 'Bez PVN' }}</small></div>
+            </article>{% else %}<p class="empty-state">Šai precei vēl nav aktīvu piedāvājumu.</p>{% endfor %}
+        </section>
+    </main>
+</body>
+</html>

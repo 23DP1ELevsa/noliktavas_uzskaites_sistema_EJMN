@@ -88,8 +88,22 @@ function renderProducts() {
             <p class="product-sku">SKU: ${escapeHtml(product.sku)}</p>
             <p class="price">${formatPrice(product.price)}</p>
             <p class="offer-count">${product.offer_count} ${product.offer_count === 1 ? "piedāvājums" : "piedāvājumi"} · ${escapeHtml(availability)}</p>
-            <button class="card-button" type="button" data-product-id="${product.id}">Skatīt piedāvājumus</button>
+            <a class="card-button" href="${escapeHtml(product.detail_url)}">Skatīt piedāvājumus</a>
         `;
+        if (product.image_url) {
+            const image = document.createElement("img");
+            image.src = product.image_url;
+            image.alt = product.name;
+            image.loading = "lazy";
+            image.referrerPolicy = "no-referrer";
+            const container = card.querySelector(".product-image");
+            container.removeAttribute("aria-hidden");
+            image.addEventListener("error", () => {
+                container.textContent = product.name.slice(0, 1).toUpperCase();
+                container.setAttribute("aria-hidden", "true");
+            }, { once: true });
+            container.replaceChildren(image);
+        }
         productGrid.append(card);
     });
 }

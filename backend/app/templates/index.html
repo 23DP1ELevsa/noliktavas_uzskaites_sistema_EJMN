@@ -18,6 +18,7 @@
                 <span class="landing-user">Sveiki, {{ current_user.full_name }}</span>
                 <a href="{{ url_for('auth.profile') }}">Mans profils</a>
                 {% if current_user.role == "admin" %}
+                    <a href="{{ url_for('admin.products') }}">Preces</a>
                     <a href="{{ url_for('admin.categories') }}">Kategorijas</a>
                 {% endif %}
                 <a href="{{ url_for('auth.logout') }}">Iziet</a>
@@ -49,6 +50,13 @@
                     <div><span>03</span><p>Izvēlies</p></div>
                 </div>
             </div>
+            <aside class="landing-preview" aria-label="StockFlow iespējas">
+                <div class="preview-heading"><strong>Viss vienā katalogā</strong><span>StockFlow</span></div>
+                <div class="preview-item"><span class="preview-icon" aria-hidden="true">01</span><div><strong>Preces un kategorijas</strong><small>Sakārtots katalogs ērtai meklēšanai</small></div></div>
+                <div class="preview-item"><span class="preview-icon" aria-hidden="true">02</span><div><strong>Piegādātāju piedāvājumi</strong><small>Cena, pieejamība un piegādes laiks</small></div></div>
+                <div class="preview-item"><span class="preview-icon" aria-hidden="true">03</span><div><strong>Pārskatāma izvēle</strong><small>Salīdziniet un atrodiet piemērotāko</small></div></div>
+                <p class="preview-note">Mazāk laika meklēšanai. Vairāk skaidrības izvēlē.</p>
+            </aside>
         </section>
     </main>
     <footer class="landing-footer">
