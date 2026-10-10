@@ -1,3 +1,5 @@
+@import url("https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Syne:wght@600;700;800&display=swap");
+
 :root {
     color-scheme: light;
     --ink: #18272d;
@@ -404,6 +406,243 @@ html, body, button, input, select, textarea {
     min-height: 100vh;
     background: #f7f8fd;
     color: #1d2b4d;
+}
+
+.admin-page {
+    min-height: 100vh;
+    background: #242528;
+    color: #d6d7da;
+}
+
+.admin-shell {
+    width: min(100% - 56px, 980px);
+    margin: 0 auto;
+    padding: 42px 0 70px;
+}
+
+.admin-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 24px;
+    border-bottom: 1px solid #3b3d41;
+    padding-bottom: 22px;
+}
+
+.admin-page h1 {
+    margin: 0;
+    color: #e0e1e4;
+    font-size: clamp(2rem, 5vw, 3rem);
+    letter-spacing: -0.05em;
+}
+
+.admin-header .account-kicker {
+    margin: 0 0 9px;
+    color: #8e9299;
+}
+
+.admin-header-actions {
+    display: flex;
+    gap: 18px;
+    padding-top: 22px;
+    color: #aeb1b7;
+    font-size: 14px;
+    font-weight: 700;
+}
+
+.admin-header-actions a:hover,
+.back-link:hover {
+    color: #73a8ee;
+}
+
+.admin-toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+    padding: 25px 0 17px;
+}
+
+.admin-toolbar p {
+    margin: 0;
+    color: #b9bbc0;
+}
+
+.admin-primary-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 40px;
+    padding: 0 15px;
+    border: 1px solid #6e9edf;
+    border-radius: 6px;
+    background: #6e9edf;
+    color: #1f2a3b;
+    font: inherit;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.admin-primary-button:hover {
+    border-color: #8ab7f2;
+    background: #8ab7f2;
+}
+
+.category-list {
+    overflow: hidden;
+    border: 1px solid #3b3d41;
+    border-radius: 8px;
+}
+
+.category-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+    padding: 19px 20px;
+    border-bottom: 1px solid #3b3d41;
+}
+
+.category-row:last-child {
+    border-bottom: 0;
+}
+
+.category-row h2 {
+    margin: 0 0 6px;
+    color: #d8d9dc;
+    font-size: 17px;
+}
+
+.category-row p {
+    max-width: 650px;
+    margin: 0 0 7px;
+    color: #aeb0b5;
+    font-size: 14px;
+    line-height: 1.45;
+}
+
+.category-row small {
+    color: #81848a;
+    font-size: 12px;
+}
+
+.category-row-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-shrink: 0;
+}
+
+.category-row-actions a,
+.category-row-actions button {
+    padding: 8px 10px;
+    border: 1px solid #494b50;
+    border-radius: 5px;
+    background: transparent;
+    color: #bfc1c6;
+    font: inherit;
+    font-size: 13px;
+    cursor: pointer;
+}
+
+.category-row-actions a:hover {
+    border-color: #6e9edf;
+    color: #8ab7f2;
+}
+
+.category-row-actions button:hover {
+    border-color: #d27878;
+    color: #e59b9b;
+}
+
+.empty-state {
+    margin: 0;
+    padding: 28px 20px;
+    color: #9b9ea4;
+}
+
+.admin-form-shell {
+    max-width: 650px;
+}
+
+.back-link {
+    display: inline-block;
+    margin-bottom: 38px;
+    color: #aeb1b7;
+    font-size: 14px;
+    font-weight: 700;
+}
+
+.admin-form-shell .account-kicker {
+    margin: 0 0 9px;
+    color: #8e9299;
+}
+
+.admin-form {
+    display: grid;
+    gap: 9px;
+    margin-top: 30px;
+}
+
+.admin-form label {
+    color: #bfc1c6;
+    font-size: 14px;
+    font-weight: 700;
+}
+
+.admin-form input,
+.admin-form textarea {
+    width: 100%;
+    margin-bottom: 8px;
+    padding: 11px 12px;
+    border: 1px solid #494b50;
+    border-radius: 5px;
+    outline: 0;
+    background: #2b2c30;
+    color: #e0e1e4;
+    font: inherit;
+    resize: vertical;
+}
+
+.admin-form input:focus,
+.admin-form textarea:focus {
+    border-color: #6e9edf;
+    box-shadow: 0 0 0 3px rgba(110, 158, 223, 0.15);
+}
+
+.admin-form .admin-primary-button {
+    width: fit-content;
+    margin-top: 8px;
+}
+
+.admin-page .flash {
+    margin: 18px 0 0;
+}
+
+@media (max-width: 640px) {
+    .admin-shell {
+        width: min(100% - 30px, 980px);
+        padding-top: 25px;
+    }
+
+    .admin-header,
+    .admin-toolbar,
+    .category-row {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .admin-header-actions {
+        padding-top: 0;
+    }
+
+    .admin-toolbar {
+        gap: 14px;
+    }
+
+    .category-row {
+        gap: 15px;
+    }
 }
 
 .brand-logo,
@@ -941,6 +1180,1202 @@ html, body, button, input, select, textarea {
     }
 }
 
+/* Final EasyRent-inspired palette override. */
+html { background: #f5efe7 !important; }
+body,
+.landing-page,
+.account-page,
+.marketplace-page,
+.admin-page {
+    background: transparent !important;
+    color: #153047 !important;
+    font-family: "Plus Jakarta Sans", "Avenir Next", "Segoe UI", Arial, sans-serif;
+}
+.landing-page { height: auto; min-height: 100vh; overflow-y: auto; }
+.landing-page::before { background: transparent !important; }
+.landing-page .landing-header { border-bottom-color: rgba(21, 48, 71, 0.12) !important; }
+.landing-page .brand-logo,
+.landing-page .landing-actions a,
+.landing-page .landing-user,
+.market-header .brand,
+.market-header .header-actions,
+.market-header .header-actions a,
+.market-header .user-greeting,
+.category-nav a,
+.admin-page .admin-brand,
+.admin-page .admin-header-actions a,
+.admin-page .admin-toolbar p { color: #153047 !important; }
+.brand-mark,
+.account-brand .brand-mark,
+.admin-brand .brand-mark,
+.market-header .brand-mark { border-color: #0f766e !important; }
+.brand-mark span,
+.account-brand .brand-mark span,
+.admin-brand .brand-mark span,
+.market-header .brand-mark span { background: #0f766e !important; }
+.brand-accent,
+.account-brand .brand-accent,
+.admin-brand .brand-accent,
+.market-header .brand-accent,
+.landing-copy h1 strong { color: #0f766e !important; }
+.landing-copy h1,
+.account-card h1,
+.admin-page h1 { color: #153047 !important; }
+.landing-lede,
+.account-help,
+.account-switch,
+.landing-footer,
+.admin-page .category-row p,
+.admin-page .category-row small { color: #617181 !important; }
+.landing-primary-button,
+.account-form button,
+.admin-primary-button,
+.apply-filters,
+.global-search button { border-radius: 999px !important; background: #0f766e !important; }
+.landing-primary-button:hover,
+.account-form button:hover,
+.admin-primary-button:hover,
+.apply-filters:hover,
+.global-search button:hover { background: #115e59 !important; }
+.account-page { display: grid; place-items: center; padding: 44px 16px; }
+.account-card,
+.admin-page .admin-form-shell {
+    border: 1px solid rgba(21, 48, 71, 0.12) !important;
+    border-radius: 24px !important;
+    background: rgba(255, 250, 244, 0.86) !important;
+    box-shadow: 0 24px 64px rgba(25, 41, 55, 0.12) !important;
+}
+.account-card .account-kicker,
+.admin-page .account-kicker { color: #0f766e !important; }
+.account-form label,
+.admin-form label { color: #153047 !important; }
+.account-form input,
+.admin-form input,
+.admin-form textarea,
+.filter-input,
+.price-fields input,
+.sort-control select {
+    border-color: rgba(21, 48, 71, 0.12) !important;
+    border-radius: 14px !important;
+    background: rgba(255, 252, 248, 0.96) !important;
+    color: #153047 !important;
+}
+.market-header {
+    background: rgba(255, 250, 244, 0.84) !important;
+    border-bottom-color: rgba(21, 48, 71, 0.12) !important;
+    box-shadow: 0 8px 20px rgba(34, 51, 68, 0.06) !important;
+}
+.market-header .header-actions a:hover,
+.category-nav a:hover,
+.category-nav .category-active { color: #0f766e !important; }
+.category-nav .category-active { border-bottom-color: #0f766e !important; }
+.hero-banner {
+    border-radius: 24px !important;
+    background: linear-gradient(135deg, #115e59, #0f766e) !important;
+}
+.filters,
+.product-card,
+.admin-page .category-list {
+    border: 1px solid rgba(21, 48, 71, 0.12) !important;
+    border-radius: 18px !important;
+    background: rgba(255, 250, 244, 0.86) !important;
+    box-shadow: 0 8px 20px rgba(34, 51, 68, 0.06) !important;
+}
+.filter-heading h2,
+.supplier-title,
+.catalog-toolbar h2,
+.product-card h3,
+.admin-page .category-row h2 { color: #153047 !important; }
+.admin-page .admin-header { border-bottom-color: rgba(21, 48, 71, 0.12) !important; }
+.admin-page .category-row { border-bottom-color: rgba(21, 48, 71, 0.12) !important; }
+.admin-page .category-row-actions a,
+.admin-page .category-row-actions button,
+.admin-secondary-button {
+    border-color: rgba(21, 48, 71, 0.22) !important;
+    border-radius: 999px !important;
+    color: #153047 !important;
+}
+
+/* Keep the EasyRent-inspired system authoritative over legacy page rules. */
+html {
+    background:
+        radial-gradient(circle at top left, rgba(15, 118, 110, 0.16), transparent 30%),
+        radial-gradient(circle at 85% 10%, rgba(201, 107, 59, 0.16), transparent 28%),
+        linear-gradient(180deg, #fcf8f2 0%, #f5efe7 100%);
+}
+
+body,
+.landing-page,
+.account-page,
+.marketplace-page,
+.admin-page {
+    background: transparent !important;
+    color: #153047 !important;
+    font-family: "Plus Jakarta Sans", "Avenir Next", "Segoe UI", Arial, sans-serif;
+}
+
+.landing-page {
+    display: flex;
+    height: auto;
+    min-height: 100vh;
+    overflow-y: auto;
+}
+
+.landing-page::before {
+    background: transparent !important;
+}
+
+.landing-page .landing-header {
+    border-bottom-color: rgba(21, 48, 71, 0.12);
+}
+
+.landing-page .brand-logo,
+.landing-page .landing-actions a,
+.landing-page .landing-user {
+    color: #153047;
+}
+
+.landing-page .brand-mark,
+.account-brand .brand-mark,
+.admin-brand .brand-mark,
+.market-header .brand-mark {
+    border-color: #0f766e !important;
+}
+
+.landing-page .brand-mark span,
+.account-brand .brand-mark span,
+.admin-brand .brand-mark span,
+.market-header .brand-mark span {
+    background: #0f766e !important;
+}
+
+.landing-page .brand-accent,
+.account-brand .brand-accent,
+.admin-brand .brand-accent,
+.market-header .brand-accent {
+    color: #0f766e !important;
+}
+
+.landing-copy h1,
+.account-card h1,
+.admin-page h1 {
+    color: #153047 !important;
+}
+
+.landing-copy h1 strong {
+    color: #0f766e !important;
+}
+
+.landing-lede,
+.account-help,
+.account-switch,
+.landing-footer {
+    color: #617181 !important;
+}
+
+.landing-primary-button,
+.account-form button,
+.admin-primary-button,
+.apply-filters,
+.global-search button {
+    border-radius: 999px !important;
+    background: #0f766e !important;
+    box-shadow: 0 10px 22px rgba(15, 118, 110, 0.16);
+}
+
+.landing-primary-button:hover,
+.account-form button:hover,
+.admin-primary-button:hover,
+.apply-filters:hover,
+.global-search button:hover {
+    background: #115e59 !important;
+}
+
+.account-page {
+    display: grid;
+    place-items: center;
+    padding: 44px 16px;
+}
+
+.account-card,
+.admin-page .admin-form-shell {
+    border: 1px solid rgba(21, 48, 71, 0.12) !important;
+    border-radius: 24px !important;
+    background: rgba(255, 250, 244, 0.86) !important;
+    box-shadow: 0 24px 64px rgba(25, 41, 55, 0.12);
+    backdrop-filter: blur(18px);
+}
+
+.account-card .account-kicker,
+.admin-page .account-kicker {
+    color: #0f766e !important;
+}
+
+.account-form label,
+.admin-form label {
+    color: #153047 !important;
+}
+
+.account-form input,
+.admin-form input,
+.admin-form textarea,
+.filter-input,
+.price-fields input,
+.sort-control select {
+    border-color: rgba(21, 48, 71, 0.12) !important;
+    border-radius: 14px !important;
+    background: rgba(255, 252, 248, 0.96) !important;
+    color: #153047 !important;
+}
+
+.account-form input:focus,
+.admin-form input:focus,
+.admin-form textarea:focus,
+.filter-input:focus,
+.price-fields input:focus {
+    border-color: #0f766e !important;
+    outline: 3px solid rgba(15, 118, 110, 0.12);
+}
+
+.market-header {
+    background: rgba(255, 250, 244, 0.84) !important;
+    border-bottom: 1px solid rgba(21, 48, 71, 0.12) !important;
+    box-shadow: 0 8px 20px rgba(34, 51, 68, 0.06);
+    backdrop-filter: blur(18px);
+}
+
+.market-header .brand,
+.market-header .header-actions,
+.market-header .header-actions a,
+.market-header .user-greeting,
+.category-nav a {
+    color: #153047 !important;
+}
+
+.market-header .header-actions a:hover,
+.category-nav a:hover,
+.category-nav .category-active {
+    color: #0f766e !important;
+}
+
+.category-nav .category-active {
+    border-bottom-color: #0f766e !important;
+}
+
+.hero-banner {
+    border-radius: 24px !important;
+    background:
+        radial-gradient(circle at 85% 15%, rgba(255, 255, 255, 0.25), transparent 28%),
+        linear-gradient(135deg, #115e59, #0f766e) !important;
+}
+
+.filters,
+.product-card,
+.admin-page .category-list {
+    border: 1px solid rgba(21, 48, 71, 0.12) !important;
+    border-radius: 18px !important;
+    background: rgba(255, 250, 244, 0.86) !important;
+    box-shadow: 0 8px 20px rgba(34, 51, 68, 0.06);
+}
+
+.filter-heading h2,
+.supplier-title,
+.catalog-toolbar h2,
+.product-card h3,
+.admin-page .category-row h2 {
+    color: #153047 !important;
+}
+
+.admin-page .admin-header {
+    border-bottom-color: rgba(21, 48, 71, 0.12) !important;
+}
+
+.admin-page .admin-brand,
+.admin-page .admin-header-actions a,
+.admin-page .admin-toolbar p,
+.admin-page .category-row p,
+.admin-page .category-row small {
+    color: #617181 !important;
+}
+
+.admin-page .category-row {
+    border-bottom-color: rgba(21, 48, 71, 0.12) !important;
+}
+
+.admin-page .category-row-actions a,
+.admin-page .category-row-actions button,
+.admin-secondary-button {
+    border-color: rgba(21, 48, 71, 0.22) !important;
+    border-radius: 999px !important;
+    color: #153047 !important;
+}
+
+.admin-page .category-row-actions a:hover,
+.admin-page .category-row-actions button:hover,
+.admin-secondary-button:hover {
+    border-color: #0f766e !important;
+    color: #0f766e !important;
+}
+.account-brand > span:last-child,
+.admin-brand > span:last-child,
+.market-header .brand > span:last-child,
+.landing-page .brand-logo > span:last-child {
+    color: #153047 !important;
+}
+.account-brand > span:last-child .brand-accent,
+.admin-brand > span:last-child .brand-accent,
+.market-header .brand > span:last-child .brand-accent,
+.landing-page .brand-logo > span:last-child .brand-accent {
+    color: #0f766e !important;
+}
+.account-switch a,
+.admin-breadcrumbs a {
+    color: #0f766e !important;
+}
+
+/* EasyRent-inspired StockFlow design system */
+:root {
+    --stock-bg: #f5efe7;
+    --stock-bg-soft: #fbf7f1;
+    --stock-surface: rgba(255, 250, 244, 0.86);
+    --stock-surface-strong: rgba(255, 252, 248, 0.96);
+    --stock-text: #153047;
+    --stock-muted: #617181;
+    --stock-stroke: rgba(21, 48, 71, 0.12);
+    --stock-stroke-strong: rgba(21, 48, 71, 0.22);
+    --stock-primary: #0f766e;
+    --stock-primary-strong: #115e59;
+    --stock-primary-soft: rgba(15, 118, 110, 0.12);
+    --stock-secondary: #c96b3b;
+    --stock-secondary-soft: rgba(201, 107, 59, 0.14);
+    --stock-shadow-sm: 0 8px 20px rgba(34, 51, 68, 0.06);
+    --stock-shadow-md: 0 16px 38px rgba(34, 51, 68, 0.09);
+    --stock-shadow-lg: 0 24px 64px rgba(25, 41, 55, 0.12);
+    --stock-font: "Plus Jakarta Sans", "Avenir Next", "Segoe UI", Arial, sans-serif;
+    --stock-heading: "Syne", "Plus Jakarta Sans", "Segoe UI", Arial, sans-serif;
+}
+
+html {
+    background:
+        radial-gradient(circle at top left, rgba(15, 118, 110, 0.16), transparent 30%),
+        radial-gradient(circle at 85% 10%, rgba(201, 107, 59, 0.16), transparent 28%),
+        linear-gradient(180deg, #fcf8f2 0%, #f5efe7 100%);
+}
+
+body,
+button,
+input,
+select,
+textarea {
+    font-family: var(--stock-font);
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+    font-family: var(--stock-heading);
+}
+
+body::before,
+body::after {
+    position: fixed;
+    z-index: -1;
+    width: 300px;
+    height: 300px;
+    border-radius: 999px;
+    content: "";
+    filter: blur(18px);
+    pointer-events: none;
+}
+
+body::before {
+    top: 110px;
+    left: -100px;
+    background: rgba(15, 118, 110, 0.1);
+}
+
+body::after {
+    top: 250px;
+    right: -130px;
+    background: rgba(201, 107, 59, 0.1);
+}
+
+.brand,
+.account-brand,
+.admin-brand {
+    font-family: var(--stock-font);
+    font-weight: 800;
+    letter-spacing: -0.04em;
+}
+
+.brand-mark,
+.account-brand .brand-mark,
+.admin-brand .brand-mark,
+.market-header .brand-mark {
+    width: 29px;
+    height: 29px;
+    padding: 4px;
+    border: 2px solid var(--stock-primary);
+    border-radius: 9px;
+}
+
+.brand-mark span,
+.account-brand .brand-mark span,
+.admin-brand .brand-mark span,
+.market-header .brand-mark span {
+    width: 4px;
+    border-radius: 4px 4px 1px 1px;
+    background: var(--stock-primary);
+}
+
+.brand-mark span:nth-child(1) { height: 8px; }
+.brand-mark span:nth-child(2) { height: 13px; }
+.brand-mark span:nth-child(3) { height: 18px; }
+
+.brand-accent,
+.account-brand .brand-accent,
+.admin-brand .brand-accent,
+.market-header .brand-accent {
+    color: var(--stock-primary);
+}
+
+.landing-page,
+.account-page,
+.marketplace-page,
+.admin-page {
+    min-height: 100vh;
+    background: transparent;
+    color: var(--stock-text);
+}
+
+.landing-page {
+    height: auto;
+    min-height: 100vh;
+    overflow-y: auto;
+}
+
+.landing-page::before {
+    background: transparent;
+}
+
+.landing-page .landing-header {
+    min-height: 78px;
+    border-bottom: 1px solid var(--stock-stroke);
+}
+
+.landing-page .brand-logo {
+    color: var(--stock-text);
+}
+
+.landing-page .landing-actions a,
+.landing-page .landing-user {
+    color: var(--stock-muted);
+}
+
+.landing-page .landing-actions a:hover {
+    color: var(--stock-primary);
+}
+
+.landing-page .landing-actions .outline-button {
+    border-color: var(--stock-primary);
+    color: var(--stock-primary);
+    border-radius: 999px;
+}
+
+.landing-page .landing-actions .outline-button:hover {
+    background: var(--stock-primary-soft);
+}
+
+.landing-copy h1 {
+    color: var(--stock-text);
+    font-family: var(--stock-heading);
+}
+
+.landing-copy h1 strong {
+    color: var(--stock-primary);
+}
+
+.landing-lede {
+    color: var(--stock-muted);
+}
+
+.landing-primary-button {
+    border-radius: 999px;
+    background: var(--stock-primary);
+    box-shadow: 0 10px 22px rgba(15, 118, 110, 0.16);
+}
+
+.landing-primary-button:hover {
+    background: var(--stock-primary-strong);
+}
+
+.landing-footer {
+    border-top-color: var(--stock-stroke);
+    color: var(--stock-muted);
+}
+
+.landing-footer .footer-logo {
+    color: var(--stock-text);
+    font-family: var(--stock-font);
+}
+
+.landing-footer .footer-logo span {
+    color: var(--stock-primary);
+}
+
+.account-page {
+    padding: 44px 16px;
+}
+
+.account-card {
+    border: 1px solid var(--stock-stroke);
+    border-radius: 24px;
+    background: var(--stock-surface);
+    box-shadow: var(--stock-shadow-lg);
+    backdrop-filter: blur(18px);
+}
+
+.account-brand {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    color: var(--stock-text);
+}
+
+.account-brand .brand-mark {
+    border-color: var(--stock-primary);
+}
+
+.account-brand .brand-mark span {
+    background: var(--stock-primary);
+}
+
+.account-card .account-kicker,
+.admin-page .account-kicker {
+    color: var(--stock-primary);
+}
+
+.account-card h1,
+.admin-page h1 {
+    color: var(--stock-text);
+}
+
+.account-form label,
+.admin-form label {
+    color: var(--stock-text);
+}
+
+.account-form input,
+.admin-form input,
+.admin-form textarea {
+    border-color: var(--stock-stroke);
+    border-radius: 14px;
+    background: var(--stock-surface-strong);
+    color: var(--stock-text);
+}
+
+.account-form input:focus,
+.admin-form input:focus,
+.admin-form textarea:focus {
+    border-color: var(--stock-primary);
+    outline: 3px solid var(--stock-primary-soft);
+}
+
+.account-form button,
+.admin-primary-button,
+.apply-filters,
+.global-search button {
+    border-radius: 999px;
+    background: var(--stock-primary);
+    box-shadow: 0 10px 22px rgba(15, 118, 110, 0.16);
+}
+
+.account-form button:hover,
+.admin-primary-button:hover,
+.apply-filters:hover,
+.global-search button:hover {
+    background: var(--stock-primary-strong);
+}
+
+.account-switch,
+.account-help {
+    color: var(--stock-muted);
+}
+
+.account-switch a,
+.admin-breadcrumbs a {
+    color: var(--stock-primary);
+}
+
+.marketplace-page {
+    background: transparent;
+}
+
+.market-header {
+    background: var(--stock-surface);
+    border-bottom: 1px solid var(--stock-stroke);
+    box-shadow: var(--stock-shadow-sm);
+    backdrop-filter: blur(18px);
+}
+
+.market-header .brand {
+    color: var(--stock-text);
+}
+
+.market-header .header-actions,
+.market-header .user-greeting,
+.market-header .header-actions a,
+.category-nav a {
+    color: var(--stock-muted);
+}
+
+.market-header .header-actions a:hover,
+.category-nav a:hover,
+.category-nav .category-active {
+    color: var(--stock-primary);
+}
+
+.category-nav .category-active {
+    border-bottom-color: var(--stock-primary);
+}
+
+.market-hero,
+.market-layout {
+    position: relative;
+    z-index: 1;
+}
+
+.hero-banner {
+    border-radius: 24px;
+    background:
+        radial-gradient(circle at 85% 15%, rgba(255, 255, 255, 0.25), transparent 28%),
+        linear-gradient(135deg, var(--stock-primary-strong), var(--stock-primary));
+    box-shadow: var(--stock-shadow-md);
+}
+
+.hero-banner h1 strong {
+    color: #b9f1e6;
+}
+
+.filters,
+.product-card {
+    border: 1px solid var(--stock-stroke);
+    border-radius: 18px;
+    background: var(--stock-surface);
+    box-shadow: var(--stock-shadow-sm);
+}
+
+.filter-heading h2,
+.supplier-title,
+.catalog-toolbar h2,
+.product-card h3 {
+    color: var(--stock-text);
+}
+
+.filter-input,
+.price-fields input,
+.sort-control select {
+    border-color: var(--stock-stroke);
+    border-radius: 12px;
+    background: var(--stock-surface-strong);
+    color: var(--stock-text);
+}
+
+.filter-input:focus,
+.price-fields input:focus {
+    border-color: var(--stock-primary);
+    outline: 3px solid var(--stock-primary-soft);
+}
+
+.filter-link:hover,
+.filter-link.selected {
+    border-radius: 999px;
+    background: var(--stock-primary-soft);
+    color: var(--stock-primary);
+}
+
+.product-card:hover {
+    box-shadow: var(--stock-shadow-md);
+}
+
+.marketplace-page .site-footer {
+    border-top-color: var(--stock-stroke);
+    background: transparent;
+    color: var(--stock-muted);
+}
+
+.admin-page {
+    padding-top: 1px;
+}
+
+.admin-shell {
+    width: min(100% - 48px, 1120px);
+}
+
+.admin-page .admin-header {
+    border-bottom-color: var(--stock-stroke);
+}
+
+.admin-page .admin-brand,
+.admin-page .admin-header-actions a,
+.admin-page .admin-toolbar p {
+    color: var(--stock-text);
+}
+
+.admin-page .admin-brand .brand-mark {
+    border-color: var(--stock-primary);
+}
+
+.admin-page .admin-brand .brand-mark span {
+    background: var(--stock-primary);
+}
+
+.admin-page .admin-brand .brand-accent {
+    color: var(--stock-primary);
+}
+
+.admin-page .category-list {
+    border: 1px solid var(--stock-stroke);
+    border-radius: 18px;
+    background: var(--stock-surface);
+    box-shadow: var(--stock-shadow-md);
+}
+
+.admin-page .category-row {
+    border-bottom-color: var(--stock-stroke);
+}
+
+.admin-page .category-row h2 {
+    color: var(--stock-text);
+}
+
+.admin-page .category-row p,
+.admin-page .category-row small {
+    color: var(--stock-muted);
+}
+
+.admin-page .category-row-actions a,
+.admin-page .category-row-actions button,
+.admin-secondary-button {
+    border-color: var(--stock-stroke-strong);
+    border-radius: 999px;
+    color: var(--stock-text);
+}
+
+.admin-page .category-row-actions a:hover,
+.admin-page .category-row-actions button:hover,
+.admin-secondary-button:hover {
+    border-color: var(--stock-primary);
+    color: var(--stock-primary);
+}
+
+.admin-page .admin-form-shell {
+    border: 1px solid var(--stock-stroke);
+    border-radius: 24px;
+    background: var(--stock-surface);
+    box-shadow: var(--stock-shadow-lg);
+}
+
+.admin-page .admin-form-shell .admin-brand,
+.admin-page .admin-form-shell h1 {
+    color: var(--stock-text);
+}
+
+.admin-page .admin-form-shell .admin-brand .brand-accent {
+    color: var(--stock-primary);
+}
+
+.admin-page .admin-form-shell .admin-brand .brand-mark {
+    border-color: var(--stock-primary);
+}
+
+.admin-page .admin-form-shell .admin-brand .brand-mark span {
+    background: var(--stock-primary);
+}
+
+.admin-page .admin-form-shell .account-kicker {
+    color: var(--stock-primary);
+}
+
+.admin-breadcrumbs {
+    color: var(--stock-muted);
+}
+
+.admin-primary-button,
+.admin-secondary-button {
+    min-height: 42px;
+}
+
+@media (max-width: 640px) {
+    .admin-shell {
+        width: min(100% - 30px, 1120px);
+    }
+
+    .account-card {
+        padding: 28px 22px;
+    }
+}
+
+/* Shared application presentation */
+.admin-page {
+    background:
+        linear-gradient(135deg, rgba(31, 45, 112, 0.96), rgba(104, 89, 232, 0.88)),
+        url("../images/stockflow-home-background.png") center / cover fixed no-repeat;
+    color: #24345a;
+}
+
+.admin-shell {
+    width: min(100% - 48px, 1120px);
+    padding: 28px 0 64px;
+}
+
+.admin-header {
+    align-items: flex-end;
+    border-bottom-color: rgba(255, 255, 255, 0.22);
+}
+
+.admin-brand {
+    display: inline-block;
+    margin-bottom: 28px;
+    color: #fff;
+    font-size: 1.5rem;
+    font-weight: 800;
+    letter-spacing: 0.01em;
+}
+
+.admin-brand span {
+    color: #aee9fa;
+}
+
+.admin-header .account-kicker,
+.admin-form-shell .account-kicker {
+    color: #bde9ff;
+}
+
+.admin-page h1 {
+    color: #fff;
+}
+
+.admin-header-actions {
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    padding-top: 0;
+}
+
+.admin-header-actions a {
+    color: #e2efff;
+}
+
+.admin-toolbar {
+    color: #fff;
+}
+
+.admin-toolbar p {
+    color: #e2efff;
+}
+
+.category-list {
+    border: 0;
+    background: rgba(255, 255, 255, 0.97);
+    box-shadow: 0 18px 42px rgba(22, 31, 94, 0.18);
+}
+
+.category-row {
+    border-bottom-color: #e4e8f3;
+}
+
+.category-row h2 {
+    color: #263454;
+}
+
+.category-row p {
+    color: #71809c;
+}
+
+.category-row small {
+    color: #8b97ad;
+}
+
+.category-row-actions a,
+.category-row-actions button {
+    border-color: #d5dceb;
+    color: #53617b;
+}
+
+.admin-form-shell {
+    padding: 42px max(30px, 5vw) 55px;
+    border-radius: 14px;
+    background: rgba(255, 255, 255, 0.98);
+    box-shadow: 0 22px 55px rgba(22, 31, 94, 0.2);
+}
+
+.admin-form-shell .admin-brand {
+    color: #263454;
+}
+
+.admin-form-shell .admin-brand span {
+    color: #6859e8;
+}
+
+.admin-breadcrumbs {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 34px;
+    color: #8a96ab;
+    font-size: 13px;
+}
+
+.admin-breadcrumbs a {
+    color: #6859e8;
+    font-weight: 700;
+}
+
+.admin-form-shell h1 {
+    color: #1d2b4d;
+    font-size: 2.2rem;
+}
+
+.admin-form label {
+    color: #33415e;
+}
+
+.admin-form input,
+.admin-form textarea {
+    border-color: #ccd5e5;
+    background: #fff;
+    color: #1d2b4d;
+}
+
+.admin-form-actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-top: 8px;
+}
+
+.admin-form .admin-primary-button {
+    margin-top: 0;
+}
+
+.admin-secondary-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 40px;
+    padding: 0 15px;
+    border: 1px solid #ccd5e5;
+    border-radius: 6px;
+    color: #53617b;
+    font-size: 14px;
+    font-weight: 700;
+}
+
+.admin-secondary-button:hover {
+    border-color: #6859e8;
+    color: #6859e8;
+}
+
+.account-help {
+    margin: -12px 0 22px;
+    color: #7b87a0;
+    font-size: 0.85rem;
+}
+
+/* One StockFlow visual system for every application page. */
+.account-page,
+.marketplace-page,
+.admin-page {
+    min-height: 100vh;
+    background:
+        linear-gradient(90deg, rgba(3, 18, 43, 0.94) 0%, rgba(3, 18, 43, 0.84) 42%, rgba(3, 18, 43, 0.55) 100%),
+        url("../images/stockflow-home-background.png") center / cover fixed no-repeat;
+    color: #fff;
+}
+
+.account-page {
+    display: grid;
+    place-items: center;
+    padding: 32px 16px;
+}
+
+.account-card {
+    border: 1px solid rgba(174, 233, 250, 0.28);
+    background: rgba(8, 28, 61, 0.86);
+    box-shadow: 0 22px 55px rgba(2, 13, 32, 0.28);
+}
+
+.account-brand,
+.admin-brand {
+    gap: 10px;
+    color: #fff;
+}
+
+.account-brand .brand-mark,
+.admin-brand .brand-mark {
+    border-color: #aee9fa;
+}
+
+.account-brand .brand-mark span,
+.admin-brand .brand-mark span {
+    background: #aee9fa;
+}
+
+.account-brand .brand-accent,
+.admin-brand .brand-accent {
+    color: #aee9fa;
+}
+
+.account-card .account-kicker,
+.admin-page .account-kicker {
+    color: #aee9fa;
+}
+
+.account-card h1,
+.admin-page h1 {
+    color: #fff;
+}
+
+.account-form label,
+.admin-form label {
+    color: #d7e5ff;
+}
+
+.account-form input,
+.admin-form input,
+.admin-form textarea {
+    border-color: rgba(174, 233, 250, 0.28);
+    background: rgba(255, 255, 255, 0.1);
+    color: #fff;
+}
+
+.account-form input::placeholder,
+.admin-form input::placeholder,
+.admin-form textarea::placeholder {
+    color: #a7bad5;
+}
+
+.account-form input:focus,
+.admin-form input:focus,
+.admin-form textarea:focus {
+    border-color: #aee9fa;
+    outline: 3px solid rgba(174, 233, 250, 0.15);
+}
+
+.account-form button,
+.admin-primary-button,
+.apply-filters,
+.global-search button {
+    border: 0;
+    background: #6859e8;
+}
+
+.account-form button:hover,
+.admin-primary-button:hover,
+.apply-filters:hover,
+.global-search button:hover {
+    background: #7b6df0;
+}
+
+.account-switch,
+.account-help {
+    color: #b9cce8;
+}
+
+.account-switch a,
+.admin-breadcrumbs a {
+    color: #aee9fa;
+}
+
+.market-header,
+.marketplace-page .site-footer {
+    background: rgba(3, 18, 43, 0.72);
+    border-color: rgba(194, 219, 255, 0.18);
+}
+
+.market-header .brand,
+.market-header .brand-accent,
+.market-header .header-login,
+.market-header .header-actions,
+.market-header .user-greeting,
+.market-header .category-nav a,
+.marketplace-page .site-footer {
+    color: #d7e5ff;
+}
+
+.market-header .brand-mark {
+    border-color: #aee9fa;
+}
+
+.market-header .brand-mark span {
+    background: #aee9fa;
+}
+
+.market-header .header-login:hover,
+.market-header .category-nav a:hover,
+.market-header .category-nav .category-active {
+    color: #aee9fa;
+}
+
+.admin-page .admin-header {
+    border-bottom-color: rgba(194, 219, 255, 0.18);
+}
+
+.admin-page .admin-header-actions a,
+.admin-page .admin-toolbar p {
+    color: #d7e5ff;
+}
+
+.admin-page .category-list {
+    border: 1px solid rgba(174, 233, 250, 0.24);
+    background: rgba(8, 28, 61, 0.86);
+}
+
+.admin-page .category-row {
+    border-bottom-color: rgba(194, 219, 255, 0.16);
+}
+
+.admin-page .category-row h2,
+.admin-page .category-row p,
+.admin-page .category-row small {
+    color: #d7e5ff;
+}
+
+.admin-page .category-row small {
+    color: #a7bad5;
+}
+
+.admin-page .category-row-actions a,
+.admin-page .category-row-actions button,
+.admin-secondary-button {
+    border-color: rgba(174, 233, 250, 0.3);
+    color: #d7e5ff;
+    background: transparent;
+}
+
+.admin-page .category-row-actions a:hover,
+.admin-page .category-row-actions button:hover,
+.admin-secondary-button:hover {
+    border-color: #aee9fa;
+    color: #aee9fa;
+}
+
+.admin-page .admin-form-shell {
+    border: 1px solid rgba(174, 233, 250, 0.28);
+    background: rgba(8, 28, 61, 0.9);
+}
+
+.admin-page .admin-form-shell .admin-brand,
+.admin-page .admin-form-shell h1 {
+    color: #fff;
+}
+
+.admin-page .admin-form-shell .admin-brand .brand-accent {
+    color: #aee9fa;
+}
+
 @media (max-width: 520px) {
     .landing-page {
         display: block;
@@ -957,4 +2392,262 @@ html, body, button, input, select, textarea {
         grid-template-columns: 1fr;
         gap: 7px;
     }
+}
+
+/* Authoritative EasyRent-inspired palette. */
+html { background: #f5efe7 !important; }
+body, .landing-page, .account-page, .marketplace-page, .admin-page {
+    background: transparent !important;
+    color: #153047 !important;
+    font-family: "Plus Jakarta Sans", "Avenir Next", "Segoe UI", Arial, sans-serif;
+}
+.landing-page { height: auto; min-height: 100vh; overflow-y: auto; }
+.landing-page::before { background: transparent !important; }
+.landing-page .brand-logo,
+.landing-page .landing-actions a,
+.landing-page .landing-user,
+.market-header .brand,
+.market-header .header-actions,
+.market-header .header-actions a,
+.market-header .user-greeting,
+.category-nav a,
+.admin-page .admin-brand,
+.admin-page .admin-header-actions a,
+.admin-page .admin-toolbar p { color: #153047 !important; }
+.brand-mark, .account-brand .brand-mark, .admin-brand .brand-mark, .market-header .brand-mark {
+    border-color: #0f766e !important;
+}
+.brand-mark span, .account-brand .brand-mark span, .admin-brand .brand-mark span,
+.market-header .brand-mark span { background: #0f766e !important; }
+.brand-accent, .account-brand .brand-accent, .admin-brand .brand-accent,
+.market-header .brand-accent, .landing-copy h1 strong { color: #0f766e !important; }
+.landing-copy h1, .account-card h1, .admin-page h1 { color: #153047 !important; }
+.landing-lede, .account-help, .account-switch, .landing-footer,
+.admin-page .category-row p, .admin-page .category-row small { color: #617181 !important; }
+.landing-primary-button, .account-form button, .admin-primary-button,
+.apply-filters, .global-search button {
+    border-radius: 999px !important;
+    background: #0f766e !important;
+}
+.landing-primary-button:hover, .account-form button:hover, .admin-primary-button:hover,
+.apply-filters:hover, .global-search button:hover { background: #115e59 !important; }
+.account-page { display: grid; place-items: center; padding: 44px 16px; }
+.account-card, .admin-page .admin-form-shell {
+    border: 1px solid rgba(21, 48, 71, 0.12) !important;
+    border-radius: 24px !important;
+    background: rgba(255, 250, 244, 0.86) !important;
+    box-shadow: 0 24px 64px rgba(25, 41, 55, 0.12) !important;
+}
+.account-card .account-kicker, .admin-page .account-kicker { color: #0f766e !important; }
+.account-form label, .admin-form label { color: #153047 !important; }
+.account-form input, .admin-form input, .admin-form textarea, .filter-input,
+.price-fields input, .sort-control select {
+    border-color: rgba(21, 48, 71, 0.12) !important;
+    border-radius: 14px !important;
+    background: rgba(255, 252, 248, 0.96) !important;
+    color: #153047 !important;
+}
+.market-header {
+    background: rgba(255, 250, 244, 0.84) !important;
+    border-bottom-color: rgba(21, 48, 71, 0.12) !important;
+    box-shadow: 0 8px 20px rgba(34, 51, 68, 0.06) !important;
+}
+.market-header .header-actions a:hover, .category-nav a:hover,
+.category-nav .category-active { color: #0f766e !important; }
+.category-nav .category-active { border-bottom-color: #0f766e !important; }
+.hero-banner { border-radius: 24px !important; background: linear-gradient(135deg, #115e59, #0f766e) !important; }
+.filters, .product-card, .admin-page .category-list {
+    border: 1px solid rgba(21, 48, 71, 0.12) !important;
+    border-radius: 18px !important;
+    background: rgba(255, 250, 244, 0.86) !important;
+    box-shadow: 0 8px 20px rgba(34, 51, 68, 0.06) !important;
+}
+.filter-heading h2, .supplier-title, .catalog-toolbar h2, .product-card h3,
+.admin-page .category-row h2 { color: #153047 !important; }
+.admin-page .admin-header, .admin-page .category-row {
+    border-color: rgba(21, 48, 71, 0.12) !important;
+}
+.admin-page .category-row-actions a, .admin-page .category-row-actions button,
+.admin-secondary-button {
+    border-color: rgba(21, 48, 71, 0.22) !important;
+    border-radius: 999px !important;
+    color: #153047 !important;
+}
+
+/* Authoritative StockFlow palette: white surfaces, blue text, violet actions. */
+html,
+body {
+    background: #ffffff !important;
+    color: #18233d !important;
+}
+
+.landing-page,
+.account-page,
+.marketplace-page,
+.admin-page {
+    background: #ffffff !important;
+    color: #18233d !important;
+}
+
+.landing-page .landing-header,
+.market-header,
+.admin-page .admin-header {
+    background: #ffffff !important;
+    border-color: #e5e9f2 !important;
+}
+
+.brand,
+.landing-page .brand-logo,
+.landing-page .landing-actions a,
+.landing-page .landing-user,
+.market-header .brand,
+.market-header .header-actions,
+.market-header .header-actions a,
+.market-header .user-greeting,
+.category-nav a,
+.admin-page .admin-brand,
+.admin-page .admin-header-actions a,
+.admin-page .admin-toolbar p {
+    color: #24345a !important;
+}
+
+.brand-mark,
+.account-brand .brand-mark,
+.admin-brand .brand-mark,
+.market-header .brand-mark {
+    border-color: #6859e8 !important;
+}
+
+.brand-mark span,
+.account-brand .brand-mark span,
+.admin-brand .brand-mark span,
+.market-header .brand-mark span {
+    background: #6859e8 !important;
+}
+
+.brand-accent,
+.account-brand .brand-accent,
+.admin-brand .brand-accent,
+.market-header .brand-accent,
+.landing-copy h1 strong,
+.landing-page .brand-logo > span:last-child .brand-accent {
+    color: #6859e8 !important;
+}
+
+.landing-copy h1,
+.account-card h1,
+.admin-page h1,
+.filter-heading h2,
+.supplier-title,
+.catalog-toolbar h2,
+.product-card h3,
+.admin-page .category-row h2 {
+    color: #24345a !important;
+}
+
+.landing-lede,
+.account-help,
+.account-switch,
+.landing-footer,
+.admin-page .category-row p,
+.admin-page .category-row small {
+    color: #61708f !important;
+}
+
+.landing-primary-button,
+.account-form button,
+.admin-primary-button,
+.apply-filters,
+.global-search button {
+    border-radius: 999px !important;
+    background: #6859e8 !important;
+    color: #ffffff !important;
+}
+
+.landing-primary-button:hover,
+.account-form button:hover,
+.admin-primary-button:hover,
+.apply-filters:hover,
+.global-search button:hover {
+    background: #5548d6 !important;
+}
+
+.account-card,
+.admin-page .admin-form-shell,
+.filters,
+.product-card,
+.admin-page .category-list {
+    border: 1px solid #e5e9f2 !important;
+    background: #ffffff !important;
+    box-shadow: 0 18px 45px rgba(36, 52, 90, 0.08) !important;
+}
+
+.account-card .account-kicker,
+.admin-page .account-kicker,
+.category-nav .category-active,
+.account-switch a,
+.admin-breadcrumbs a,
+.market-header .header-login {
+    color: #6859e8 !important;
+}
+
+.category-nav .category-active {
+    border-bottom-color: #6859e8 !important;
+}
+
+.account-form label,
+.admin-form label {
+    color: #24345a !important;
+}
+
+.account-form input,
+.admin-form input,
+.admin-form textarea,
+.filter-input,
+.price-fields input,
+.sort-control select,
+.global-search {
+    border-color: #dce2ef !important;
+    background: #ffffff !important;
+    color: #18233d !important;
+}
+
+.account-form input:focus,
+.admin-form input:focus,
+.admin-form textarea:focus,
+.filter-input:focus,
+.price-fields input:focus,
+.sort-control select:focus,
+.global-search:focus-within {
+    border-color: #6859e8 !important;
+    box-shadow: 0 0 0 4px rgba(104, 89, 232, 0.12) !important;
+}
+
+.hero-banner {
+    border-radius: 24px !important;
+    background: linear-gradient(135deg, #24345a, #6859e8) !important;
+}
+
+.hero-banner h1 strong {
+    color: #aee9fa !important;
+}
+
+.admin-page .admin-header,
+.admin-page .category-row {
+    border-color: #e5e9f2 !important;
+}
+
+.admin-page .category-row-actions a,
+.admin-page .category-row-actions button,
+.admin-secondary-button {
+    border-color: #cfd7e8 !important;
+    color: #24345a !important;
+    background: #ffffff !important;
+}
+
+.admin-page .category-row-actions a:hover,
+.admin-page .category-row-actions button:hover,
+.admin-secondary-button:hover {
+    border-color: #6859e8 !important;
+    color: #6859e8 !important;
 }

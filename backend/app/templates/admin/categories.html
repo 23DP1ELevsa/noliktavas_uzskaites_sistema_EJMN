@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="lv">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Kategoriju CRUD | StockFlow</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body class="admin-page">
+    <main class="admin-shell">
+        <header class="admin-header">
+            <div class="admin-heading">
+                <a class="brand brand-logo admin-brand" href="{{ url_for('index') }}" aria-label="StockFlow sākumlapa">
+                    <span class="brand-mark" aria-hidden="true"><span></span><span></span><span></span></span>
+                    <span>Stock<span class="brand-accent">Flow</span></span>
+                </a>
+                <p class="account-kicker">Administratora panelis</p>
+                <h1>Kategoriju pārvaldība</h1>
+            </div>
+            <div class="admin-header-actions">
+                <a href="{{ url_for('index') }}">Sākums</a>
+                <a href="{{ url_for('catalog.catalog_page') }}">Katalogs</a>
+                <a href="{{ url_for('auth.profile') }}">Mans profils</a>
+                <a href="{{ url_for('auth.logout') }}">Iziet</a>
+            </div>
+        </header>
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% for category, message in messages %}
+                <p class="flash flash-{{ category }}">{{ message }}</p>
+            {% endfor %}
+        {% endwith %}
+        <div class="admin-toolbar">
+            <p>Izveidojiet, apskatiet, rediģējiet un dzēsiet preču kategorijas.</p>
+            <a class="admin-primary-button" href="{{ url_for('admin.create_category') }}">＋ Pievienot kategoriju</a>
+        </div>
+        <section class="category-list" aria-label="Kategoriju saraksts">
+            {% if categories %}
+                {% for category in categories %}
+                    <article class="category-row">
+                        <div>
+                            <h2>{{ category.name }}</h2>
+                            <p>{{ category.description or "Apraksts nav pievienots." }}</p>
+                            <small>{{ category.products|length }} piesaistītas preces</small>
+                        </div>
+                        <div class="category-row-actions">
+                            <a href="{{ url_for('admin.edit_category', category_id=category.id) }}">Rediģēt</a>
+                            <form method="post" action="{{ url_for('admin.delete_category', category_id=category.id) }}">
+                                <button type="submit" data-confirm-delete>Dzēst</button>
+                            </form>
+                        </div>
+                    </article>
+                {% endfor %}
+            {% else %}
+                <p class="empty-state">Kategorijas vēl nav izveidotas.</p>
+            {% endif %}
+        </section>
+    </main>
+    <script>
+        document.querySelectorAll("[data-confirm-delete]").forEach((button) => {
+            button.form.addEventListener("submit", (event) => {
+                if (!window.confirm("Vai tiešām dzēst šo kategoriju?")) event.preventDefault();
+            });
+        });
+    </script>
+</body>
+</html>

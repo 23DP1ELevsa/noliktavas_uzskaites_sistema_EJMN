@@ -8,9 +8,13 @@
 </head>
 <body class="account-page">
     <main class="account-card account-card-wide">
-        <a class="account-brand" href="{{ url_for('index') }}">Stock<span>Flow</span></a>
+        <a class="brand brand-logo account-brand" href="{{ url_for('index') }}" aria-label="StockFlow sākumlapa">
+            <span class="brand-mark" aria-hidden="true"><span></span><span></span><span></span></span>
+            <span>Stock<span class="brand-accent">Flow</span></span>
+        </a>
         <p class="account-kicker">Konta un uzņēmuma profils</p>
         <h1>Mans profils</h1>
+        <p class="account-help">Atjaunojiet savus un uzņēmuma rekvizītus vienuviet.</p>
         {% with messages = get_flashed_messages(with_categories=true) %}
             {% for category, message in messages %}
                 <p class="flash flash-{{ category }}">{{ message }}</p>
@@ -41,7 +45,13 @@
             <button type="submit">Saglabāt profilu</button>
         </form>
         <p class="account-switch">
+            <a href="{{ url_for('index') }}">Sākums</a>
+            <span aria-hidden="true"> · </span>
             <a href="{{ url_for('catalog.catalog_page') }}">Atvērt katalogu</a>
+            {% if current_user.role == "admin" %}
+                <span aria-hidden="true"> · </span>
+                <a href="{{ url_for('admin.categories') }}">Kategorijas</a>
+            {% endif %}
             <span aria-hidden="true"> · </span>
             <a href="{{ url_for('auth.logout') }}">Iziet</a>
         </p>

@@ -85,6 +85,16 @@ Pēc migrāciju izpildes ielādē testa kategorijas, preces, piedāvājumus un l
 
 Demonstrācijas konti un to paroles ir aprakstītas failā [`docs/demo-data.md`](docs/demo-data.md).
 
+Testa administratora piekļuve:
+
+| Loma | E-pasts | Parole |
+| --- | --- | --- |
+| Administrators | `admin.demo@stockflow.test` | `DemoAdmin123!` |
+
+Pēc pieslēgšanās administratora sadaļa ir pieejama, izmantojot **Kategorijas** saiti
+galvenē vai tieši adresē `/admin/categories`. Komanda `seed-demo` izveido šo kontu,
+ja tas vēl neeksistē; esoša konta parole netiek pārrakstīta.
+
 ## Noderīgas komandas
 
 ```powershell

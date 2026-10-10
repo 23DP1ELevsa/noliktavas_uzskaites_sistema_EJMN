@@ -8,7 +8,10 @@
 </head>
 <body class="account-page">
     <main class="account-card account-card-wide">
-        <a class="account-brand" href="{{ url_for('index') }}">Stock<span>Flow</span></a>
+        <a class="brand brand-logo account-brand" href="{{ url_for('index') }}" aria-label="StockFlow sākumlapa">
+            <span class="brand-mark" aria-hidden="true"><span></span><span></span><span></span></span>
+            <span>Stock<span class="brand-accent">Flow</span></span>
+        </a>
         <p class="account-kicker">Izveidojiet kontu</p>
         <h1>Izveidot kontu</h1>
         {% with messages = get_flashed_messages(with_categories=true) %}

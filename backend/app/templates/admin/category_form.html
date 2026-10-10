@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="lv">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{% if category %}Rediģēt{% else %}Izveidot{% endif %} kategoriju | StockFlow</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body class="admin-page">
+    <main class="admin-shell admin-form-shell">
+        <a class="brand brand-logo admin-brand" href="{{ url_for('index') }}" aria-label="StockFlow sākumlapa">
+            <span class="brand-mark" aria-hidden="true"><span></span><span></span><span></span></span>
+            <span>Stock<span class="brand-accent">Flow</span></span>
+        </a>
+        <nav class="admin-breadcrumbs" aria-label="Atrašanās vieta">
+            <a href="{{ url_for('admin.categories') }}">Kategorijas</a><span>/</span>
+            <span>{% if category %}Rediģēt{% else %}Jauna kategorija{% endif %}</span>
+        </nav>
+        <p class="account-kicker">Administratora panelis</p>
+        <h1>{% if category %}Rediģēt kategoriju{% else %}Izveidot kategoriju{% endif %}</h1>
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% for category_name, message in messages %}
+                <p class="flash flash-{{ category_name }}">{{ message }}</p>
+            {% endfor %}
+        {% endwith %}
+        <form method="post" class="admin-form">
+            <label for="name">Kategorijas nosaukums</label>
+            <input id="name" name="name" value="{{ form_data.name }}" maxlength="150" required autofocus>
+            <label for="description">Apraksts</label>
+            <textarea id="description" name="description" rows="5">{{ form_data.description or "" }}</textarea>
+            <div class="admin-form-actions">
+                <a class="admin-secondary-button" href="{{ url_for('admin.categories') }}">Atcelt</a>
+                <button class="admin-primary-button" type="submit">{% if category %}Saglabāt izmaiņas{% else %}Izveidot kategoriju{% endif %}</button>
+            </div>
+        </form>
+    </main>
+</body>
+</html>

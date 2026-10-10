@@ -17,6 +17,9 @@
             {% if current_user.is_authenticated %}
                 <span class="landing-user">Sveiki, {{ current_user.full_name }}</span>
                 <a href="{{ url_for('auth.profile') }}">Mans profils</a>
+                {% if current_user.role == "admin" %}
+                    <a href="{{ url_for('admin.categories') }}">Kategorijas</a>
+                {% endif %}
                 <a href="{{ url_for('auth.logout') }}">Iziet</a>
             {% else %}
                 <a href="{{ url_for('auth.login') }}">Pieslēgties</a>
