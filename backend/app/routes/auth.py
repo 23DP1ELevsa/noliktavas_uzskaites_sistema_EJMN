@@ -2,7 +2,7 @@ import re
 from urllib.parse import urljoin, urlparse
 
 from flask import Blueprint, flash, redirect, render_template, request, url_for
-from flask_login import current_user, login_user, logout_user
+from flask_login import current_user, login_required, login_user, logout_user
 from sqlalchemy.exc import IntegrityError
 
 from ..extensions import db
@@ -102,6 +102,42 @@ def register():
                 return redirect(url_for("index"))
 
     return render_template("auth/register.html")
+
+
+@auth_bp.route("/profile", methods=["GET", "POST"])
+@login_required
+def profile():
+    profile = current_user.company_profile
+
+    if request.method == "POST":
+        full_name = request.form.get("full_name", "").strip()
+        company_name = request.form.get("company_name", "").strip()
+        registration_no = request.form.get("registration_no", "").strip()
+        address = request.form.get("address", "").strip()
+        vat_no = request.form.get("vat_no", "").strip() or None
+        phone = request.form.get("phone", "").strip() or None
+
+        errors = []
+        if not full_name:
+            errors.append("Ievadiet vārdu un uzvārdu.")
+        if not company_name or not registration_no or not address:
+            errors.append("Aizpildiet visus obligātos uzņēmuma laukus.")
+
+        if errors:
+            for error in errors:
+                flash(error, "error")
+        else:
+            current_user.full_name = full_name
+            profile.company_name = company_name
+            profile.registration_no = registration_no
+            profile.vat_no = vat_no
+            profile.phone = phone
+            profile.address = address
+            db.session.commit()
+            flash("Profils veiksmīgi saglabāts.", "success")
+            return redirect(url_for("auth.profile"))
+
+    return render_template("auth/profile.html", profile=profile)
 
 
 @auth_bp.get("/logout")

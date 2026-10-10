@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="lv">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Mans profils | StockFlow</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body class="account-page">
+    <main class="account-card account-card-wide">
+        <a class="account-brand" href="{{ url_for('index') }}">Stock<span>Flow</span></a>
+        <p class="account-kicker">Konta un uzņēmuma profils</p>
+        <h1>Mans profils</h1>
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% for category, message in messages %}
+                <p class="flash flash-{{ category }}">{{ message }}</p>
+            {% endfor %}
+        {% endwith %}
+        <form method="post" class="account-form">
+            <label for="full_name">Vārds un uzvārds</label>
+            <input id="full_name" name="full_name" value="{{ request.form.get('full_name', current_user.full_name) }}" required autocomplete="name">
+
+            <label for="email">E-pasts</label>
+            <input id="email" name="email" type="email" value="{{ current_user.email }}" disabled>
+
+            <label for="company_name">Uzņēmuma nosaukums</label>
+            <input id="company_name" name="company_name" value="{{ request.form.get('company_name', profile.company_name) }}" required>
+
+            <label for="registration_no">Reģistrācijas numurs</label>
+            <input id="registration_no" name="registration_no" value="{{ request.form.get('registration_no', profile.registration_no) }}" required>
+
+            <label for="vat_no">PVN numurs</label>
+            <input id="vat_no" name="vat_no" value="{{ request.form.get('vat_no', profile.vat_no or '') }}">
+
+            <label for="address">Uzņēmuma adrese</label>
+            <input id="address" name="address" value="{{ request.form.get('address', profile.address) }}" required autocomplete="street-address">
+
+            <label for="phone">Tālrunis</label>
+            <input id="phone" name="phone" type="tel" value="{{ request.form.get('phone', profile.phone or '') }}" autocomplete="tel">
+
+            <button type="submit">Saglabāt profilu</button>
+        </form>
+        <p class="account-switch">
+            <a href="{{ url_for('catalog.catalog_page') }}">Atvērt katalogu</a>
+            <span aria-hidden="true"> · </span>
+            <a href="{{ url_for('auth.logout') }}">Iziet</a>
+        </p>
+    </main>
+</body>
+</html>

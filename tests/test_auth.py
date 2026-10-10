@@ -64,3 +64,26 @@ def test_login_rejects_unknown_credentials(database_app):
 
     assert response.status_code == 200
     assert "Nepareizs e-pasts vai parole." in response.get_data(as_text=True)
+
+
+def test_profile_can_be_updated_and_requires_login(database_app):
+    client = database_app.test_client()
+    response = client.get("/auth/profile")
+    assert response.status_code == 302
+    assert "/auth/login" in response.headers["Location"]
+
+    client.post("/auth/register", data=registration_data())
+    response = client.post("/auth/profile", data={
+        "full_name": "Anna Ozola",
+        "company_name": "Ozola SIA",
+        "registration_no": "40200000002",
+        "vat_no": "LV40200000002",
+        "address": "Rīga, Centra iela 2",
+        "phone": "+371 20000000",
+    })
+    assert response.status_code == 302
+    assert "Profils veiksmīgi saglabāts." in client.get("/auth/profile").get_data(as_text=True)
+
+    user = db.session.scalar(db.select(User).where(User.email == "anna@example.test"))
+    assert user.full_name == "Anna Ozola"
+    assert user.company_profile.company_name == "Ozola SIA"
