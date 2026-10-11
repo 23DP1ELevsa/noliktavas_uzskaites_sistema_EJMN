@@ -1,0 +1,6 @@
+{% if order.status == 'noraidīts' or order.admin_note %}
+<div class="order-note">
+    <h3>{{ 'Noraidīšanas iemesls' if order.status == 'noraidīts' else 'Administratora komentārs' }}</h3>
+    <p>{{ order.admin_note or 'Noraidīšanas iemesls nav norādīts.' }}</p>
+</div>
+{% endif %}

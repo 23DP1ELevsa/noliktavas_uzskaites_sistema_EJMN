@@ -21,8 +21,11 @@ pieteikumus. Pieejamas arī apstiprināto, noraidīto un visu pieteikumu atlases
 Detalizētajā skatā administrators redz uzņēmumu, klienta kontaktus, piegādes adresi,
 piezīmi, preces pa piegādātājiem un summas.
 
-Administratoram pieejamas pogas **Apstiprināt** un **Noraidīt**, kā arī izvēles
-komentārs klientam. Lēmums, administrators, izskatīšanas laiks un paziņojumi tiek
+Administratoram pieejamas pogas **Apstiprināt** un **Noraidīt**. Apstiprinot,
+komentārs klientam ir izvēles; noraidot, tajā pašā laukā obligāti jānorāda iemesls.
+Klienta un administratora skatā noraidīta pieteikuma komentārs tiek attēlots kā
+**Noraidīšanas iemesls**. Veciem noraidītiem pieteikumiem bez komentāra parāda,
+ka iemesls nav norādīts. Lēmums, administrators, izskatīšanas laiks un paziņojumi tiek
 saglabāti vienā transakcijā. Pieteikuma rindas un summas netiek mainītas. Rindas
 bloķēšana un statusa pārbaude nepieļauj atkārtotu vai pretēju lēmumu pēc izskatīšanas.
 Pieteikums pats par sevi neveic maksājumu vai krājumu rezervāciju.

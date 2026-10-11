@@ -71,12 +71,40 @@ def test_submit_review_decide_and_notify_both_profiles(comparison_data, decision
     assert f'ir {status}' in profile
     detail = client.get(f'/orders/{order.id}').get_data(as_text=True)
     assert 'Komentārs klientam.' in detail and data['delivery_address'] in detail
+    assert ('Noraidīšanas iemesls' if decision == 'decline' else 'Administratora komentārs') in detail
     notification = db.session.scalar(db.select(Notification).where(Notification.user_id == buyer.id, Notification.kind == kind))
     with client.session_transaction() as session:
         token = session['cart_csrf_token']
     assert client.post(f'/auth/notifications/{notification.id}/read', data={'csrf_token': token}).status_code == 302
     db.session.refresh(notification)
     assert notification.is_read
+
+
+@pytest.mark.parametrize('reason', ['', '   \n\t'])
+def test_decline_requires_reason_without_changing_order_or_notifications(comparison_data, reason):
+    client, _, _, _ = comparison_data
+    submit(comparison_data)
+    order = db.session.scalar(db.select(Order))
+    csrf = sign_in_admin(client, order.id)
+    response = client.post(f'/admin/orders/{order.id}', data={
+        'csrf_token': csrf, 'decision': 'decline', 'admin_note': reason,
+    })
+    assert response.status_code == 422
+    assert 'norādiet noraidīšanas iemeslu' in response.get_data(as_text=True)
+    assert 'aria-invalid="true"' in response.get_data(as_text=True)
+    db.session.refresh(order)
+    assert order.status == 'iesniegts' and order.processed_at is None and order.admin_note is None
+    assert db.session.scalar(db.select(db.func.count(Notification.id))) == 2
+    # The administrator can correct the input and complete the same decision.
+    response = client.post(f'/admin/orders/{order.id}', data={
+        'csrf_token': csrf, 'decision': 'decline', 'admin_note': '  Prece vairs nav pieejama.  ',
+    })
+    assert response.status_code == 302
+    db.session.refresh(order)
+    assert order.status == 'noraidīts' and order.admin_note == 'Prece vairs nav pieejama.'
+    assert db.session.scalar(db.select(db.func.count(Notification.id))) == 4
+    html = client.get(f'/admin/orders/{order.id}').get_data(as_text=True)
+    assert 'Noraidīšanas iemesls' in html and 'Prece vairs nav pieejama.' in html
 
 
 @pytest.mark.parametrize('field,value', [('delivery_address', ''), ('delivery_address', 'a' * 256),

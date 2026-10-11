@@ -43,6 +43,8 @@ def application_detail(order_id):
             error, status_code = "Šis pieteikums jau ir izskatīts. Lēmums nav mainīts.", 409
         elif len(note) > 1000 or any(ord(c) < 32 and c not in "\n\r\t" for c in note):
             error, status_code = "Komentārs nedrīkst pārsniegt 1000 rakstzīmes vai saturēt vadības rakstzīmes.", 422
+        elif decision == "decline" and not note:
+            error, status_code = "Lai noraidītu pieteikumu, norādiet noraidīšanas iemeslu.", 422
         else:
             order.status = "apstiprināts" if decision == "approve" else "noraidīts"
             order.admin_note = note or None

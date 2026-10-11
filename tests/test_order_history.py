@@ -59,9 +59,26 @@ def test_history_detail_uses_saved_prices_comment_and_decision_date(comparison_d
     db.session.commit()
     html = client.get(f'/orders/{order.id}').get_data(as_text=True)
     for text in ['Lēta vienība', 'Salīdzināma prece', '2.00 €', 'Piegādes nosacījumi jāsaskaņo.',
-                 'Lēmums pieņemts:', '2026-10-12T09:30:00Z', 'href="/orders"']:
+                 'Noraidīšanas iemesls', 'Lēmums pieņemts:', '2026-10-12T09:30:00Z', 'href="/orders"']:
         assert text in html
     assert '999.00' not in html and 'Jauns preces nosaukums' not in html
+
+
+def test_legacy_declined_order_without_note_is_explained(comparison_data):
+    client, _, _, _ = comparison_data
+    submit(comparison_data)
+    order = db.session.scalar(db.select(Order))
+    order.status = 'noraidīts'
+    db.session.commit()
+    html = client.get(f'/orders/{order.id}').get_data(as_text=True)
+    assert 'Noraidīšanas iemesls nav norādīts.' in html
+
+
+def test_empty_history_offers_catalog_link(comparison_data):
+    client, _, _, _ = comparison_data
+    sign_in(client)
+    html = client.get('/orders').get_data(as_text=True)
+    assert 'Jums vēl nav pieteikumu.' in html and 'Atvērt katalogu' in html
 
 
 @pytest.mark.parametrize('query', ['status=bad', 'sort=bad', 'page=0', 'page=-1', 'page=NaN', 'page=999999999999'])

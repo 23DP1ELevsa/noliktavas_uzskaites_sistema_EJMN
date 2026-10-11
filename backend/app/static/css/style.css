@@ -396,7 +396,8 @@ label { color: var(--ink); font-weight: 600; }
 .order-item p { margin: 0; }
 .order-item > strong { white-space: nowrap; }
 .order-supplier-groups { margin: 24px 0; }
-.order-note { white-space: pre-wrap; overflow-wrap: anywhere; }
+.order-note { overflow-wrap: anywhere; }
+.order-note p { white-space: pre-wrap; }
 .order-note h3 { font-size: 1rem; margin: 20px 0 8px; }
 .decision-actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 18px; }
 .decision-actions > button { flex: 1; }
