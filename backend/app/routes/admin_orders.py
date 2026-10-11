@@ -1,4 +1,5 @@
 from datetime import datetime, timezone
+import re
 
 from flask import abort, flash, redirect, render_template, request, url_for
 from flask_login import current_user
@@ -15,12 +16,22 @@ from .admin import admin_bp, admin_required, _check_product_csrf, _product_csrf_
 @admin_required
 def applications():
     status = request.args.get("status", "iesniegts")
-    query = db.select(Order).options(joinedload(Order.user), joinedload(Order.company_profile))
-    if status in {"iesniegts", "apstiprināts", "noraidīts"}:
-        query = query.where(Order.status == status)
-    orders = db.session.scalars(query.order_by(Order.created_at.desc(), Order.id.desc())).all()
+    sort = request.args.get("sort", "date-desc")
+    if status not in {"all", "iesniegts", "apstiprināts", "noraidīts"} or sort not in {"date-desc", "date-asc"}:
+        abort(400, description="Nederīga pieteikumu atlase.")
+    page = request.args.get("page", "1")
+    if not re.fullmatch(r"[0-9]{1,7}", page) or not 1 <= int(page) <= 1000000:
+        abort(400, description="Nederīgs lapas numurs.")
+    conditions = [Order.status == status] if status != "all" else []
+    total = db.session.scalar(db.select(db.func.count(Order.id)).where(*conditions))
+    pages = max(1, (total + 11) // 12)
+    page = min(int(page), pages)
+    ordering = (Order.created_at.desc(), Order.id.desc()) if sort == "date-desc" else (Order.created_at.asc(), Order.id.asc())
+    query = db.select(Order).where(*conditions).options(joinedload(Order.user), joinedload(Order.company_profile))
+    orders = db.session.scalars(query.order_by(*ordering).limit(12).offset((page - 1) * 12)).all()
     pending = db.session.scalar(db.select(db.func.count(Order.id)).where(Order.status == "iesniegts"))
-    return render_template("admin/orders.html", orders=orders, status=status, pending=pending, customer_details=customer_details)
+    return render_template("admin/orders.html", orders=orders, status=status, sort=sort, pending=pending,
+                           total=total, page=page, pages=pages, customer_details=customer_details)
 
 
 @admin_bp.route("/orders/<int:order_id>", methods=["GET", "POST"])

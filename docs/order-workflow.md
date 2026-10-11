@@ -18,6 +18,11 @@ Profila izmaiņas vēlāk nepārraksta jauno pieteikumu kontaktinformāciju.
 
 Admin paneļa sadaļa **Pieteikumi** (`/admin/orders`) pēc noklusējuma rāda iesniegtos
 pieteikumus. Pieejamas arī apstiprināto, noraidīto un visu pieteikumu atlases.
+Sarakstā redzams numurs, uzņēmums, kontaktpersona, datums, saglabātā summa un statuss.
+Ierakstus var kārtot pēc iesniegšanas datuma abos virzienos; vienā lapā ir līdz
+12 pieteikumiem. Lapošana saglabā statusa un datuma atlasi. Pieejams atlasīto
+ierakstu skaits un tukšai statusa atlasei — pāreja uz visiem pieteikumiem.
+Nederīgs statuss, kārtošana vai lapas numurs atgriež 400.
 Detalizētajā skatā administrators redz uzņēmumu, klienta kontaktus, piegādes adresi,
 piezīmi, preces pa piegādātājiem un summas.
 
@@ -65,3 +70,4 @@ Migrācija `0006_order_notifications` pievieno `orders.customer_snapshot` un
 `notifications`. Esoši pieteikumi saglabā savas rindas un summas; tiem bez saglabātas
 klienta datu kopijas attēlo saistītā profila datus. Pārbaudes:
 `tests/test_order_workflow.py`, `tests/test_cart_checkout.py`, `tests/test_layout.py`.
+Administratora saraksta un piekļuves pārbaudes: `tests/test_admin_orders.py`.
