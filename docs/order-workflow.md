@@ -39,6 +39,25 @@ pieejams `/orders`. Klients var apskatīt tikai savus pieteikumus un mainīt tik
 paziņojumu lasīšanas statusu. Pieteikumu lēmumus pieņem tikai administrators.
 Lēmumiem un paziņojumu izmaiņām nepieciešams CSRF kods.
 
+## Vēstures atlase un navigācija
+
+`/orders` pieņem `status` (`all`, `iesniegts`, `apstiprināts`, `noraidīts`),
+`sort` (`date-desc`, `date-asc`) un pozitīvu `page`. Pēc noklusējuma rāda jaunākos
+pieteikumus visos statusos. Vienā lapā ir līdz 12 ierakstiem. Atlase, skaits un
+lapošana vienmēr attiecas tikai uz pieslēgto lietotāju; norādīts cita lietotāja ID
+atlasi nemaina. Pieeja sveša pieteikuma detalizētajam skatam atgriež 404.
+
+Detalizētais skats rāda iesniegšanas laiku, saglabātās cenas un piegādātājus,
+administratora komentāru un lēmuma datumu. Laikus attēlo Rīgas laika zonā.
+Tukšai statusa atlasei ir saite atpakaļ uz visiem pieteikumiem.
+
+Publiskajās, profila un admin paneļa lapās izmanto kopīgu galveni ar saitēm uz
+katalogu, grozu, pieteikumiem un profilu. Aktīvā sadaļa tiek izcelta, bet pie profila
+rāda nelasīto paziņojumu skaitu. Profilā paziņojumi un pēdējie pieteikumi atrodas
+līdzās datu formai; šaurā ekrānā sadaļas sakārtojas vienā kolonnā.
+
+Vēstures servera pārbaudes: `tests/test_order_history.py`.
+
 Migrācija `0006_order_notifications` pievieno `orders.customer_snapshot` un
 `notifications`. Esoši pieteikumi saglabā savas rindas un summas; tiem bez saglabātas
 klienta datu kopijas attēlo saistītā profila datus. Pārbaudes:

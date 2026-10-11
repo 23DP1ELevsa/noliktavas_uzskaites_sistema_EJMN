@@ -9,10 +9,11 @@
 <body class="marketplace-page">
     {% include '_market_header.html' %}
     <main class="admin-shell">
-        <nav class="breadcrumbs" aria-label="Atrašanās vieta"><a href="{{ url_for('catalog.catalog_page') }}">Katalogs</a><span>/</span><span>Pieteikums #{{ order.id }}</span></nav>
+        <nav class="breadcrumbs" aria-label="Atrašanās vieta"><a href="{{ url_for('orders.order_list') }}">Mani pieteikumi</a><span>/</span><span>Pieteikums #{{ order.id }}</span></nav>
         <section class="order-receipt">
             <p class="account-kicker">Pieteikums #{{ order.id }}</p><h1>{{ 'Pieteikums iesniegts' if order.status == 'iesniegts' else 'Pieteikums' }}</h1>
             <p>Statuss: <span class="status-badge order-status-{{ order.status }}">{{ order.status }}</span></p>
+            <p class="field-hint">Iesniegts: <time datetime="{{ order.created_at.isoformat() }}Z" data-local-time>{{ order.created_at.strftime('%d.%m.%Y. %H:%M') }} UTC</time>{% if order.processed_at %}<br>Lēmums pieņemts: <time datetime="{{ order.processed_at.isoformat() }}Z" data-local-time>{{ order.processed_at.strftime('%d.%m.%Y. %H:%M') }} UTC</time>{% endif %}</p>
             {% if order.status == 'iesniegts' %}<p>Administrators saņēmis pieteikumu izskatīšanai. Par lēmumu saņemsiet paziņojumu savā profilā.</p>{% else %}{% if order.admin_note %}<div class="order-note"><h3>Administratora komentārs</h3><p>{{ order.admin_note }}</p></div>{% endif %}{% endif %}
             {% include '_order_customer.html' %}
             {% include '_order_items.html' %}

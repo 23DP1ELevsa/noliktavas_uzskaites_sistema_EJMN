@@ -8,33 +8,7 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
 <body class="marketplace-page" data-catalog-url="{{ url_for('catalog.get_catalog') }}">
-    <header class="market-header">
-        <div class="header-top">
-            <a class="brand" href="/" aria-label="StockFlow sākumlapa">
-                <span class="brand-mark" aria-hidden="true"><span></span><span></span><span></span></span>
-                <span>Stock<span class="brand-accent">Flow</span></span>
-            </a>
-            <div class="header-actions">
-                <a href="{{ url_for('cart.cart_page') }}">Grozs</a>
-                {% if current_user.is_authenticated %}
-                    <span class="user-greeting">Sveiki, {{ current_user.full_name }}</span>
-                    {% if current_user.role == "admin" %}
-                        <a class="header-login" href="{{ url_for('admin.dashboard') }}">Admin panelis</a>
-                    {% endif %}
-                    <a class="header-login" href="{{ url_for('auth.logout') }}">Iziet</a>
-                {% else %}
-                    <a class="header-login" href="{{ url_for('auth.login') }}">Pieslēgties</a>
-                    <a href="{{ url_for('auth.register') }}">Reģistrēties</a>
-                {% endif %}
-            </div>
-        </div>
-        <nav class="category-nav" aria-label="Kategorijas">
-            <a class="category-active" href="{{ url_for('catalog.catalog_page') }}" data-category="">Visas preces</a>
-            {% for category in categories %}
-                <a href="?category_id={{ category.id }}" data-category="{{ category.id }}">{{ category.name }}</a>
-            {% endfor %}
-        </nav>
-    </header>
+    {% include '_market_header.html' %}
 
     <main>
         <section class="market-hero">

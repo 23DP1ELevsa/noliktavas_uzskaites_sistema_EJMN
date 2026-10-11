@@ -1,9 +1,10 @@
 from datetime import datetime, timezone
 import secrets
 
-from flask import Blueprint, flash, redirect, render_template, request, session, url_for
+from flask import Blueprint, abort, flash, redirect, render_template, request, session, url_for
 from flask_login import current_user, login_required
 from sqlalchemy.exc import SQLAlchemyError
+from sqlalchemy.orm import selectinload
 
 from ..extensions import db
 from ..models import CompanyProfile, Order, OrderItem, User
@@ -89,13 +90,28 @@ def checkout():
 @orders_bp.get("/<int:order_id>")
 @login_required
 def order_detail(order_id):
-    order = db.first_or_404(db.select(Order).where(Order.id == order_id, Order.user_id == current_user.id))
+    order = db.first_or_404(db.select(Order).where(Order.id == order_id, Order.user_id == current_user.id)
+                           .options(selectinload(Order.items)))
     return render_template("order.html", order=order, customer=customer_details(order))
 
 
 @orders_bp.get("")
 @login_required
 def order_list():
-    orders = db.session.scalars(db.select(Order).where(Order.user_id == current_user.id)
-                                .order_by(Order.created_at.desc(), Order.id.desc())).all()
-    return render_template("orders.html", orders=orders)
+    status = request.args.get("status", "all")
+    sort = request.args.get("sort", "date-desc")
+    if status not in {"all", "iesniegts", "apstiprināts", "noraidīts"} or sort not in {"date-desc", "date-asc"}:
+        abort(400, description="Nederīga pieteikumu atlase.")
+    page = request.args.get("page", "1")
+    if not re.fullmatch(r"[0-9]{1,7}", page) or not 1 <= int(page) <= 1000000:
+        abort(400, description="Nederīgs lapas numurs.")
+    conditions = [Order.user_id == current_user.id]
+    if status != "all":
+        conditions.append(Order.status == status)
+    total = db.session.scalar(db.select(db.func.count(Order.id)).where(*conditions))
+    pages = max(1, (total + 11) // 12)
+    page = min(int(page), pages)
+    ordering = (Order.created_at.desc(), Order.id.desc()) if sort == "date-desc" else (Order.created_at.asc(), Order.id.asc())
+    orders = db.session.scalars(db.select(Order).where(*conditions).options(selectinload(Order.items))
+                                .order_by(*ordering).limit(12).offset((page - 1) * 12)).all()
+    return render_template("orders.html", orders=orders, status=status, sort=sort, total=total, page=page, pages=pages)

@@ -8,21 +8,15 @@
 </head>
 <body class="admin-page">
     <a class="skip-link" href="#main-content">Pāriet uz saturu</a>
+    {% include '_market_header.html' %}
     <main class="admin-shell" id="main-content">
         <header class="admin-header">
             <div class="admin-heading">
-                <a class="brand admin-brand" href="{{ url_for('index') }}" aria-label="StockFlow sākumlapa">
-                    <span class="brand-mark" aria-hidden="true"><span></span><span></span><span></span></span>
-                    <span>Stock<span class="brand-accent">Flow</span></span>
-                </a>
+
                 <p class="account-kicker">Administratora panelis</p>
                 <h1>{{ self.title() }}</h1>
             </div>
-            <nav class="admin-header-actions" aria-label="Administratora navigācija">
-                <a href="{{ url_for('catalog.catalog_page') }}">Katalogs</a>
-                <a href="{{ url_for('auth.profile') }}">Mans profils</a>
-                <a href="{{ url_for('auth.logout') }}">Iziet</a>
-            </nav>
+
         </header>
         <nav class="admin-section-nav" aria-label="Paneļa sadaļas">
             <a href="{{ url_for('admin.dashboard') }}" {% if request.endpoint == 'admin.dashboard' %}aria-current="page"{% endif %}>Pārskats</a>

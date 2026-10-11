@@ -8,26 +8,7 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
 <body class="landing-page">
-    <header class="landing-header">
-        <a class="brand brand-logo" href="/" aria-label="StockFlow sākumlapa">
-            <span class="brand-mark" aria-hidden="true"><span></span><span></span><span></span></span>
-            <span>Stock<span class="brand-accent">Flow</span></span>
-        </a>
-        <div class="landing-actions">
-            <a href="{{ url_for('cart.cart_page') }}">Grozs</a>
-            {% if current_user.is_authenticated %}
-                <span class="landing-user">Sveiki, {{ current_user.full_name }}</span>
-                <a href="{{ url_for('auth.profile') }}">Mans profils</a>
-                {% if current_user.role == "admin" %}
-                    <a href="{{ url_for('admin.dashboard') }}">Admin panelis</a>
-                {% endif %}
-                <a href="{{ url_for('auth.logout') }}">Iziet</a>
-            {% else %}
-                <a href="{{ url_for('auth.login') }}">Pieslēgties</a>
-                <a class="outline-button" href="{{ url_for('auth.register') }}">Reģistrēties</a>
-            {% endif %}
-        </div>
-    </header>
+    {% include '_market_header.html' %}
 
     <main>
         {% with messages = get_flashed_messages(with_categories=true) %}

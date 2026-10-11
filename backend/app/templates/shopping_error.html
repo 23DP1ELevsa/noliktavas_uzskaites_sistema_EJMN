@@ -7,7 +7,7 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
 <body class="marketplace-page">
-    <header class="market-header"><div class="header-top"><a class="brand" href="{{ url_for('index') }}">Stock<span class="brand-accent">Flow</span></a><nav class="header-actions" aria-label="Navigācija"><a href="{{ url_for('catalog.catalog_page') }}">Katalogs</a><a href="{{ url_for('cart.cart_page') }}">Grozs</a></nav></div></header>
+    {% include '_market_header.html' %}
     <main class="admin-shell">
         <section class="shopping-empty empty-state" role="alert"><h1>Darbību neizdevās pabeigt</h1><p>Serveris pašlaik nav pieejams. Mēģiniet vēlreiz pēc brīža.</p><a class="admin-primary-button" href="{{ url_for('cart.cart_page') }}">Atvērt grozu vēlreiz</a></section>
     </main>

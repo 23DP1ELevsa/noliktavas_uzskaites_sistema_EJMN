@@ -1,4 +1,6 @@
 from flask import Flask, render_template
+from flask_login import current_user
+from sqlalchemy.exc import SQLAlchemyError
 
 from .config import Config, environment_config, normalize_database_url
 from .extensions import configure_engine, db, login_manager, migrate
@@ -27,6 +29,18 @@ def create_app(config_class=Config):
     login_manager.init_app(app)
     register_blueprints(app)
     register_commands(app)
+
+    @app.context_processor
+    def navigation_notifications():
+        if not current_user.is_authenticated:
+            return {"nav_unread": 0}
+        from .models import Notification
+        try:
+            count = db.session.scalar(db.select(db.func.count(Notification.id)).where(
+                Notification.user_id == current_user.id, Notification.is_read.is_(False)))
+        except SQLAlchemyError:
+            count = 0
+        return {"nav_unread": count}
 
     @app.get("/")
     def index():
