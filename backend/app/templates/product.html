@@ -48,7 +48,7 @@
                 <button class="admin-primary-button" type="submit">Salīdzināt</button>
             </form>
             {% if comparison_error %}<p class="flash flash-error" role="alert">{{ comparison_error }}</p>{% endif %}
-            {% include '_vat_note.html' %}
+            <p class="comparison-note">Visiem piedāvājumiem izmanto vienādu daudzumu. Kopsumma = preču summa ar PVN + norādītā piegādes maksa. Cenām bez PVN nodokli aprēķina pēc piedāvājuma PVN likmes; cenām ar PVN to atkārtoti nepieskaita. Piegādes maksu izmanto kā norādītu gala maksu.</p>
             <div class="offer-list">
                 {% for row in rows %}{% set offer = row.offer %}
                 <article class="offer-card">
@@ -62,10 +62,12 @@
                         <div><dt>Piegādes maksa</dt><dd>{{ '%.2f'|format(offer.delivery_price) }} €</dd></div>
                         <div><dt>Piegādes termiņš</dt><dd>{{ offer.delivery_days }} dienas</dd></div>
                         {% if offer.vat_rate is not none %}<div><dt>PVN likme</dt><dd>{{ '%g'|format(offer.vat_rate) }} %</dd></div>{% endif %}
+                        <div><dt>Preču summa ar PVN ({{ quantity }} {{ product.unit }})</dt><dd>{{ (row.subtotal_with_vat|string ~ ' €') if row.subtotal_with_vat is not none else 'Nav aprēķināma' }}</dd></div>
+                        <div><dt>{{ 'PVN cenā' if offer.vat_included else 'Pieskaitītais PVN' }}</dt><dd>{% if offer.vat_included %}Iekļauts{% elif row.vat_amount is not none %}{{ row.vat_amount }} €{% else %}Likme nav norādīta{% endif %}</dd></div>
                     </dl>
                     <p class="offer-updated">Dati atjaunināti: <time datetime="{{ offer.updated_at.isoformat() }}Z" data-local-time>{{ offer.updated_at.strftime('%d.%m.%Y. %H:%M') }} UTC</time></p>
                     <div class="offer-bottom">
-                        <div><span class="field-hint">Salīdzinājumam: kopā par {{ quantity }} {{ product.unit }} ar piegādi</span><strong class="offer-total">{{ '%.2f'|format(row.total) }} €</strong><small>{{ 'Ar PVN' if offer.vat_included else 'Bez PVN' }}</small></div>
+                        <div><span class="field-hint">Salīdzinājumam: kopā par {{ quantity }} {{ product.unit }}</span>{% if row.total_with_vat is not none %}<strong class="offer-total">{{ row.total_with_vat }} €</strong><small>Preces ar PVN + piegāde</small>{% else %}<strong class="offer-total">Nav aprēķināma</strong>{% endif %}</div>
                         {% if current_user.is_authenticated %}
                         {% set can_order = offer.stock_qty >= offer.min_order_qty %}
                         {% set order_quantity = [quantity, offer.min_order_qty]|max %}
@@ -85,6 +87,7 @@
                         {% else %}<button class="admin-primary-button" type="button" disabled>Pievienot grozam</button>{% endif %}
                     </div>
                     {% if row.error %}<p class="field-error">Salīdzināšanai izvēlētajā daudzumā: {{ row.error }}</p>{% endif %}
+                    {% if row.vat_error %}<p class="field-error">{{ row.vat_error }}</p>{% endif %}
                 </article>
                 {% else %}<p class="empty-state">Šai precei vēl nav aktīvu piedāvājumu. <a href="{{ url_for('catalog.catalog_page') }}">Atgriezties katalogā</a></p>{% endfor %}
             </div>

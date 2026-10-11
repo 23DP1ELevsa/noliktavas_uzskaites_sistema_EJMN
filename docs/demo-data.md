@@ -75,7 +75,11 @@ paroles netiek mainītas pat tad, ja atkārtotai izpildei norāda jaunas vērtī
    Baltic Supply — 8.49 EUR, MOQ 5, atlikums 40, piegāde 5.00 EUR trīs dienās.
    Trešais piedāvājums par 7.99 EUR ir neaktīvs un netiek rādīts.
 3. Pildspalvu cenas ir 0.65 un 0.49 EUR, minimālie daudzumi — 10 un 50.
-   Urbju piedāvājumiem atšķiras arī PVN statuss. PVN netiek pārrēķināts.
+   Urbju piedāvājumiem atšķiras arī PVN statuss. Demo cenām bez PVN norādīta
+   21 % likme. Salīdzināšanas lapā 2 NordTech urbji maksā 159.80 EUR ar piegādi,
+   bet 2 Baltic Supply urbji — 186.58 EUR pēc PVN un piegādes pieskaitīšanas.
+   Esošu piedāvājumu likmes `seed-demo` nepārraksta: veciem demo ierakstiem bez
+   likmes to var norādīt administratora piedāvājumu rediģēšanas lapā.
 4. `/catalog?in_stock=false` atgriež tīrītāju (atlikums 0) un cimdus (atlikums 2,
    minimālais daudzums 5). Pelei ir izpārdots piedāvājums un pieejams alternatīvs
    piedāvājums. Kataloga lapā atzīme **Tikai pieejamās** paslēpj nepieejamās preces.

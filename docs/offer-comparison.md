@@ -13,16 +13,34 @@ augošā secībā. Pieejama arī dilstoša kopsumma, piegādes termiņš un pieg
 nosaukums. Izvēle tiek saglabāta lapas URL parametros `quantity` un `sort`.
 Bez JavaScript nospiediet **Salīdzināt**; ar JavaScript izvēles maiņa iesniedz formu.
 
-Kopsumma tiek aprēķināta ar `Decimal`: `vienības cena × daudzums + piegādes maksa`.
-Piegādes maksu pieskaita vienu reizi katram piedāvājumam. PVN netiek pieņemts vai
-pārrēķināts: datubāzē ir PVN iekļaušanas pazīme, bet nav nodokļa likmes vai atsevišķa
-piegādes PVN statusa. Lapa skaidro, ka kopsummas ar un bez PVN nav tieši salīdzināmas.
+Salīdzinājuma kopsumma tiek aprēķināta ar `Decimal`:
+`preču summa ar PVN + piegādes maksa`. Visām rindām izmanto vienu un to pašu
+izvēlēto daudzumu; to nepalielina līdz konkrētā piegādātāja minimālajam pasūtījumam.
+Ja PVN jau iekļauts vienības cenā, to atkārtoti nepieskaita. Pretējā gadījumā
+PVN aprēķina kā `vienības cena × daudzums × vat_rate / 100` un noapaļo līdz
+centiem ar `ROUND_HALF_UP` visai preču summai, nevis katrai vienībai atsevišķi.
+Lapa atsevišķi rāda preču summu ar PVN, pieskaitīto PVN un piegādes maksu.
+
+Piegādes maksu pieskaita vienu reizi katram piedāvājumam kā norādītu gala maksu;
+modelī nav atsevišķas piegādes PVN pazīmes. Kārtošanai izmanto aprēķināto
+kopsummu ar PVN un piegādi, vienādas summas kārto stabili pēc piedāvājuma ID.
+Piemēram, 3 vienības par 10,00 € bez PVN, ar 21 % likmi un 4,50 € piegādi
+salīdzinājumā maksā 40,80 €. Ja 10,00 € jau ietver PVN, kopsumma ir 34,50 €.
+
+Vecam piedāvājumam bez PVN un bez `vat_rate` likmi nepieņem automātiski:
+kopsummas vietā rāda **Nav aprēķināma** un paskaidro trūkstošo likmi. Šādas
+rindas abos kopsummas kārtošanas virzienos atrodas beigās. Administrators var
+norādīt likmi piedāvājuma rediģēšanas lapā. Neaktīvu piegādātāju piedāvājumi
+netiek rādīti. Minimālā daudzuma un atlikuma neatbilstības rāda atsevišķi no
+PVN aprēķina; nepieejamu piedāvājumu izmaksas joprojām var salīdzināt.
 
 Pēc pieslēgšanās **Pievienot grozam** saglabā izvēlēto piedāvājumu un daudzumu
 lietotāja datubāzes grozā. Pie katras pogas laukā **Pasūtīt** var atsevišķi izvēlēties
 šī piedāvājuma daudzumu; tas nemaina kopīgo salīdzināšanas daudzumu vai kārtošanu.
 Ar JavaScript blakus redzama izvēlētā pasūtījuma summa ar piegādi. Daudzuma laukā
 norādīti piegādātāja minimālā daudzuma un atlikuma ierobežojumi.
+Groza un pasūtījuma summas turpina izmantot piegādātāja norādītās cenas un to
+PVN statusu; salīdzinājuma aprēķins nemaina saglabātās cenas vai pasūtījumu vēsturi.
 Viena piedāvājuma atkārtota pievienošana palielina tā
 daudzumu esošajā rindā. Serveris pārbauda aktīvu preci un piedāvājumu, pozitīvu
 veselu daudzumu, minimālo pasūtījumu un atlikumu, ieskaitot grozā esošo daudzumu.

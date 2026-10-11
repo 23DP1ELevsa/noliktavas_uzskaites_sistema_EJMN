@@ -38,6 +38,7 @@ def test_seed_creates_complete_demo_dataset(database_app):
     assert any(offer.stock_qty == 0 for offer in offers)
     assert any(0 < offer.stock_qty < offer.min_order_qty for offer in offers)
     assert {offer.vat_included for offer in offers} == {True, False}
+    assert all(offer.vat_rate == Decimal("21.00") for offer in offers if not offer.vat_included)
     buyer = db.session.scalar(db.select(User).where(User.email == demo_data.USER_EMAIL))
     assert buyer.company_profile.company_name == "Demo Uzņēmums SIA"
     rows = buyer.cart.items

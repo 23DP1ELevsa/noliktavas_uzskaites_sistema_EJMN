@@ -1,5 +1,6 @@
-"""Offer comparison uses declared EUR prices without adding VAT automatically."""
+"""Compare EUR offers including their declared VAT rate and delivery fee."""
 
+from decimal import Decimal, ROUND_HALF_UP
 import re
 import secrets
 
@@ -22,21 +23,42 @@ def parse_quantity(value):
 def comparison_rows(offers, quantity, sort):
     rows = []
     for offer in offers:
-        error = None
+        errors = []
         if quantity < offer.min_order_qty:
-            error = f"Minimālais daudzums: {offer.min_order_qty}."
-        elif quantity > offer.stock_qty:
-            error = f"Nepietiekams atlikums. Noliktavā: {offer.stock_qty}."
-        rows.append({"offer": offer, "subtotal": offer.unit_price * quantity,
-                     "total": offer.unit_price * quantity + offer.delivery_price,
-                     "error": error})
+            errors.append(f"Minimālais daudzums: {offer.min_order_qty}.")
+        if quantity > offer.stock_qty:
+            errors.append(f"Nepietiekams atlikums. Noliktavā: {offer.stock_qty}.")
+        subtotal = offer.unit_price * quantity
+        vat_amount, vat_error = Decimal("0.00"), None
+        if not offer.vat_included:
+            if offer.vat_rate is None:
+                vat_amount = None
+                vat_error = "Nav norādīta PVN likme; kopsummu ar PVN nevar aprēķināt."
+            else:
+                # Round VAT on the whole goods amount, not on each unit separately.
+                vat_amount = (subtotal * offer.vat_rate / Decimal("100")).quantize(
+                    Decimal("0.01"), rounding=ROUND_HALF_UP)
+        subtotal_with_vat = subtotal + vat_amount if vat_amount is not None else None
+        total_with_vat = (subtotal_with_vat + offer.delivery_price
+                          if subtotal_with_vat is not None else None)
+        rows.append({"offer": offer, "subtotal": subtotal,
+                     # Preserve supplier-declared amounts used by cart/checkout.
+                     "total": subtotal + offer.delivery_price,
+                     "subtotal_with_vat": subtotal_with_vat, "vat_amount": vat_amount,
+                     "total_with_vat": total_with_vat, "vat_error": vat_error,
+                     "error": " ".join(errors) or None})
+
+    def total_key(row):
+        value = row["total_with_vat"]
+        return (value is None, (value if value is not None else Decimal("0.00"))
+                * (-1 if sort == "total-desc" else 1), row["offer"].id)
+
     if sort == "supplier":
         rows.sort(key=lambda row: (row["offer"].supplier_name.casefold(), row["offer"].id))
     elif sort == "delivery":
-        rows.sort(key=lambda row: (row["offer"].delivery_days, row["total"], row["offer"].id))
+        rows.sort(key=lambda row: (row["offer"].delivery_days, *total_key(row)))
     else:
-        rows.sort(key=lambda row: (row["total"] * (-1 if sort == "total-desc" else 1),
-                                  row["offer"].id))
+        rows.sort(key=total_key)
     return rows
 
 
