@@ -6,7 +6,7 @@ import json
 
 from ..config import PROJECT_ROOT
 from ..extensions import db
-from ..models import Cart, CartItem, Category, CompanyProfile, Offer, Product, User
+from ..models import Cart, CartItem, Category, CompanyProfile, Offer, Product, Supplier, User
 
 
 ADMIN_EMAIL = "admin.demo@stockflow.test"
@@ -28,7 +28,7 @@ def seed_demo_data(admin_password, user_password):
 
     data = json.loads(DEMO_CATALOG.read_text(encoding="utf-8"))
     created = Counter({name: 0 for name in (
-        "users", "company_profiles", "categories", "products", "offers", "carts", "cart_items",
+        "users", "company_profiles", "categories", "products", "offers", "carts", "cart_items", "suppliers",
     )})
 
     def add(record):
@@ -71,6 +71,11 @@ def seed_demo_data(admin_password, user_password):
         products[fields["sku"]] = product
 
     offers = {}
+    def supplier_for(name, delivery_price):
+        normalized = " ".join(name.split())
+        supplier = db.session.scalar(db.select(Supplier).where(Supplier.name_key == normalized.casefold()))
+        return supplier if supplier is not None else add(Supplier(
+            name=normalized, name_key=normalized.casefold(), delivery_price=delivery_price))
     for fields in data["offers"]:
         product = products[fields["product_sku"]]
         # A reserved supplier SKU identifies a demo offer even after price or name edits.
@@ -87,7 +92,10 @@ def seed_demo_data(admin_password, user_password):
             values = {key: value for key, value in fields.items() if key != "product_sku"}
             for field in ("unit_price", "delivery_price"):
                 values[field] = Decimal(values[field])
-            offer = add(Offer(product=product, created_by_admin=admin, data_source="manual", **values))
+            offer = add(Offer(product=product, created_by_admin=admin, data_source="manual",
+                              supplier=supplier_for(values["supplier_name"], values["delivery_price"]), **values))
+        if offer.supplier_id is None:
+            offer.supplier = supplier_for(offer.supplier_name, offer.delivery_price)
         offers[fields["supplier_sku"]] = offer
 
     # Do not refill an existing cart: its owner may have checked out or removed items.

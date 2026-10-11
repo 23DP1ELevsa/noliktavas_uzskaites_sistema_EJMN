@@ -77,6 +77,9 @@ Veselības pārbaude: `http://127.0.0.1:5000/health`
 
 ## Demonstrācijas dati
 
+Administratora piegādātāju pārvaldība aprakstīta failā
+[Piegādātāju pārvaldība](docs/supplier-management.md).
+
 Piedāvājumu salīdzināšana, daudzuma izvēle un lietotāja grozs ir aprakstīti
 failā [Piedāvājumu salīdzināšana](docs/offer-comparison.md).
 
@@ -97,8 +100,11 @@ Testa administratora piekļuve:
 | --- | --- | --- |
 | Administrators | `admin.demo@stockflow.test` | `DemoAdmin123!` |
 
-Pēc pieslēgšanās administratora sadaļas ir pieejamas, izmantojot **Preces** un **Kategorijas** saites
-galvenē vai tieši adresēs `/admin/products` un `/admin/categories`. [Preču pārvaldības apraksts](docs/product-management.md).
+Pēc pieslēgšanās administrators nonāk vienotajā **Admin panelī** (`/admin`).
+Tajā ir sadaļas piegādātājiem, precēm, piegādātāju precēm un kategorijām.
+Administrators pats pievieno piegādātājus un preces, norāda cenas, PVN, atlikumus
+un pasūtīšanas nosacījumus. [Paneļa apraksts](docs/admin-panel.md).
+[Preču pārvaldības apraksts](docs/product-management.md).
 Komanda `seed-demo` izveido šo kontu,
 ja tas vēl neeksistē; esoša konta parole netiek pārrakstīta.
 

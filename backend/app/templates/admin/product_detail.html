@@ -22,4 +22,8 @@
             </div>
         </div>
     </section>
+    <div class="admin-toolbar supplier-offers-heading"><h2>Piegādātāji un cenas</h2><a class="admin-primary-button" href="{{ url_for('admin.offer_form', product_id=product.id) }}">Piesaistīt piegādātāju</a></div>
+    <section class="category-list" aria-label="Preces piegādātāji">
+        {% for offer in product.offers %}<article class="category-row supplier-product-row"><div><h3>{{ offer.supplier.name if offer.supplier else offer.supplier_name }}</h3><p>{{ 'Aktīvs' if offer.is_active and offer.supplier_active else 'Neaktīvs' }} · Atlikums {{ offer.stock_qty }}</p></div><strong>{{ '%.2f'|format(offer.unit_price) }} € / {{ product.unit }}</strong><div class="category-row-actions"><a href="{{ url_for('admin.offer_form', offer_id=offer.id) }}">Rediģēt</a></div></article>{% else %}<p class="empty-state">Precei vēl nav piesaistīts piegādātājs.</p>{% endfor %}
+    </section>
 {% endblock %}

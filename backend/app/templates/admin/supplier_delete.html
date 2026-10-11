@@ -1,0 +1,9 @@
+{% extends 'admin/base.html' %}
+{% block title %}Dzēst piegādātāju{% endblock %}
+{% block content %}
+<section class="form-panel confirmation-panel">
+    <p class="account-kicker">Darbības apstiprinājums</p><h2>{{ supplier.name }}</h2>
+    {% if has_relations %}<p>Piegādātāju nevar dzēst: tam ir saistīti piedāvājumi vai pasūtījumi. Dati jāsaglabā. Piegādātāju var deaktivizēt tā detalizētajā skatā.</p><a class="admin-secondary-button" href="{{ url_for('admin.supplier_detail', supplier_id=supplier.id) }}">Atgriezties pie piegādātāja</a>
+    {% else %}<p>Piegādātājam nav saistītu piedāvājumu vai pasūtījumu. Vai vēlaties dzēst šo ierakstu?</p><form method="post"><input type="hidden" name="csrf_token" value="{{ csrf_token }}"><input type="hidden" name="confirmed" value="1"><div class="admin-form-actions"><a class="admin-secondary-button" href="{{ url_for('admin.supplier_detail', supplier_id=supplier.id) }}">Atcelt</a><button class="admin-primary-button" type="submit">Apstiprināt dzēšanu</button></div></form>{% endif %}
+</section>
+{% endblock %}

@@ -13,7 +13,7 @@ catalog_bp = Blueprint("catalog", __name__, url_prefix="/catalog")
 def product_page(product_id):
     product = db.first_or_404(db.select(Product).where(
         Product.id == product_id, Product.is_active.is_(True)))
-    offers = [offer for offer in product.offers if offer.is_active]
+    offers = [offer for offer in product.offers if offer.is_active and offer.supplier_active]
     error = None
     try:
         quantity = parse_quantity(request.args.get("quantity", "1"))

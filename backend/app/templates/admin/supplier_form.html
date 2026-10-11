@@ -1,0 +1,20 @@
+{% extends 'admin/base.html' %}
+{% block title %}{{ 'Rediģēt piegādātāju' if supplier else 'Pievienot piegādātāju' }}{% endblock %}
+{% block content %}
+<nav class="admin-breadcrumbs" aria-label="Atrašanās vieta"><a href="{{ url_for('admin.suppliers') }}">Piegādātāji</a><span>/</span><span>{{ self.title() }}</span></nav>
+<section class="form-panel">
+    {% if errors %}<p class="flash flash-error" role="alert">Piegādātājs nav saglabāts. Pārbaudiet atzīmētos laukus.</p>{% endif %}
+    {% from 'auth/_form_macros.html' import field with context %}
+    <form method="post" class="admin-form supplier-form">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+        {{ field('name', 'Nosaukums', 255, true) }}
+        {{ field('contact_person', 'Kontaktpersona', 150) }}
+        <div class="form-grid">{{ field('email', 'E-pasts', 255, type='email') }}{{ field('phone', 'Tālrunis', 50, type='tel') }}</div>
+        {{ field('website', 'Tīmekļa vietne', 2048, type='url', hint='Pilna saite, piemēram, https://piemers.lv.') }}
+        <div class="form-field"><label for="delivery_price">Piegādes maksa, EUR *</label><input id="delivery_price" name="delivery_price" type="text" inputmode="decimal" maxlength="11" value="{{ form_data.delivery_price }}" required aria-describedby="delivery-price-hint{% if errors.get('delivery_price') %} delivery_price-error{% endif %}" {% if errors.get('delivery_price') %}aria-invalid="true"{% endif %}><p class="field-hint" id="delivery-price-hint">Mainot maksu, tā tiks piemērota piegādātāja esošajiem piedāvājumiem. 0 — bezmaksas piegāde.</p>{% if errors.get('delivery_price') %}<p class="field-error" id="delivery_price-error">{{ errors.delivery_price }}</p>{% endif %}</div>
+        <label class="filter-check"><input type="checkbox" name="is_active" value="1" {% if form_data.is_active %}checked{% endif %}><span>Aktīvs piegādātājs</span></label>
+        <p class="field-hint">Neaktīva piegādātāja piedāvājumi nav pieejami pasūtīšanai.</p>
+        <div class="admin-form-actions"><a class="admin-secondary-button" href="{{ url_for('admin.supplier_detail', supplier_id=supplier.id) if supplier else url_for('admin.suppliers') }}">Atcelt</a><button class="admin-primary-button" type="submit">{{ 'Saglabāt izmaiņas' if supplier else 'Izveidot piegādātāju' }}</button></div>
+    </form>
+</section>
+{% endblock %}

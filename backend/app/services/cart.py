@@ -39,7 +39,7 @@ def load_cart_summary(user_id, *, lock=False):
     for item in items:
         row = comparison_rows([item.offer], item.quantity, "total-asc")[0]
         row["item"] = item
-        if not item.offer.is_active or not item.offer.product.is_active:
+        if not item.offer.is_active or not item.offer.product.is_active or not item.offer.supplier_active:
             row["error"] = "Piedāvājums vairs nav aktīvs."
         rows.append(row)
         name = item.offer.supplier_name

@@ -48,7 +48,7 @@ def checkout():
         db.session.add(order)
         for row in summary["rows"]:
             offer, item = row["offer"], row["item"]
-            db.session.add(OrderItem(order=order, offer=offer, product_name=offer.product.name,
+            db.session.add(OrderItem(order=order, offer=offer, supplier_id=offer.supplier_id, product_name=offer.product.name,
                                     supplier_name=offer.supplier_name, unit_price=offer.unit_price,
                                     quantity=item.quantity, delivery_price=offer.delivery_price,
                                     line_total=row["total"], vat_included=offer.vat_included))

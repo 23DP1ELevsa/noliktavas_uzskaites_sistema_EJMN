@@ -19,8 +19,8 @@
             {% if editable %}
             <form class="cart-quantity-form" method="post" action="{{ url_for('cart.update_item', item_id=item.id) }}">
                 <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
-                <div class="form-field"><label for="quantity-{{ item.id }}">Daudzums ({{ offer.product.unit }})</label><input id="quantity-{{ item.id }}" type="number" name="quantity" min="{{ offer.min_order_qty }}" max="{{ offer.stock_qty }}" step="1" value="{{ item.quantity }}" required {% if not offer.is_active or not offer.product.is_active or offer.stock_qty < offer.min_order_qty %}disabled{% endif %}></div>
-                <button class="admin-secondary-button" type="submit" {% if not offer.is_active or not offer.product.is_active or offer.stock_qty < offer.min_order_qty %}disabled{% endif %}>Saglabāt</button>
+                <div class="form-field"><label for="quantity-{{ item.id }}">Daudzums ({{ offer.product.unit }})</label><input id="quantity-{{ item.id }}" type="number" name="quantity" min="{{ offer.min_order_qty }}" max="{{ offer.stock_qty }}" step="1" value="{{ item.quantity }}" required {% if not offer.is_active or not offer.supplier_active or not offer.product.is_active or offer.stock_qty < offer.min_order_qty %}disabled{% endif %}></div>
+                <button class="admin-secondary-button" type="submit" {% if not offer.is_active or not offer.supplier_active or not offer.product.is_active or offer.stock_qty < offer.min_order_qty %}disabled{% endif %}>Saglabāt</button>
             </form>
             {% else %}<span class="checkout-quantity">Daudzums: <strong>{{ item.quantity }} {{ offer.product.unit }}</strong></span>{% endif %}
             <div class="shopping-line-total"><span>Preču summa</span><strong>{{ '%.2f'|format(row.subtotal) }} €</strong></div>

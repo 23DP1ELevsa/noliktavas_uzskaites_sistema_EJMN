@@ -38,7 +38,8 @@ def add_item():
         flash(str(error), "error")
         return redirect(url_for("cart.cart_page"))
     offer = db.first_or_404(db.select(Offer).join(Product).where(
-        Offer.id == offer_id, Offer.is_active.is_(True), Product.is_active.is_(True)
+        Offer.id == offer_id, Offer.is_active.is_(True), Product.is_active.is_(True),
+        db.or_(Offer.supplier_id.is_(None), Offer.supplier.has(is_active=True))
     ).with_for_update())
     destination = url_for("catalog.product_page", product_id=offer.product_id,
                           quantity=quantity, sort=request.form.get("sort", "total-asc"))
@@ -73,7 +74,7 @@ def update_item(item_id):
     offer = db.session.scalar(db.select(Offer).where(Offer.id == item.offer_id).with_for_update())
     try:
         quantity = parse_quantity(request.form.get("quantity"))
-        if not offer.is_active or not offer.product.is_active:
+        if not offer.is_active or not offer.product.is_active or not offer.supplier_active:
             raise ValueError("Piedāvājums vairs nav aktīvs.")
         error = comparison_rows([offer], quantity, "total-asc")[0]["error"]
         if error:

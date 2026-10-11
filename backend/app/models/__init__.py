@@ -3,8 +3,9 @@
 from .accounts import CompanyProfile, User
 from .catalog import Category, Offer, Product
 from .shopping import Cart, CartItem, Order, OrderItem
+from .suppliers import Supplier
 
 __all__ = [
     "User", "CompanyProfile", "Category", "Product", "Offer",
-    "Cart", "CartItem", "Order", "OrderItem",
+    "Cart", "CartItem", "Order", "OrderItem", "Supplier",
 ]

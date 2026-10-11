@@ -3,6 +3,7 @@
 {% block content %}
     <nav class="admin-breadcrumbs" aria-label="Atrašanās vieta"><a href="{{ url_for('admin.products') }}">Preces</a><span>/</span><span>{{ self.title() }}</span></nav>
     <section class="form-panel">
+        {% if supplier %}<p class="admin-context">Piegādātājs: <strong>{{ supplier.name }}</strong>. Pēc preces izveides norādiet cenu un pasūtīšanas nosacījumus.</p>{% endif %}
         <p class="account-help">Ar * atzīmētie lauki ir obligāti. SKU jābūt unikālam visā katalogā.</p>
         {% if errors %}<div class="flash flash-error" role="alert"><strong>Prece nav saglabāta.</strong> Pārbaudiet atzīmētos laukus.</div>{% endif %}
         {% if not categories %}<p class="flash flash-error" role="alert">Vispirms <a href="{{ url_for('admin.create_category') }}">izveidojiet kategoriju</a>, lai varētu pievienot preci.</p>{% endif %}
@@ -34,8 +35,8 @@
             {{ field('unit', 'Mērvienība', 30, true) }}
             <label class="filter-check"><input type="checkbox" name="is_active" value="1" {% if form_data.is_active %}checked{% endif %}><span>Aktīva prece — redzama publiskajā katalogā</span></label>
             <div class="admin-form-actions">
-                <a class="admin-secondary-button" href="{{ url_for('admin.product_detail', product_id=product.id) if product else url_for('admin.products') }}">Atcelt</a>
-                <button class="admin-primary-button" type="submit" {% if not categories %}disabled{% endif %}>{{ 'Saglabāt izmaiņas' if product else 'Izveidot preci' }}</button>
+                <a class="admin-secondary-button" href="{{ url_for('admin.supplier_detail', supplier_id=supplier.id) if supplier else (url_for('admin.product_detail', product_id=product.id) if product else url_for('admin.products')) }}">Atcelt</a>
+                <button class="admin-primary-button" type="submit" {% if not categories %}disabled{% endif %}>{{ 'Turpināt uz cenu un atlikumu' if supplier else ('Saglabāt izmaiņas' if product else 'Izveidot preci') }}</button>
             </div>
         </form>
     </section>

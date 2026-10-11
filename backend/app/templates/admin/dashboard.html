@@ -1,0 +1,14 @@
+{% extends 'admin/base.html' %}
+{% block title %}Pārskats{% endblock %}
+{% block content %}
+<p class="account-help">Pārvaldiet katalogu un piegādātāju preces vienuviet.</p>
+<div class="admin-dashboard">
+    {% for card in cards %}
+    <section class="admin-section-card">
+        <div class="admin-section-heading"><h2>{{ card.title }}</h2><span class="admin-section-count">{{ card.count }}</span></div>
+        <p>{{ card.description }}</p>
+        <div class="admin-section-actions"><a class="admin-primary-button" href="{{ card.add_url }}">{{ card.action }}</a><a class="admin-secondary-button" href="{{ card.list_url }}">Atvērt sadaļu</a></div>
+    </section>
+    {% endfor %}
+</div>
+{% endblock %}

@@ -89,7 +89,7 @@ def login():
             login_user(user)
             flash("Veiksmīgi pieslēdzāties.", "success")
             next_url = request.args.get("next") or request.form.get("next")
-            return redirect(_safe_next_url(next_url) or url_for("index"))
+            return redirect(_safe_next_url(next_url) or url_for("admin.dashboard" if user.role == "admin" else "index"))
 
     return render_template("auth/login.html", next_url=request.args.get("next", ""))
 

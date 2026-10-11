@@ -209,7 +209,7 @@ def test_migrations_are_repeatable_and_match_models(database_app, records):
     assert set(inspect(db.engine).get_table_names()) == set(db.metadata.tables) | {"alembic_version"}
     result = database_app.test_cli_runner().invoke(args=["db-check"])
     assert result.exit_code == 0
-    assert "all 9 application tables" in result.output
+    assert "all 10 application tables" in result.output
 
 
 def test_initial_migration_can_be_reversed_and_reapplied(database_app):
@@ -218,7 +218,7 @@ def test_initial_migration_can_be_reversed_and_reapplied(database_app):
     result = database_app.test_cli_runner().invoke(args=["db-check"])
     assert result.exit_code != 0 and "Missing tables" in result.output
     upgrade(directory=MIGRATIONS)
-    assert len(inspect(db.engine).get_table_names()) == 10
+    assert len(inspect(db.engine).get_table_names()) == 11
 
 
 def test_delivery_address_migration_preserves_existing_company_data(database_app):

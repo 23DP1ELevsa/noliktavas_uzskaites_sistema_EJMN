@@ -1,0 +1,21 @@
+{% extends 'admin/base.html' %}
+{% block title %}Piegādātāji{% endblock %}
+{% block content %}
+<div class="admin-toolbar"><p>Piegādātāju kontakti, piegādes maksas un pieejamība.</p><a class="admin-primary-button" href="{{ url_for('admin.supplier_form') }}">＋ Pievienot piegādātāju</a></div>
+<form class="inventory-filters" method="get" role="search">
+    <div><label for="supplier-search">Meklēt piegādātāju</label><input id="supplier-search" type="search" name="q" value="{{ q }}" maxlength="255" placeholder="Nosaukums, kontaktpersona vai e-pasts"></div>
+    <div><label for="supplier-status">Statuss</label><select id="supplier-status" name="status"><option value="all" {% if status == 'all' %}selected{% endif %}>Visi</option><option value="active" {% if status == 'active' %}selected{% endif %}>Aktīvi</option><option value="inactive" {% if status == 'inactive' %}selected{% endif %}>Neaktīvi</option></select></div>
+    <button class="admin-primary-button" type="submit">Meklēt</button><a class="admin-secondary-button" href="{{ url_for('admin.suppliers') }}">Notīrīt</a>
+</form>
+<p class="results-count" role="status">Atrasti {{ suppliers|length }} piegādātāji</p>
+<section class="inventory-list" aria-label="Piegādātāju saraksts">
+    {% for supplier in suppliers %}
+    <article class="inventory-row supplier-row">
+        <div class="inventory-thumbnail" aria-hidden="true">{{ supplier.name[:1]|upper }}</div>
+        <div class="inventory-info"><span class="status-badge {{ 'status-inactive' if not supplier.is_active else '' }}">{{ 'Aktīvs' if supplier.is_active else 'Neaktīvs' }}</span><h2><a href="{{ url_for('admin.supplier_detail', supplier_id=supplier.id) }}">{{ supplier.name }}</a></h2>{% if supplier.contact_person or supplier.email %}<p>{{ supplier.contact_person or '' }}{{ ' · ' if supplier.contact_person and supplier.email else '' }}{{ supplier.email or '' }}</p>{% endif %}<small>{{ supplier.offers|length }} piedāvājumi</small></div>
+        <div class="supplier-fee"><span>Piegādes maksa</span><strong>{{ '%.2f'|format(supplier.delivery_price) }} €</strong></div>
+        <div class="category-row-actions"><a href="{{ url_for('admin.supplier_detail', supplier_id=supplier.id) }}">Skatīt</a><a href="{{ url_for('admin.supplier_form', supplier_id=supplier.id) }}">Rediģēt</a></div>
+    </article>
+    {% else %}<div class="empty-state"><h2>{{ 'Piegādātāji nav atrasti' if q or status != 'all' else 'Vēl nav piegādātāju' }}</h2><p>{{ 'Mainiet meklēšanas kritērijus.' if q or status != 'all' else 'Pievienojiet pirmo piegādātāju, lai saglabātu tā informāciju.' }}</p></div>{% endfor %}
+</section>
+{% endblock %}

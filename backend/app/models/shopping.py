@@ -73,6 +73,7 @@ class OrderItem(IdentityMixin, db.Model):
     offer_id = db.Column(ID_TYPE, db.ForeignKey("offers.id", ondelete="SET NULL"), index=True)
     product_name = db.Column(db.String(255), nullable=False)
     supplier_name = db.Column(db.String(255), nullable=False)
+    supplier_id = db.Column(ID_TYPE, db.ForeignKey("suppliers.id"), index=True)
     unit_price = db.Column(db.Numeric(10, 2), nullable=False)
     quantity = db.Column(db.Integer, nullable=False)
     delivery_price = db.Column(db.Numeric(10, 2), nullable=False)
@@ -81,3 +82,4 @@ class OrderItem(IdentityMixin, db.Model):
 
     order = db.relationship("Order", back_populates="items")
     offer = db.relationship("Offer", back_populates="order_items")
+    supplier = db.relationship("Supplier", back_populates="order_items")

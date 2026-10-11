@@ -47,6 +47,7 @@ class Offer(IdentityMixin, db.Model):
     created_by_admin_id = db.Column(ID_TYPE, db.ForeignKey("users.id", ondelete="RESTRICT"),
                                     nullable=False, index=True)
     supplier_name = db.Column(db.String(255), nullable=False)
+    supplier_id = db.Column(ID_TYPE, db.ForeignKey("suppliers.id"), index=True)
     supplier_sku = db.Column(db.String(100))
     unit_price = db.Column(db.Numeric(10, 2), nullable=False)
     # VAT must be supplied explicitly: silently assuming its status changes meaning.
@@ -61,6 +62,11 @@ class Offer(IdentityMixin, db.Model):
     is_active = active_column()
 
     product = db.relationship("Product", back_populates="offers")
+    supplier = db.relationship("Supplier", back_populates="offers")
     created_by_admin = db.relationship("User", back_populates="offers_created")
     cart_items = db.relationship("CartItem", back_populates="offer", passive_deletes="all")
     order_items = db.relationship("OrderItem", back_populates="offer", passive_deletes="all")
+
+    @property
+    def supplier_active(self):
+        return self.supplier is None or self.supplier.is_active

@@ -1,0 +1,11 @@
+{% extends 'admin/base.html' %}
+{% block title %}Piegādātāju preces{% endblock %}
+{% block content %}
+<div class="admin-toolbar"><p>{{ offers|length }} ieraksti</p><a class="admin-primary-button" href="{{ url_for('admin.offer_form') }}">Piesaistīt preci</a></div>
+<form class="inventory-filters" method="get"><div class="form-field"><label for="q">Meklēt preci vai piegādātāju</label><input id="q" name="q" value="{{ q }}" placeholder="Nosaukums vai SKU" maxlength="255"></div><button class="admin-secondary-button" type="submit">Meklēt</button>{% if q %}<a href="{{ url_for('admin.supplier_products') }}">Notīrīt</a>{% endif %}</form>
+<section class="category-list" aria-label="Piegādātāju preces">
+{% for offer in offers %}
+<article class="category-row supplier-product-row"><div><h2><a href="{{ url_for('admin.product_detail', product_id=offer.product_id) }}">{{ offer.product.name }}</a></h2><p>{% if offer.supplier %}<a href="{{ url_for('admin.supplier_detail', supplier_id=offer.supplier_id) }}">{{ offer.supplier.name }}</a>{% else %}{{ offer.supplier_name }}{% endif %} · {{ offer.supplier_sku or offer.product.sku }}</p><span class="status-badge {{ 'status-inactive' if not offer.is_active or not offer.supplier_active or not offer.product.is_active else '' }}">{{ 'Aktīva' if offer.is_active and offer.supplier_active and offer.product.is_active else 'Neaktīva' }}</span></div><div><strong>{{ '%.2f'|format(offer.unit_price) }} € / {{ offer.product.unit }}</strong><p class="field-hint">{{ 'Ar PVN' if offer.vat_included else 'Bez PVN' }} · Atlikums {{ offer.stock_qty }}</p></div><div class="category-row-actions"><a href="{{ url_for('admin.offer_form', offer_id=offer.id) }}">Rediģēt</a></div></article>
+{% else %}<p class="empty-state">{{ 'Nekas nav atrasts. Mainiet meklēšanas tekstu.' if q else 'Vēl nav piegādātāju preču. Pievienojiet piegādātāju un piesaistiet tam preci.' }}</p>{% endfor %}
+</section>
+{% endblock %}

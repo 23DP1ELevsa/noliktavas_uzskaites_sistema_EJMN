@@ -70,7 +70,8 @@ class CatalogFilters:
 
 
 def search_catalog(filters):
-    offer_conditions = [Offer.is_active.is_(True)]
+    offer_conditions = [Offer.is_active.is_(True), db.or_(Offer.supplier_id.is_(None),
+                                                       Offer.supplier.has(is_active=True))]
     if filters.min_price is not None:
         offer_conditions.append(Offer.unit_price >= filters.min_price)
     if filters.max_price is not None:

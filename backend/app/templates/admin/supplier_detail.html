@@ -1,0 +1,24 @@
+{% extends 'admin/base.html' %}
+{% block title %}{{ supplier.name }}{% endblock %}
+{% block content %}
+<nav class="admin-breadcrumbs" aria-label="Atrašanās vieta"><a href="{{ url_for('admin.suppliers') }}">Piegādātāji</a><span>/</span><span>{{ supplier.name }}</span></nav>
+<div class="admin-toolbar">
+    <span class="status-badge {{ 'status-inactive' if not supplier.is_active else '' }}">{{ 'Aktīvs piegādātājs' if supplier.is_active else 'Neaktīvs piegādātājs' }}</span>
+    <div class="category-row-actions"><a href="{{ url_for('admin.supplier_form', supplier_id=supplier.id) }}">Rediģēt</a><form method="post" action="{{ url_for('admin.supplier_status', supplier_id=supplier.id) }}"><input type="hidden" name="csrf_token" value="{{ csrf_token }}"><input type="hidden" name="is_active" value="{{ '0' if supplier.is_active else '1' }}"><button type="submit">{{ 'Deaktivizēt' if supplier.is_active else 'Aktivizēt' }}</button></form>{% if not has_relations %}<a href="{{ url_for('admin.delete_supplier', supplier_id=supplier.id) }}">Dzēst</a>{% endif %}</div>
+</div>
+<section class="supplier-detail-panel">
+    <dl class="supplier-facts">
+        <div><dt>Kontaktpersona</dt><dd>{{ supplier.contact_person or 'Nav norādīta' }}</dd></div>
+        <div><dt>E-pasts</dt><dd>{% if supplier.email %}<a href="mailto:{{ supplier.email }}">{{ supplier.email }}</a>{% else %}Nav norādīts{% endif %}</dd></div>
+        <div><dt>Tālrunis</dt><dd>{{ supplier.phone or 'Nav norādīts' }}</dd></div>
+        <div><dt>Tīmekļa vietne</dt><dd>{% if supplier.website %}<a href="{{ supplier.website }}" target="_blank" rel="noopener noreferrer">{{ supplier.website }}</a>{% else %}Nav norādīta{% endif %}</dd></div>
+        <div><dt>Piegādes maksa</dt><dd class="supplier-fee-value">{{ '%.2f'|format(supplier.delivery_price) }} €</dd></div>
+        <div><dt>Saistītie pasūtījumi</dt><dd>{{ order_count }}</dd></div>
+    </dl>
+</section>
+<div class="admin-toolbar supplier-offers-heading"><h2>Piegādātāja preces</h2><div class="admin-section-actions"><a class="admin-primary-button" href="{{ url_for('admin.product_form', supplier_id=supplier.id) }}">Pievienot jaunu preci</a><a class="admin-secondary-button" href="{{ url_for('admin.offer_form', supplier_id=supplier.id) }}">Piesaistīt esošu preci</a></div></div>
+<section class="category-list" aria-label="Piegādātāja piedāvājumi">
+    {% for offer in supplier.offers|sort(attribute='id') %}<article class="category-row supplier-product-row"><div><h3><a href="{{ url_for('admin.product_detail', product_id=offer.product_id) }}">{{ offer.product.name }}</a></h3><p>{{ offer.supplier_sku or offer.product.sku }} · {{ 'Aktīvs' if offer.is_active else 'Neaktīvs' }}</p></div><div><strong>{{ '%.2f'|format(offer.unit_price) }} € / {{ offer.product.unit }}</strong><p class="field-hint">Atlikums {{ offer.stock_qty }} · Piegāde {{ '%.2f'|format(offer.delivery_price) }} €</p></div><div class="category-row-actions"><a href="{{ url_for('admin.offer_form', offer_id=offer.id) }}">Rediģēt</a></div></article>{% else %}<p class="empty-state">Šim piegādātājam vēl nav piedāvājumu.</p>{% endfor %}
+</section>
+{% if has_relations %}<p class="field-hint supplier-preservation-note">Piegādātājs ir saistīts ar piedāvājumiem vai pasūtījumiem. Tā ieraksts tiek saglabāts; vajadzības gadījumā izmantojiet deaktivizēšanu.</p>{% endif %}
+{% endblock %}

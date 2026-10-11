@@ -19,8 +19,7 @@
                 <span class="landing-user">Sveiki, {{ current_user.full_name }}</span>
                 <a href="{{ url_for('auth.profile') }}">Mans profils</a>
                 {% if current_user.role == "admin" %}
-                    <a href="{{ url_for('admin.products') }}">Preces</a>
-                    <a href="{{ url_for('admin.categories') }}">Kategorijas</a>
+                    <a href="{{ url_for('admin.dashboard') }}">Admin panelis</a>
                 {% endif %}
                 <a href="{{ url_for('auth.logout') }}">Iziet</a>
             {% else %}

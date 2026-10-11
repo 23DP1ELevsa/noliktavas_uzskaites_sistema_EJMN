@@ -19,13 +19,18 @@
                 <h1>{{ self.title() }}</h1>
             </div>
             <nav class="admin-header-actions" aria-label="Administratora navigācija">
-                <a href="{{ url_for('admin.products') }}" {% if request.endpoint in ['admin.products', 'admin.product_detail', 'admin.product_form', 'admin.delete_product'] %}aria-current="page"{% endif %}>Preces</a>
-                <a href="{{ url_for('admin.categories') }}">Kategorijas</a>
                 <a href="{{ url_for('catalog.catalog_page') }}">Katalogs</a>
                 <a href="{{ url_for('auth.profile') }}">Mans profils</a>
                 <a href="{{ url_for('auth.logout') }}">Iziet</a>
             </nav>
         </header>
+        <nav class="admin-section-nav" aria-label="Paneļa sadaļas">
+            <a href="{{ url_for('admin.dashboard') }}" {% if request.endpoint == 'admin.dashboard' %}aria-current="page"{% endif %}>Pārskats</a>
+            <a href="{{ url_for('admin.suppliers') }}" {% if request.endpoint in ['admin.suppliers', 'admin.supplier_detail', 'admin.supplier_form', 'admin.delete_supplier'] %}aria-current="page"{% endif %}>Piegādātāji</a>
+            <a href="{{ url_for('admin.products') }}" {% if request.endpoint in ['admin.products', 'admin.product_detail', 'admin.product_form', 'admin.delete_product'] %}aria-current="page"{% endif %}>Preces</a>
+            <a href="{{ url_for('admin.supplier_products') }}" {% if request.endpoint in ['admin.supplier_products', 'admin.offer_form'] %}aria-current="page"{% endif %}>Piegādātāju preces</a>
+            <a href="{{ url_for('admin.categories') }}" {% if request.endpoint in ['admin.categories', 'admin.create_category', 'admin.edit_category'] %}aria-current="page"{% endif %}>Kategorijas</a>
+        </nav>
         {% with messages = get_flashed_messages(with_categories=true) %}
             {% for category, message in messages %}<p class="flash flash-{{ category }}" role="status">{{ message }}</p>{% endfor %}
         {% endwith %}

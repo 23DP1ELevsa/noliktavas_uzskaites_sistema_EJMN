@@ -1,6 +1,8 @@
 from flask import Flask
 
 from .admin import admin_bp
+from . import suppliers  # noqa: F401 -- add supplier routes to the admin blueprint
+from . import admin_offers  # noqa: F401 -- register the unified admin panel
 from .auth import auth_bp
 from .cart import cart_bp
 from .catalog import catalog_bp

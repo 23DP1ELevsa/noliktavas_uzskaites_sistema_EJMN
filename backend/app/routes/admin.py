@@ -8,7 +8,7 @@ from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import joinedload, selectinload
 
 from ..extensions import db
-from ..models import Category, Offer, Product
+from ..models import Category, Offer, Product, Supplier
 
 admin_bp = Blueprint("admin", __name__, url_prefix="/admin")
 
@@ -197,6 +197,12 @@ def product_detail(product_id):
 @admin_required
 def product_form(product_id=None):
     product = db.get_or_404(Product, product_id) if product_id is not None else None
+    supplier_id = request.args.get("supplier_id", "") if product is None else ""
+    supplier = None
+    if supplier_id:
+        if not supplier_id.isascii() or not supplier_id.isdigit() or len(supplier_id) > 19 or not 0 < int(supplier_id) <= 9223372036854775807:
+            abort(400)
+        supplier = db.get_or_404(Supplier, int(supplier_id))
     data = _product_form_data(product)
     errors = {}
     if request.method == "POST":
@@ -218,10 +224,13 @@ def product_form(product_id=None):
                 errors["sku"] = "Preci neizdevās saglabāt. Pārbaudiet SKU un kategoriju."
             else:
                 flash("Prece veiksmīgi atjaunināta." if product else "Prece veiksmīgi izveidota.", "success")
+                if supplier:
+                    return redirect(url_for("admin.offer_form", product_id=item.id, supplier_id=supplier.id))
                 return redirect(url_for("admin.product_detail", product_id=item.id))
     categories = db.session.scalars(db.select(Category).order_by(Category.name)).all()
     return render_template("admin/product_form.html", product=product, form_data=data,
-                           errors=errors, categories=categories, csrf_token=_product_csrf_token()), (422 if errors else 200)
+                           errors=errors, categories=categories, supplier=supplier,
+                           csrf_token=_product_csrf_token()), (422 if errors else 200)
 
 
 @admin_bp.route("/products/<int:product_id>/delete", methods=["GET", "POST"])
