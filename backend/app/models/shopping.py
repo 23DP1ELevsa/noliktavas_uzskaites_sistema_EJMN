@@ -46,6 +46,7 @@ class Order(IdentityMixin, CreatedMixin, db.Model):
                                    nullable=False, index=True)
     status = db.Column(db.String(30), nullable=False, default="iesniegts", server_default="iesniegts")
     total_amount = db.Column(db.Numeric(12, 2), nullable=False)
+    customer_snapshot = db.Column(db.JSON)
     admin_note = db.Column(db.Text)
     processed_by_admin_id = db.Column(ID_TYPE, db.ForeignKey("users.id", ondelete="RESTRICT"), index=True)
     processed_at = db.Column(db.DateTime)

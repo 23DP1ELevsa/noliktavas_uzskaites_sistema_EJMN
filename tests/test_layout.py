@@ -27,10 +27,12 @@ def test_all_pages_render_the_same_single_footer(database_app):
     client.get('/auth/logout')
     client.post('/auth/login', data={'email': USER_EMAIL, 'password': DEFAULT_USER_PASSWORD})
     check_footer('/orders/checkout')
+    check_footer('/orders')
 
     client.get('/auth/logout')
     client.post("/auth/login", data={"email": ADMIN_EMAIL, "password": DEFAULT_ADMIN_PASSWORD})
     for path in ("/auth/profile", "/cart", "/admin", "/admin/supplier-products",
+                 "/admin/orders",
                  "/admin/supplier-products/new", "/admin/supplier-products/1/edit",
                  "/admin/supplier-products/1/delete",
                  "/admin/products/new?supplier_id=1", "/admin/suppliers", "/admin/suppliers/new",

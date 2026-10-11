@@ -1,0 +1,14 @@
+<section class="checkout-company">
+    <h2>Uzņēmums un piegāde</h2>
+    <dl class="supplier-facts order-customer-facts">
+        <div><dt>Uzņēmums</dt><dd>{{ customer.company_name }}</dd></div>
+        <div><dt>Reģistrācijas numurs</dt><dd>{{ customer.registration_no }}</dd></div>
+        {% if customer.vat_no %}<div><dt>PVN numurs</dt><dd>{{ customer.vat_no }}</dd></div>{% endif %}
+        <div><dt>Uzņēmuma adrese</dt><dd>{{ customer.address }}</dd></div>
+        <div><dt>Piegādes adrese</dt><dd>{{ customer.delivery_address }}</dd></div>
+        <div><dt>Kontaktpersona</dt><dd>{{ customer.full_name }}</dd></div>
+        <div><dt>E-pasts</dt><dd>{{ customer.email }}</dd></div>
+        {% if customer.phone %}<div><dt>Tālrunis</dt><dd>{{ customer.phone }}</dd></div>{% endif %}
+    </dl>
+    {% if customer.note %}<div class="order-note"><h3>Klienta piezīme</h3><p>{{ customer.note }}</p></div>{% endif %}
+</section>

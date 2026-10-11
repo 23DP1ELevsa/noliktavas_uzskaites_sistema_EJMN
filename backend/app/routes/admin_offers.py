@@ -8,7 +8,7 @@ from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import joinedload
 
 from ..extensions import db
-from ..models import CartItem, Category, Offer, OrderItem, Product, Supplier
+from ..models import CartItem, Category, Offer, Order, OrderItem, Product, Supplier
 from .admin import admin_bp, admin_required, _check_product_csrf, _product_csrf_token
 
 
@@ -26,6 +26,10 @@ def dashboard():
                   count=db.session.scalar(db.select(db.func.count(model.id))),
                   list_url=url_for("admin." + listing), add_url=url_for("admin." + adding), action=action)
              for title, description, model, listing, adding, action in sections]
+    cards.insert(0, dict(title="Pieteikumi", description="Klientu pieteikumi, to dati un lēmumi.",
+                        count=db.session.scalar(db.select(db.func.count(Order.id)).where(Order.status == "iesniegts")),
+                        add_url=url_for("admin.applications"), list_url=url_for("admin.applications", status="all"),
+                        action="Izskatīt pieteikumus", secondary="Visi pieteikumi"))
     return render_template("admin/dashboard.html", cards=cards)
 
 

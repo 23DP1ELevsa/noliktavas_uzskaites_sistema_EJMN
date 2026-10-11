@@ -26,6 +26,7 @@
         </header>
         <nav class="admin-section-nav" aria-label="Paneļa sadaļas">
             <a href="{{ url_for('admin.dashboard') }}" {% if request.endpoint == 'admin.dashboard' %}aria-current="page"{% endif %}>Pārskats</a>
+            <a href="{{ url_for('admin.applications') }}" {% if request.endpoint in ['admin.applications', 'admin.application_detail'] %}aria-current="page"{% endif %}>Pieteikumi</a>
             <a href="{{ url_for('admin.suppliers') }}" {% if request.endpoint in ['admin.suppliers', 'admin.supplier_detail', 'admin.supplier_form', 'admin.delete_supplier'] %}aria-current="page"{% endif %}>Piegādātāji</a>
             <a href="{{ url_for('admin.products') }}" {% if request.endpoint in ['admin.products', 'admin.product_detail', 'admin.product_form', 'admin.delete_product'] %}aria-current="page"{% endif %}>Preces</a>
             <a href="{{ url_for('admin.supplier_products') }}" {% if request.endpoint in ['admin.supplier_products', 'admin.offer_form', 'admin.delete_offer'] %}aria-current="page"{% endif %}>Piedāvājumi</a>

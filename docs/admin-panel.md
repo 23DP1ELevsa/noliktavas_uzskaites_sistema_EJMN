@@ -4,8 +4,10 @@ Vienotais pārskats pieejams `/admin` un caur saiti **Admin panelis** publiskaj�
 lapās. Pēc administratora pieslēgšanās tas atveras automātiski, ja nav norādīta
 cita lokāla mērķa adrese. Visās pārvaldības lapās ir kopīga sadaļu navigācija.
 
-Panelī ir piegādātāji, preces, piedāvājumi un kategorijas. Katra pārskata
+Panelī ir pieteikumi, piegādātāji, preces, piedāvājumi un kategorijas. Katra pārskata
 sadaļa rāda ierakstu skaitu un saites pievienošanai un saraksta atvēršanai.
+Pieteikumu sadaļa rāda izskatīšanu gaidošo pieteikumu skaitu un saites izskatīšanai
+un visiem pieteikumiem. [Pieteikumu un paziņojumu apraksts](order-workflow.md).
 
 ## Piegādātāja preču pievienošana
 

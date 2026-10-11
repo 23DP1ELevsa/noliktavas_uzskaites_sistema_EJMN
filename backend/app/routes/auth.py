@@ -6,7 +6,8 @@ from flask_login import current_user, login_required, login_user, logout_user
 from sqlalchemy.exc import IntegrityError
 
 from ..extensions import db
-from ..models import CompanyProfile, User
+from ..models import CompanyProfile, Notification, Order, User
+from ..services.comparison import cart_csrf_token, require_cart_csrf
 
 
 auth_bp = Blueprint("auth", __name__, url_prefix="/auth")
@@ -172,7 +173,26 @@ def profile():
                      for field in COMPANY_FIELDS}
         form_data["full_name"] = current_user.full_name
 
-    return render_template("auth/profile.html", profile=profile, form_data=form_data, errors=errors)
+    notifications = db.session.scalars(db.select(Notification).where(Notification.user_id == current_user.id)
+                                        .order_by(Notification.is_read, Notification.created_at.desc(), Notification.id.desc())
+                                        .limit(20)).all()
+    unread = db.session.scalar(db.select(db.func.count(Notification.id)).where(
+        Notification.user_id == current_user.id, Notification.is_read.is_(False)))
+    orders = db.session.scalars(db.select(Order).where(Order.user_id == current_user.id)
+                               .order_by(Order.created_at.desc(), Order.id.desc()).limit(5)).all()
+    return render_template("auth/profile.html", profile=profile, form_data=form_data, errors=errors,
+                           notifications=notifications, unread=unread, orders=orders, csrf_token=cart_csrf_token())
+
+
+@auth_bp.post("/notifications/<int:notification_id>/read")
+@login_required
+def read_notification(notification_id):
+    require_cart_csrf()
+    notification = db.first_or_404(db.select(Notification).where(Notification.id == notification_id,
+                                                                Notification.user_id == current_user.id))
+    notification.is_read = True
+    db.session.commit()
+    return redirect(url_for("auth.profile"))
 
 
 @auth_bp.get("/logout")

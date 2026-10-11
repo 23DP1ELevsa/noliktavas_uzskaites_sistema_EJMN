@@ -1,0 +1,9 @@
+<!doctype html>
+<html lang="lv">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Mani pieteikumi | StockFlow</title><link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}"></head>
+<body class="marketplace-page">
+{% include '_market_header.html' %}
+<main class="admin-shell"><div class="admin-toolbar"><h1>Mani pieteikumi</h1><a class="admin-secondary-button" href="{{ url_for('auth.profile') }}">Mans profils</a></div>
+<section class="category-list" aria-label="Mani pieteikumi">{% for order in orders %}<article class="category-row supplier-product-row"><div><h2><a href="{{ url_for('orders.order_detail', order_id=order.id) }}">Pieteikums #{{ order.id }}</a></h2><p class="field-hint"><time datetime="{{ order.created_at.isoformat() }}Z" data-local-time>{{ order.created_at.strftime('%d.%m.%Y. %H:%M') }} UTC</time></p></div><span class="status-badge order-status-{{ order.status }}">{{ order.status }}</span><strong>{{ '%.2f'|format(order.total_amount) }} €</strong><div class="category-row-actions"><a href="{{ url_for('orders.order_detail', order_id=order.id) }}">Apskatīt</a></div></article>{% else %}<p class="empty-state">Jums vēl nav pieteikumu. <a href="{{ url_for('catalog.catalog_page') }}">Atvērt katalogu</a></p>{% endfor %}</section>
+</main>{% include '_footer.html' %}<script src="{{ url_for('static', filename='js/comparison.js') }}" defer></script>
+</body></html>

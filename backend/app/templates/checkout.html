@@ -20,9 +20,13 @@
                     <dl class="checkout-company-facts">
                         <div><dt>Uzņēmums</dt><dd>{{ profile.company_name }}</dd></div>
                         <div><dt>Reģistrācijas numurs</dt><dd>{{ profile.registration_no }}</dd></div>
-                        <div><dt>Piegādes adrese</dt><dd>{{ profile.effective_delivery_address }}</dd></div>
-                        <div><dt>Kontaktpersona</dt><dd>{{ current_user.full_name }} · {{ current_user.email }}{% if profile.phone %} · {{ profile.phone }}{% endif %}</dd></div>
+                        <div><dt>Kontaktpersona</dt><dd>{{ current_user.full_name }} · {{ current_user.email }}</dd></div>
                     </dl>
+                    <div class="checkout-inputs">
+                        <div class="form-field"><label for="delivery_address">Piegādes adrese *</label><input id="delivery_address" name="delivery_address" form="checkout-submit" value="{{ form_data.delivery_address }}" maxlength="255" required autocomplete="street-address" {% if errors.get('delivery_address') %}aria-invalid="true" aria-describedby="delivery-address-error"{% endif %}>{% if errors.get('delivery_address') %}<p class="field-error" id="delivery-address-error">{{ errors.delivery_address }}</p>{% endif %}</div>
+                        <div class="form-field"><label for="phone">Kontakttālrunis</label><input id="phone" name="phone" form="checkout-submit" value="{{ form_data.phone }}" type="tel" maxlength="50" autocomplete="tel" {% if errors.get('phone') %}aria-invalid="true" aria-describedby="phone-error"{% endif %}>{% if errors.get('phone') %}<p class="field-error" id="phone-error">{{ errors.phone }}</p>{% endif %}</div>
+                        <div class="form-field"><label for="note">Piezīme administratoram</label><textarea id="note" name="note" form="checkout-submit" maxlength="1000" rows="3" {% if errors.get('note') %}aria-invalid="true" aria-describedby="note-error"{% endif %}>{{ form_data.note }}</textarea>{% if errors.get('note') %}<p class="field-error" id="note-error">{{ errors.note }}</p>{% endif %}</div>
+                    </div>
                     {% else %}<p class="flash flash-error" role="alert">Pirms iesniegšanas pievienojiet uzņēmuma nosaukumu, reģistrācijas numuru un adresi savā profilā.</p><a class="admin-secondary-button" href="{{ url_for('auth.profile') }}">Papildināt uzņēmuma profilu</a>{% endif %}
                 </section>
                 {% set editable = false %}{% include '_cart_groups.html' %}
@@ -35,7 +39,7 @@
                     <input type="hidden" name="review_token" value="{{ review_token }}">
                     <button class="admin-primary-button checkout-primary" type="submit" {% if not profile_complete %}disabled{% endif %}>Iesniegt pieteikumu</button>
                 </form>
-                <p class="field-hint summary-help">Pieteikums tiks nodots izskatīšanai. Maksājums netiek veikts.</p>
+                <p class="field-hint summary-help">Pieteikumu saņems administrators. Lēmums un paziņojums būs redzams jūsu profilā. Maksājums netiek veikts.</p>
             </aside>
         </div>
     </main>

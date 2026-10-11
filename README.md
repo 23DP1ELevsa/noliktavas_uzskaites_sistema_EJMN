@@ -101,10 +101,11 @@ Testa administratora piekļuve:
 | Administrators | `admin.demo@stockflow.test` | `DemoAdmin123!` |
 
 Pēc pieslēgšanās administrators nonāk vienotajā **Admin panelī** (`/admin`).
-Tajā ir sadaļas piegādātājiem, precēm, piegādātāju precēm un kategorijām.
+Tajā ir sadaļas pieteikumiem, piegādātājiem, precēm, piedāvājumiem un kategorijām.
 Administrators pats pievieno piegādātājus un preces, norāda cenas, PVN, atlikumus
 un pasūtīšanas nosacījumus. [Paneļa apraksts](docs/admin-panel.md).
 [Preču pārvaldības apraksts](docs/product-management.md).
+[Pieteikumu iesniegšana, izskatīšana un profila paziņojumi](docs/order-workflow.md).
 Komanda `seed-demo` izveido šo kontu,
 ja tas vēl neeksistē; esoša konta parole netiek pārrakstīta.
 

@@ -1,0 +1,13 @@
+{% extends 'admin/base.html' %}
+{% block title %}Pieteikums #{{ order.id }}{% endblock %}
+{% block content %}
+<nav class="admin-breadcrumbs" aria-label="Atrašanās vieta"><a href="{{ url_for('admin.applications') }}">Pieteikumi</a><span>/</span><span>#{{ order.id }}</span></nav>
+<div class="admin-toolbar"><span class="status-badge order-status-{{ order.status }}">{{ order.status }}</span><p>Iesniegts: <time datetime="{{ order.created_at.isoformat() }}Z" data-local-time>{{ order.created_at.strftime('%d.%m.%Y. %H:%M') }} UTC</time></p></div>
+{% if error %}<p class="flash flash-error" role="alert">{{ error }}</p>{% endif %}
+<div class="cart-layout"><div class="supplier-groups">{% include '_order_customer.html' %}{% include '_order_items.html' %}</div>
+<aside class="shopping-summary"><h2>Pieteikuma izskatīšana</h2><div class="receipt-total"><span>Kopsumma</span><strong>{{ '%.2f'|format(order.total_amount) }} €</strong></div>
+{% if order.status == 'iesniegts' %}<form method="post" class="admin-form"><input name="csrf_token" type="hidden" value="{{ csrf_token }}"><div class="form-field"><label for="admin_note">Komentārs klientam</label><textarea id="admin_note" name="admin_note" maxlength="1000" rows="4">{{ note }}</textarea></div><div class="decision-actions"><button class="admin-primary-button" name="decision" value="approve" type="submit">Apstiprināt</button><button class="admin-secondary-button" name="decision" value="decline" type="submit">Noraidīt</button></div><p class="field-hint">Klients saņems lēmumu savā profilā.</p></form>
+{% else %}<p>Lēmums: <strong>{{ order.status }}</strong></p>{% if order.admin_note %}<p class="order-note">{{ order.admin_note }}</p>{% endif %}<p class="field-hint">Izskatīja {{ order.processed_by_admin.full_name if order.processed_by_admin else 'Administrators' }}{% if order.processed_at %}<br><time datetime="{{ order.processed_at.isoformat() }}Z" data-local-time>{{ order.processed_at.strftime('%d.%m.%Y. %H:%M') }} UTC</time>{% endif %}</p>{% endif %}
+</aside></div>
+<script src="{{ url_for('static', filename='js/comparison.js') }}" defer></script>
+{% endblock %}

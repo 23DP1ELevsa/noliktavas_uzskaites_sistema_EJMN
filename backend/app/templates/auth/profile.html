@@ -22,6 +22,11 @@
                     <p class="flash flash-{{ category }}" role="{{ 'alert' if category == 'error' else 'status' }}">{{ message }}</p>
                 {% endfor %}
             {% endwith %}
+            <section class="profile-notifications" aria-labelledby="notifications-title">
+                <div class="admin-toolbar"><h2 id="notifications-title">Paziņojumi{% if unread %} <span class="notification-count">{{ unread }}</span>{% endif %}</h2>{% if current_user.role == 'admin' %}<a href="{{ url_for('admin.applications') }}">Pieteikumi</a>{% else %}<a href="{{ url_for('orders.order_list') }}">Mani pieteikumi</a>{% endif %}</div>
+                {% for notification in notifications %}<article class="notification-row {{ 'notification-unread' if not notification.is_read else '' }}"><div><a href="{{ url_for('admin.application_detail', order_id=notification.order_id) if current_user.role == 'admin' else url_for('orders.order_detail', order_id=notification.order_id) }}">{{ notification.message }}</a><p class="field-hint"><time datetime="{{ notification.created_at.isoformat() }}Z" data-local-time>{{ notification.created_at.strftime('%d.%m.%Y. %H:%M') }} UTC</time>{% if not notification.is_read %} · Jauns{% endif %}</p></div>{% if not notification.is_read %}<form method="post" action="{{ url_for('auth.read_notification', notification_id=notification.id) }}"><input name="csrf_token" type="hidden" value="{{ csrf_token }}"><button class="notification-read-button" type="submit">Atzīmēt kā lasītu</button></form>{% endif %}</article>{% else %}<p class="field-hint">Pagaidām nav paziņojumu.</p>{% endfor %}
+            </section>
+            {% if orders %}<section class="profile-orders" aria-labelledby="profile-orders-title"><div class="admin-toolbar"><h2 id="profile-orders-title">Mani pieteikumi</h2><a href="{{ url_for('orders.order_list') }}">Visi pieteikumi</a></div>{% for order in orders %}<a class="profile-order-row" href="{{ url_for('orders.order_detail', order_id=order.id) }}"><strong>#{{ order.id }}</strong><span class="status-badge order-status-{{ order.status }}">{{ order.status }}</span><strong>{{ '%.2f'|format(order.total_amount) }} €</strong></a>{% endfor %}</section>{% endif %}
             <form method="post" class="account-form">
                 {% from 'auth/_form_macros.html' import field with context %}
                 {{ field('full_name', 'Vārds un uzvārds', 150, true, autocomplete='name') }}
@@ -49,5 +54,6 @@
         </main>
     </div>
     {% include '_footer.html' %}
+    <script src="{{ url_for('static', filename='js/comparison.js') }}" defer></script>
 </body>
 </html>

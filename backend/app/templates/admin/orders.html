@@ -1,0 +1,12 @@
+{% extends 'admin/base.html' %}
+{% block title %}Pieteikumi{% endblock %}
+{% block content %}
+<div class="admin-toolbar"><p><strong>{{ pending }}</strong> gaida izskatīšanu</p></div>
+<form class="inventory-filters" method="get"><div class="form-field"><label for="status">Statuss</label><select id="status" name="status">{% for value,label in [('iesniegts','Gaida izskatīšanu'), ('apstiprināts','Apstiprināti'), ('noraidīts','Noraidīti'), ('all','Visi pieteikumi')] %}<option value="{{ value }}" {% if status == value %}selected{% endif %}>{{ label }}</option>{% endfor %}</select></div><button class="admin-secondary-button" type="submit">Atlasīt</button></form>
+<section class="category-list" aria-label="Klientu pieteikumi">
+{% for order in orders %}{% set customer = customer_details(order) %}
+<article class="category-row supplier-product-row"><div><h2><a href="{{ url_for('admin.application_detail', order_id=order.id) }}">Pieteikums #{{ order.id }}</a></h2><p>{{ customer.company_name }} · {{ customer.full_name }}</p><p class="field-hint"><time datetime="{{ order.created_at.isoformat() }}Z" data-local-time>{{ order.created_at.strftime('%d.%m.%Y. %H:%M') }} UTC</time></p></div><div><span class="status-badge order-status-{{ order.status }}">{{ order.status }}</span><p><strong>{{ '%.2f'|format(order.total_amount) }} €</strong></p></div><div class="category-row-actions"><a href="{{ url_for('admin.application_detail', order_id=order.id) }}">{{ 'Izskatīt' if order.status == 'iesniegts' else 'Apskatīt' }}</a></div></article>
+{% else %}<p class="empty-state">Šajā atlasē pieteikumu nav.</p>{% endfor %}
+</section>
+<script src="{{ url_for('static', filename='js/comparison.js') }}" defer></script>
+{% endblock %}

@@ -12,14 +12,16 @@
         <nav class="breadcrumbs" aria-label="Atrašanās vieta"><a href="{{ url_for('catalog.catalog_page') }}">Katalogs</a><span>/</span><span>Pieteikums #{{ order.id }}</span></nav>
         <section class="order-receipt">
             <p class="account-kicker">Pieteikums #{{ order.id }}</p><h1>{{ 'Pieteikums iesniegts' if order.status == 'iesniegts' else 'Pieteikums' }}</h1>
-            <p>Statuss: <strong>{{ order.status }}</strong></p>
-            <div class="receipt-items">
-                {% for item in order.items %}<div><span><strong>{{ item.product_name }}</strong><small>{{ item.supplier_name }} · {{ item.quantity }} × {{ '%.2f'|format(item.unit_price) }} € · {{ 'Ar PVN' if item.vat_included else 'Bez PVN' }} · Piegāde {{ '%.2f'|format(item.delivery_price) }} €</small></span><strong>{{ '%.2f'|format(item.line_total) }} €</strong></div>{% endfor %}
-            </div>
+            <p>Statuss: <span class="status-badge order-status-{{ order.status }}">{{ order.status }}</span></p>
+            {% if order.status == 'iesniegts' %}<p>Administrators saņēmis pieteikumu izskatīšanai. Par lēmumu saņemsiet paziņojumu savā profilā.</p>{% else %}{% if order.admin_note %}<div class="order-note"><h3>Administratora komentārs</h3><p>{{ order.admin_note }}</p></div>{% endif %}{% endif %}
+            {% include '_order_customer.html' %}
+            {% include '_order_items.html' %}
             <div class="shopping-grand-total receipt-total"><span>Kopsumma</span><strong>{{ '%.2f'|format(order.total_amount) }} €</strong></div>
             <a class="admin-primary-button" href="{{ url_for('catalog.catalog_page') }}">Atgriezties katalogā</a>
+            <a class="admin-secondary-button" href="{{ url_for('auth.profile') }}">Mans profils</a>
         </section>
     </main>
     {% include '_footer.html' %}
+    <script src="{{ url_for('static', filename='js/comparison.js') }}" defer></script>
 </body>
 </html>

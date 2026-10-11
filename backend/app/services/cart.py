@@ -69,5 +69,6 @@ def checkout_fingerprint(summary, profile):
                row["offer"].vat_included, row["offer"].supplier_name, row["offer"].product.name,
                row["offer"].delivery_days, str(row["offer"].vat_rate), row["offer"].currency) for row in summary["rows"]]
     company = [profile.id, profile.company_name, profile.registration_no, profile.vat_no,
-               profile.address, profile.effective_delivery_address, profile.phone] if profile else None
+               profile.address, profile.effective_delivery_address, profile.phone,
+               profile.user.full_name, profile.user.email] if profile else None
     return hashlib.sha256(json.dumps([values, company], ensure_ascii=False).encode()).hexdigest()
