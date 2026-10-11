@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="lv">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Grozs | StockFlow</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body class="marketplace-page">
+    {% include '_market_header.html' %}
+    <main class="admin-shell">
+        <nav class="breadcrumbs" aria-label="Atrašanās vieta"><a href="{{ url_for('catalog.catalog_page') }}">Katalogs</a><span>/</span><span>Grozs</span></nav>
+        {% include '_messages.html' %}
+        <div class="admin-toolbar"><div><p class="account-kicker">Tava izvēle</p><h1>Grozs</h1><p>{{ rows|length }} piedāvājumi grozā</p></div><a class="admin-secondary-button" href="{{ url_for('catalog.catalog_page') }}">Turpināt iepirkties</a></div>
+        {% if rows %}
+        <div class="offer-list">
+            {% for row in rows %}{% set offer = row.offer %}{% set item = row.item %}
+            <article class="offer-card">
+                <div class="offer-heading"><div><h2><a href="{{ url_for('catalog.product_page', product_id=offer.product_id, quantity=item.quantity) }}">{{ offer.product.name }}</a></h2><p>{{ offer.supplier_name }}</p></div><div class="offer-unit-price"><strong>{{ '%.2f'|format(offer.unit_price) }} €</strong><span>/ {{ offer.product.unit }} · {{ 'Ar PVN' if offer.vat_included else 'Bez PVN' }}</span></div></div>
+                <p class="field-hint">Piegāde: {{ '%.2f'|format(offer.delivery_price) }} € · {{ offer.delivery_days }} dienas</p>
+                {% if row.error %}<p class="flash flash-error" role="alert">{{ row.error }}</p>{% endif %}
+                <div class="cart-item-actions">
+                    <form class="cart-quantity-form" method="post" action="{{ url_for('cart.update_item', item_id=item.id) }}">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+                        <div class="form-field"><label for="quantity-{{ item.id }}">Daudzums ({{ offer.product.unit }})</label><input id="quantity-{{ item.id }}" type="number" name="quantity" min="{{ offer.min_order_qty }}" max="{{ offer.stock_qty }}" step="1" value="{{ item.quantity }}" required></div>
+                        <button class="admin-secondary-button" type="submit">Atjaunināt</button>
+                    </form>
+                    <div><span class="field-hint">Kopā ar piegādi</span><strong class="offer-total">{{ '%.2f'|format(row.total) }} €</strong><small>{{ 'Ar PVN' if offer.vat_included else 'Bez PVN' }}</small></div>
+                    <form method="post" action="{{ url_for('cart.remove_item', item_id=item.id) }}"><input type="hidden" name="csrf_token" value="{{ csrf_token }}"><button class="admin-secondary-button" type="submit">Izņemt</button></form>
+                </div>
+            </article>
+            {% endfor %}
+        </div>
+        <div class="cart-summary"><span>Grozā norādīto summu kopā</span><strong class="offer-total">{{ '%.2f'|format(total) }} €</strong></div>
+        {% include '_vat_note.html' %}
+        <p class="field-hint">Groza cenas un pieejamība tiek rādītas pēc aktuālajiem piedāvājumu datiem. Preču pievienošana grozam nerezervē noliktavas atlikumu.</p>
+        {% else %}<div class="offer-card empty-state"><h2>Grozs vēl ir tukšs</h2><p>Atver preci katalogā, salīdzini piegādātājus un pievieno izvēlēto piedāvājumu.</p><a class="admin-primary-button" href="{{ url_for('catalog.catalog_page') }}">Atvērt katalogu</a></div>{% endif %}
+    </main>
+    {% include '_footer.html' %}
+</body>
+</html>

@@ -14,6 +14,7 @@
             <span>Stock<span class="brand-accent">Flow</span></span>
         </a>
         <div class="landing-actions">
+            <a href="{{ url_for('cart.cart_page') }}">Grozs</a>
             {% if current_user.is_authenticated %}
                 <span class="landing-user">Sveiki, {{ current_user.full_name }}</span>
                 <a href="{{ url_for('auth.profile') }}">Mans profils</a>

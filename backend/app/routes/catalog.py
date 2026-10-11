@@ -3,6 +3,7 @@ from flask import Blueprint, jsonify, render_template, request
 from ..extensions import db
 from ..models import Category, Product
 from ..services.catalog import CatalogFilterError, CatalogFilters, search_catalog
+from ..services.comparison import SORT_OPTIONS, cart_csrf_token, comparison_rows, parse_quantity
 
 
 catalog_bp = Blueprint("catalog", __name__, url_prefix="/catalog")
@@ -12,9 +13,19 @@ catalog_bp = Blueprint("catalog", __name__, url_prefix="/catalog")
 def product_page(product_id):
     product = db.first_or_404(db.select(Product).where(
         Product.id == product_id, Product.is_active.is_(True)))
-    offers = sorted((offer for offer in product.offers if offer.is_active),
-                    key=lambda offer: (offer.unit_price, offer.id))
-    return render_template("product.html", product=product, offers=offers)
+    offers = [offer for offer in product.offers if offer.is_active]
+    error = None
+    try:
+        quantity = parse_quantity(request.args.get("quantity", "1"))
+    except ValueError as exc:
+        quantity, error = 1, str(exc)
+    sort = request.args.get("sort", "total-asc")
+    if sort not in SORT_OPTIONS:
+        sort, error = "total-asc", "Izvēlieties derīgu kārtošanas veidu."
+    rows = comparison_rows(offers, quantity, sort)
+    return render_template("product.html", product=product, offers=offers, rows=rows,
+                           quantity=quantity, sort=sort, comparison_error=error,
+                           max_quantity=2147483647, csrf_token=cart_csrf_token())
 
 
 @catalog_bp.get("/page")

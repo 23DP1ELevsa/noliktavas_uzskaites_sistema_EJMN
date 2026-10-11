@@ -25,7 +25,7 @@ def test_all_pages_render_the_same_single_footer(database_app):
         check_footer(path)
 
     client.post("/auth/login", data={"email": ADMIN_EMAIL, "password": DEFAULT_ADMIN_PASSWORD})
-    for path in ("/auth/profile", "/admin/products", "/admin/products/new",
+    for path in ("/auth/profile", "/cart", "/admin/products", "/admin/products/new",
                  "/admin/products/1", "/admin/products/1/edit", "/admin/products/1/delete",
                  "/admin/categories", "/admin/categories/new", "/admin/categories/1/edit"):
         check_footer(path)

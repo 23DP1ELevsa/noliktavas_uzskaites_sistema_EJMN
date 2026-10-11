@@ -15,6 +15,7 @@
                 <span>Stock<span class="brand-accent">Flow</span></span>
             </a>
             <div class="header-actions">
+                <a href="{{ url_for('cart.cart_page') }}">Grozs</a>
                 {% if current_user.is_authenticated %}
                     <span class="user-greeting">Sveiki, {{ current_user.full_name }}</span>
                     {% if current_user.role == "admin" %}

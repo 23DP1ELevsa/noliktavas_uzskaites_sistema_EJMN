@@ -3,21 +3,19 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>{{ product.name }} | StockFlow</title>
+    <title>{{ product.name }} — piedāvājumu salīdzinājums | StockFlow</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
 <body class="marketplace-page">
-    <header class="market-header"><div class="header-top">
-        <a class="brand" href="{{ url_for('index') }}">Stock<span class="brand-accent">Flow</span></a>
-        <nav class="header-actions" aria-label="Navigācija">
-            <a href="{{ url_for('catalog.catalog_page') }}">Katalogs</a>
-            {% if current_user.is_authenticated and current_user.role == 'admin' %}<a href="{{ url_for('admin.product_detail', product_id=product.id) }}">Pārvaldīt preci</a>{% endif %}
-        </nav>
-    </div></header>
+    {% include '_market_header.html' %}
     <main class="admin-shell">
         <nav class="breadcrumbs" aria-label="Atrašanās vieta"><a href="{{ url_for('catalog.catalog_page') }}">Katalogs</a><span>/</span><span>{{ product.name }}</span></nav>
+        {% include '_messages.html' %}
         <section class="product-detail">
-            <div class="detail-image">{% if product.image_url %}<img src="{{ product.image_url }}" alt="{{ product.name }}" referrerpolicy="no-referrer">{% else %}<span aria-hidden="true">{{ product.name[:1]|upper }}</span>{% endif %}</div>
+            <div class="detail-image">
+                <span class="image-fallback" aria-hidden="true" {% if product.image_url %}hidden{% endif %}>{{ product.name[:1]|upper }}</span>
+                {% if product.image_url %}<img src="{{ product.image_url }}" alt="{{ product.name }}" referrerpolicy="no-referrer" data-product-image>{% endif %}
+            </div>
             <div class="detail-copy">
                 <p class="account-kicker">{{ product.category.name }}</p>
                 <h1>{{ product.name }}</h1>
@@ -28,19 +26,70 @@
                     <div><dt>Modelis</dt><dd>{{ product.model or 'Nav norādīts' }}</dd></div>
                     <div><dt>Mērvienība</dt><dd>{{ product.unit }}</dd></div>
                 </dl>
+                {% if current_user.is_authenticated and current_user.role == 'admin' %}<a href="{{ url_for('admin.product_detail', product_id=product.id) }}">Pārvaldīt preci →</a>{% endif %}
             </div>
         </section>
-        <div class="admin-toolbar"><h2>Piegādātāju piedāvājumi</h2><p>{{ offers|length }} piedāvājumi, sakārtoti pēc cenas</p></div>
-        <section class="category-list" aria-label="Piedāvājumu salīdzinājums">
-            {% for offer in offers %}<article class="category-row">
-                <div><h3>{{ offer.supplier_name }}</h3>
-                    <p>{{ 'Pieejams' if offer.stock_qty >= offer.min_order_qty else 'Nav pieejams' }} · Noliktavā: {{ offer.stock_qty }} · Minimālais daudzums: {{ offer.min_order_qty }}</p>
-                    <p>Piegāde: {{ offer.delivery_days }} dienas · {{ '%.2f'|format(offer.delivery_price) }} €</p>
+        <section class="comparison-section" aria-labelledby="comparison-title">
+            <div class="admin-toolbar">
+                <div><p class="account-kicker">Izvēlies piemērotāko</p><h2 id="comparison-title">Piedāvājumu salīdzinājums</h2><p>{{ offers|length }} aktīvi piedāvājumi</p></div>
+                <a class="admin-secondary-button" href="{{ url_for('cart.cart_page') }}">Atvērt grozu →</a>
+            </div>
+            <form class="comparison-controls" method="get" id="comparison-form">
+                <div class="form-field"><label for="compare-quantity">Daudzums ({{ product.unit }})</label>
+                    <input id="compare-quantity" name="quantity" type="number" min="1" max="{{ max_quantity }}" step="1" value="{{ quantity }}" required>
                 </div>
-                <div><p class="price">{{ '%.2f'|format(offer.unit_price) }} € / {{ product.unit }}</p><small>{{ 'Ar PVN' if offer.vat_included else 'Bez PVN' }}</small></div>
-            </article>{% else %}<p class="empty-state">Šai precei vēl nav aktīvu piedāvājumu.</p>{% endfor %}
+                <div class="form-field"><label for="compare-sort">Kārtot piedāvājumus</label>
+                    <select id="compare-sort" name="sort">
+                        {% for value, label in [('total-asc', 'Kopsumma: augošā'), ('total-desc', 'Kopsumma: dilstošā'), ('delivery', 'Piegāde: ātrākā vispirms'), ('supplier', 'Piegādātājs: A–Z')] %}
+                        <option value="{{ value }}" {% if sort == value %}selected{% endif %}>{{ label }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <button class="admin-primary-button" type="submit">Salīdzināt</button>
+            </form>
+            {% if comparison_error %}<p class="flash flash-error" role="alert">{{ comparison_error }}</p>{% endif %}
+            {% include '_vat_note.html' %}
+            <div class="offer-list">
+                {% for row in rows %}{% set offer = row.offer %}
+                <article class="offer-card">
+                    <div class="offer-heading">
+                        <div><h3>{{ offer.supplier_name }}</h3><span class="status-badge {{ 'status-inactive' if row.error else '' }}">{{ 'Nav pieejams izvēlētajā daudzumā' if row.error else 'Pieejams izvēlētajā daudzumā' }}</span></div>
+                        <div class="offer-unit-price"><strong>{{ '%.2f'|format(offer.unit_price) }} €</strong><span>/ {{ product.unit }} · {{ 'Ar PVN' if offer.vat_included else 'Bez PVN' }}</span></div>
+                    </div>
+                    <dl class="offer-facts">
+                        <div><dt>Noliktavā</dt><dd>{{ offer.stock_qty }} {{ product.unit }}</dd></div>
+                        <div><dt>Minimālais daudzums</dt><dd>{{ offer.min_order_qty }} {{ product.unit }}</dd></div>
+                        <div><dt>Piegādes maksa</dt><dd>{{ '%.2f'|format(offer.delivery_price) }} €</dd></div>
+                        <div><dt>Piegādes termiņš</dt><dd>{{ offer.delivery_days }} dienas</dd></div>
+                    </dl>
+                    <p class="offer-updated">Dati atjaunināti: <time datetime="{{ offer.updated_at.isoformat() }}Z" data-local-time>{{ offer.updated_at.strftime('%d.%m.%Y. %H:%M') }} UTC</time></p>
+                    <div class="offer-bottom">
+                        <div><span class="field-hint">Salīdzinājumam: kopā par {{ quantity }} {{ product.unit }} ar piegādi</span><strong class="offer-total">{{ '%.2f'|format(row.total) }} €</strong><small>{{ 'Ar PVN' if offer.vat_included else 'Bez PVN' }}</small></div>
+                        {% if current_user.is_authenticated %}
+                        {% set can_order = offer.stock_qty >= offer.min_order_qty %}
+                        {% set order_quantity = [quantity, offer.min_order_qty]|max %}
+                        <form class="offer-order-form" method="post" action="{{ url_for('cart.add_item') }}" data-unit-price="{{ offer.unit_price }}" data-delivery-price="{{ offer.delivery_price }}">
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+                            <input type="hidden" name="offer_id" value="{{ offer.id }}">
+                            <input type="hidden" name="sort" value="{{ sort }}">
+                            <div class="form-field">
+                                <label for="offer-quantity-{{ offer.id }}">Pasūtīt ({{ product.unit }})</label>
+                                <input id="offer-quantity-{{ offer.id }}" name="quantity" type="number" min="{{ offer.min_order_qty }}" max="{{ [offer.stock_qty, max_quantity]|min }}" step="1" value="{{ order_quantity }}" aria-describedby="offer-quantity-hint-{{ offer.id }}" required {% if not can_order %}disabled{% endif %}>
+                                <p class="field-hint" id="offer-quantity-hint-{{ offer.id }}">Min. {{ offer.min_order_qty }} · Pieejams {{ offer.stock_qty }}</p>
+                            </div>
+                            <button class="admin-primary-button" type="submit" {% if not can_order %}disabled{% endif %}>Pievienot grozam</button>
+                            {% if can_order %}<p class="order-total-preview" aria-live="polite" hidden>Pasūtījuma summa ar piegādi: <strong data-order-total></strong> · {{ 'Ar PVN' if offer.vat_included else 'Bez PVN' }}</p>{% endif %}
+                        </form>
+                        {% elif not row.error %}<a class="admin-primary-button" href="{{ url_for('auth.login', next=url_for('catalog.product_page', product_id=product.id, quantity=quantity, sort=sort)) }}">Pieslēgties, lai pievienotu grozam</a>
+                        {% else %}<button class="admin-primary-button" type="button" disabled>Pievienot grozam</button>{% endif %}
+                    </div>
+                    {% if row.error %}<p class="field-error">Salīdzināšanai izvēlētajā daudzumā: {{ row.error }}</p>{% endif %}
+                </article>
+                {% else %}<p class="empty-state">Šai precei vēl nav aktīvu piedāvājumu. <a href="{{ url_for('catalog.catalog_page') }}">Atgriezties katalogā</a></p>{% endfor %}
+            </div>
         </section>
     </main>
     {% include '_footer.html' %}
+    <script src="{{ url_for('static', filename='js/comparison.js') }}" defer></script>
 </body>
 </html>

@@ -77,6 +77,9 @@ Veselības pārbaude: `http://127.0.0.1:5000/health`
 
 ## Demonstrācijas dati
 
+Piedāvājumu salīdzināšana, daudzuma izvēle un lietotāja grozs ir aprakstīti
+failā [Piedāvājumu salīdzināšana](docs/offer-comparison.md).
+
 Uzņēmuma profila izveide, saglabāšana un ievades pārbaudes ir aprakstītas
 failā [Uzņēmuma profils](docs/company-profile.md).
 
