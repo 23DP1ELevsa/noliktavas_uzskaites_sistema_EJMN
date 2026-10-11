@@ -9,6 +9,7 @@ from sqlalchemy.orm import joinedload
 from ..extensions import db
 from ..models import Order
 from ..services.orders import customer_details, notify_decision
+from ..services.order_review import approval_issues
 from .admin import admin_bp, admin_required, _check_product_csrf, _product_csrf_token
 
 
@@ -45,6 +46,7 @@ def application_detail(order_id):
     order = db.first_or_404(query)
     note = request.form.get("admin_note", "").strip() if request.method == "POST" else ""
     error = None
+    issues = None
     status_code = 200
     if request.method == "POST":
         decision = request.form.get("decision")
@@ -57,18 +59,26 @@ def application_detail(order_id):
         elif decision == "decline" and not note:
             error, status_code = "Lai noraidītu pieteikumu, norādiet noraidīšanas iemeslu.", 422
         else:
-            order.status = "apstiprināts" if decision == "approve" else "noraidīts"
-            order.admin_note = note or None
-            order.processed_by_admin_id = current_user.id
-            order.processed_at = datetime.now(timezone.utc).replace(tzinfo=None)
             try:
-                notify_decision(order)
-                db.session.commit()
+                issues = approval_issues(order, lock=True) if decision == "approve" else []
+                if issues:
+                    error, status_code = "Pieteikumu nevar apstiprināt: piedāvājumu dati ir mainījušies vai daudzums nav pieejams.", 409
+                    db.session.rollback()
+                else:
+                    order.status = "apstiprināts" if decision == "approve" else "noraidīts"
+                    order.admin_note = note or None
+                    order.processed_by_admin_id = current_user.id
+                    order.processed_at = datetime.now(timezone.utc).replace(tzinfo=None)
+                    notify_decision(order)
+                    db.session.commit()
             except SQLAlchemyError:
                 db.session.rollback()
                 error, status_code = "Lēmumu neizdevās saglabāt. Mēģiniet vēlreiz.", 503
             else:
-                flash("Lēmums saglabāts. Paziņojumi nosūtīti profilos.", "success")
-                return redirect(url_for("admin.application_detail", order_id=order.id))
+                if not error:
+                    flash("Lēmums saglabāts. Paziņojumi nosūtīti profilos.", "success")
+                    return redirect(url_for("admin.application_detail", order_id=order.id))
+    if issues is None:
+        issues = approval_issues(order) if order.status == "iesniegts" else []
     return render_template("admin/order_detail.html", order=order, customer=customer_details(order),
-                           error=error, note=note, csrf_token=_product_csrf_token()), status_code
+                           error=error, note=note, approval_issues=issues, csrf_token=_product_csrf_token()), status_code

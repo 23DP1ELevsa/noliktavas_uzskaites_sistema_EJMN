@@ -35,6 +35,16 @@ saglabāti vienā transakcijā. Pieteikuma rindas un summas netiek mainītas. Ri
 bloķēšana un statusa pārbaude nepieļauj atkārtotu vai pretēju lēmumu pēc izskatīšanas.
 Pieteikums pats par sevi neveic maksājumu vai krājumu rezervāciju.
 
+Pirms apstiprināšanas pārbauda aktuālos piedāvājumus: preces, piedāvājuma un
+piegādātāja aktivitāti, kopējo daudzumu katram piedāvājumam pret atlikumu un
+minimumu, kā arī saglabātās cenas, PVN, valūtas, piegādes maksas un piegādātāja
+atbilstību. Pieteikums bez precēm vai ar dzēstu piedāvājumu nav apstiprināms.
+Neatbilstības rāda administratoram; apstiprināšanas pieprasījums tās atkārtoti
+pārbauda, bloķējot pieteikumu un saistītos aktuālos ierakstus līdz lēmuma
+saglabāšanai. Neatbilstības gadījumā atgriež 409, nemainot pieteikumu vai
+paziņojumus. Saglabātās summas nepārrēķina: klientam jāiesniedz jauns pieteikums.
+Noraidīšana ar iemeslu paliek pieejama arī tad, ja piedāvājums vairs nav derīgs.
+
 ## Profils
 
 Profila sadaļā **Paziņojumi** redzami līdz 20 jaunākajiem paziņojumiem, nelasītos
@@ -71,3 +81,4 @@ Migrācija `0006_order_notifications` pievieno `orders.customer_snapshot` un
 klienta datu kopijas attēlo saistītā profila datus. Pārbaudes:
 `tests/test_order_workflow.py`, `tests/test_cart_checkout.py`, `tests/test_layout.py`.
 Administratora saraksta un piekļuves pārbaudes: `tests/test_admin_orders.py`.
+Aktuālo piedāvājumu un atkārtotu lēmumu pārbaudes: `tests/test_order_review.py`.

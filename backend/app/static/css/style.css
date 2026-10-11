@@ -401,6 +401,11 @@ label { color: var(--ink); font-weight: 600; }
 .order-note h3 { font-size: 1rem; margin: 20px 0 8px; }
 .decision-actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 18px; }
 .decision-actions > button { flex: 1; }
+.review-issues { padding: 16px; margin-bottom: 20px; border: 1px solid #f0c6cc; border-radius: 10px; background: #fff0f1; color: #9d3143; overflow-wrap: anywhere; }
+.review-issues h3 { margin: 0; font-size: 1rem; }
+.review-issues ul { padding-left: 20px; }
+.review-issues li + li { margin-top: 8px; }
+.review-issues p { margin-bottom: 0; font-size: .85rem; }
 .order-status-apstiprināts { background: #e8f6ee; color: #176743; }
 .order-status-noraidīts { background: #fff0f1; color: #9d3143; }
 .profile-notifications, .profile-orders { margin: 28px 0; padding: 20px; border: 1px solid var(--line); border-radius: 12px; }
