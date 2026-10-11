@@ -61,6 +61,7 @@
                         <div><dt>Minimālais daudzums</dt><dd>{{ offer.min_order_qty }} {{ product.unit }}</dd></div>
                         <div><dt>Piegādes maksa</dt><dd>{{ '%.2f'|format(offer.delivery_price) }} €</dd></div>
                         <div><dt>Piegādes termiņš</dt><dd>{{ offer.delivery_days }} dienas</dd></div>
+                        {% if offer.vat_rate is not none %}<div><dt>PVN likme</dt><dd>{{ '%g'|format(offer.vat_rate) }} %</dd></div>{% endif %}
                     </dl>
                     <p class="offer-updated">Dati atjaunināti: <time datetime="{{ offer.updated_at.isoformat() }}Z" data-local-time>{{ offer.updated_at.strftime('%d.%m.%Y. %H:%M') }} UTC</time></p>
                     <div class="offer-bottom">

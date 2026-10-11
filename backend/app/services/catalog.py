@@ -133,6 +133,8 @@ def _serialize_product(product):
             "supplier_sku": offer.supplier_sku,
             "unit_price": float(offer.unit_price),
             "vat_included": offer.vat_included,
+            "vat_rate": float(offer.vat_rate) if offer.vat_rate is not None else None,
+            "currency": offer.currency,
             "min_order_qty": offer.min_order_qty,
             "stock_qty": offer.stock_qty,
             "delivery_price": float(offer.delivery_price),

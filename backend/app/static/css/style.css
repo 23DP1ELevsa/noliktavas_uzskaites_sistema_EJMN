@@ -367,6 +367,7 @@ label { color: var(--ink); font-weight: 600; }
 .admin-section-card p { margin: 0 0 8px; color: var(--muted); }
 .admin-section-actions { display: flex; align-items: center; flex-wrap: wrap; gap: 12px; margin-top: auto; }
 .admin-context { padding: 16px; background: var(--blue-light); border-radius: 10px; }
+.offer-management-meta { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 16px; margin-top: 24px; padding-top: 20px; border-top: 1px solid var(--line); }
 .form-field output { display: block; padding: 12px 0; font-weight: 700; }
 .supplier-product-row { flex-wrap: wrap; gap: 20px; }
 .supplier-product-row > div:first-child { flex: 1; min-width: min(100%, 200px); overflow-wrap: anywhere; }

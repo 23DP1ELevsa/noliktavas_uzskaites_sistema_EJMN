@@ -76,6 +76,9 @@ def test_checkout_uses_profile_and_creates_snapshot_then_clears_cart(comparison_
     client, product, offers, buyer = comparison_data
     token = sign_in(client)
     profile = add_profile(buyer)
+    offers[0].vat_rate = Decimal('21.00')
+    offers[1].vat_rate = Decimal('12.00')
+    db.session.commit()
     add_to_cart(client, token, offers[0], 2)
     add_to_cart(client, token, offers[1], 3)
     data = review_data(client, token)
@@ -88,6 +91,8 @@ def test_checkout_uses_profile_and_creates_snapshot_then_clears_cart(comparison_
     assert order.user_id == buyer.id and order.company_profile_id == profile.id
     assert order.status == "iesniegts" and order.total_amount == Decimal("23.00")
     assert len(order.items) == 2
+    assert {item.vat_rate for item in order.items} == {Decimal('21.00'), Decimal('12.00')}
+    assert {item.currency for item in order.items} == {'EUR'}
     assert sum(item.line_total for item in order.items) == order.total_amount
     assert db.session.scalar(db.select(db.func.count(CartItem.id))) == 0
     assert "Pieteikums iesniegts" in client.get(response.headers["Location"]).get_data(as_text=True)

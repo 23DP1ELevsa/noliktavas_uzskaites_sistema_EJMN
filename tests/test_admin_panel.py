@@ -31,7 +31,7 @@ def panel_inventory(database_app):
     assert f'supplier_id={supplier.id}' in response.location and f'product_id={product.id}' in response.location
     assert client.get(response.location).status_code == 200
     data = {'csrf_token': token, 'supplier_id': str(supplier.id), 'product_id': str(product.id),
-            'supplier_sku': 'SUP-001', 'unit_price': '12,50', 'vat_included': '1',
+            'supplier_sku': 'SUP-001', 'unit_price': '12,50', 'vat_included': '1', 'vat_rate': '21', 'currency': 'EUR',
             'stock_qty': '30', 'min_order_qty': '2', 'delivery_days': '3', 'is_active': '1'}
     return client, supplier, product, data
 

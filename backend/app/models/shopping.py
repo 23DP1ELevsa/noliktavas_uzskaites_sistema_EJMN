@@ -62,6 +62,8 @@ class OrderItem(IdentityMixin, db.Model):
     __tablename__ = "order_items"
     __table_args__ = (
         db.CheckConstraint("quantity > 0", name="quantity_positive"),
+        db.CheckConstraint("vat_rate IS NULL OR (vat_rate >= 0 AND vat_rate <= 100)", name="vat_rate_range"),
+        db.CheckConstraint("currency = 'EUR'", name="currency_supported"),
         db.CheckConstraint("unit_price >= 0", name="unit_price_nonnegative"),
         db.CheckConstraint("delivery_price >= 0", name="delivery_price_nonnegative"),
         db.CheckConstraint("line_total >= 0", name="line_total_nonnegative"),
@@ -75,6 +77,8 @@ class OrderItem(IdentityMixin, db.Model):
     supplier_name = db.Column(db.String(255), nullable=False)
     supplier_id = db.Column(ID_TYPE, db.ForeignKey("suppliers.id"), index=True)
     unit_price = db.Column(db.Numeric(10, 2), nullable=False)
+    vat_rate = db.Column(db.Numeric(5, 2))
+    currency = db.Column(db.String(3), nullable=False, default="EUR", server_default="EUR")
     quantity = db.Column(db.Integer, nullable=False)
     delivery_price = db.Column(db.Numeric(10, 2), nullable=False)
     line_total = db.Column(db.Numeric(12, 2), nullable=False)

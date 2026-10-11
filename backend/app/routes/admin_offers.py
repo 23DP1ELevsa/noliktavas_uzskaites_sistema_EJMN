@@ -1,13 +1,14 @@
 from decimal import Decimal
+from datetime import datetime, timezone
 import re
 
-from flask import flash, redirect, render_template, request, url_for
+from flask import abort, flash, redirect, render_template, request, url_for
 from flask_login import current_user
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import joinedload
 
 from ..extensions import db
-from ..models import Category, Offer, Product, Supplier
+from ..models import CartItem, Category, Offer, OrderItem, Product, Supplier
 from .admin import admin_bp, admin_required, _check_product_csrf, _product_csrf_token
 
 
@@ -18,7 +19,7 @@ def dashboard():
     sections = [
         ("Piegādātāji", "Kontaktinformācija, piegādes maksa un piegādātāja preces.", Supplier, "suppliers", "supplier_form", "Pievienot piegādātāju"),
         ("Preces", "Preču nosaukumi, attēli, apraksti un kategorijas.", Product, "products", "product_form", "Pievienot preci"),
-        ("Piegādātāju preces", "Cenas, PVN, atlikumi un pasūtīšanas nosacījumi.", Offer, "supplier_products", "offer_form", "Piesaistīt preci"),
+        ("Piedāvājumi", "Piegādātāju cenas, PVN, atlikumi un pasūtīšanas nosacījumi.", Offer, "supplier_products", "offer_form", "Pievienot piedāvājumu"),
         ("Kategorijas", "Preču kataloga iedalījums.", Category, "categories", "create_category", "Pievienot kategoriju"),
     ]
     cards = [dict(title=title, description=description,
@@ -32,13 +33,17 @@ def dashboard():
 @admin_required
 def supplier_products():
     q = request.args.get("q", "").strip()[:255]
+    status = request.args.get("status", "all")
     query = db.select(Offer).join(Product).options(joinedload(Offer.product), joinedload(Offer.supplier))
     if q:
         query = query.where(db.or_(Product.name.icontains(q, autoescape=True),
                                   Offer.supplier_name.icontains(q, autoescape=True),
-                                  Product.sku.icontains(q, autoescape=True)))
+                                  Product.sku.icontains(q, autoescape=True),
+                                  Offer.supplier_sku.icontains(q, autoescape=True)))
+    if status in {"active", "inactive"}:
+        query = query.where(Offer.is_active.is_(status == "active"))
     items = db.session.scalars(query.order_by(Offer.supplier_name, Product.name, Offer.id)).all()
-    return render_template("admin/supplier_products.html", offers=items, q=q)
+    return render_template("admin/supplier_products.html", offers=items, q=q, status=status)
 
 
 def _selected_id(value, model):
@@ -53,7 +58,7 @@ def _selected_id(value, model):
 @admin_required
 def offer_form(offer_id=None):
     offer = db.get_or_404(Offer, offer_id) if offer_id is not None else None
-    fields = ("supplier_id", "product_id", "supplier_sku", "unit_price", "vat_included", "stock_qty", "min_order_qty", "delivery_days")
+    fields = ("supplier_id", "product_id", "supplier_sku", "unit_price", "vat_included", "vat_rate", "currency", "stock_qty", "min_order_qty", "delivery_days")
     errors = {}
     if request.method == "POST":
         _check_product_csrf()
@@ -65,7 +70,7 @@ def offer_form(offer_id=None):
         data["is_active"] = offer.is_active if offer else True
         if not offer:
             data.update(supplier_id=request.args.get("supplier_id", ""), product_id=request.args.get("product_id", ""),
-                        stock_qty="0", min_order_qty="1", delivery_days="0")
+                        stock_qty="0", min_order_qty="1", delivery_days="0", currency="EUR")
     supplier = _selected_id(data["supplier_id"], Supplier)
     product = _selected_id(data["product_id"], Product)
     if request.method == "POST":
@@ -90,6 +95,11 @@ def offer_form(offer_id=None):
                 errors[field] = f"Norādiet veselu skaitli no {minimum} līdz 2 147 483 647."
         if data["vat_included"] not in {"0", "1"}:
             errors["vat_included"] = "Norādiet, vai PVN ir iekļauts cenā."
+        rate = data["vat_rate"].replace(",", ".")
+        if not re.fullmatch(r"[0-9]{1,3}(?:\.[0-9]{1,2})?", rate) or Decimal(rate) > 100:
+            errors["vat_rate"] = "Norādiet PVN likmi no 0 līdz 100 %, ar ne vairāk kā divām zīmēm aiz komata."
+        if data["currency"] != "EUR":
+            errors["currency"] = "Izvēlieties EUR — kataloga un groza valūtu."
         if not errors:
             item = offer or Offer(created_by_admin_id=current_user.id, data_source="manual")
             item.supplier = supplier
@@ -98,6 +108,9 @@ def offer_form(offer_id=None):
             item.supplier_sku = data["supplier_sku"] or None
             item.unit_price = Decimal(price_text)
             item.vat_included = data["vat_included"] == "1"
+            item.vat_rate = Decimal(rate)
+            item.currency = data["currency"]
+            item.updated_at = datetime.now(timezone.utc).replace(tzinfo=None)
             item.is_active = data["is_active"]
             item.delivery_price = supplier.delivery_price
             for field in ("stock_qty", "min_order_qty", "delivery_days"):
@@ -114,6 +127,40 @@ def offer_form(offer_id=None):
     suppliers = db.session.scalars(db.select(Supplier).order_by(Supplier.name)).all()
     products = db.session.scalars(db.select(Product).order_by(Product.name)).all()
     data["unit_price"] = data["unit_price"].replace(",", ".")
+    data["vat_rate"] = data["vat_rate"].replace(",", ".")
     return render_template("admin/offer_form.html", offer=offer, form_data=data, errors=errors,
                            suppliers=suppliers, products=products, supplier=supplier,
                            csrf_token=_product_csrf_token()), (422 if errors else 200)
+
+
+@admin_bp.route("/supplier-products/<int:offer_id>/delete", methods=["GET", "POST"])
+@admin_required
+def delete_offer(offer_id):
+    if request.method == "POST":
+        _check_product_csrf()
+        if request.form.get("confirmed") != "1":
+            abort(400, description="Darbība jāapstiprina.")
+        offer = db.first_or_404(db.select(Offer).where(Offer.id == offer_id).with_for_update()
+                               .execution_options(populate_existing=True))
+    else:
+        offer = db.get_or_404(Offer, offer_id)
+    in_history = db.session.scalar(db.select(OrderItem.id).where(OrderItem.offer_id == offer.id).limit(1)) is not None
+    in_cart = db.session.scalar(db.select(CartItem.id).where(CartItem.offer_id == offer.id).limit(1)) is not None
+    preserve = in_history or in_cart
+    if request.method == "POST":
+        if preserve:
+            offer.is_active = False
+            offer.updated_at = datetime.now(timezone.utc).replace(tzinfo=None)
+        else:
+            db.session.delete(offer)
+        try:
+            db.session.commit()
+        except IntegrityError:
+            db.session.rollback()
+            flash("Piedāvājumu neizdevās mainīt. Atveriet apstiprinājumu vēlreiz.", "error")
+            return redirect(url_for("admin.delete_offer", offer_id=offer_id))
+        flash("Piedāvājums deaktivizēts. Saistītie grozi un pasūtījumi saglabāti."
+              if preserve else "Piedāvājums dzēsts.", "success")
+        return redirect(url_for("admin.supplier_products"))
+    return render_template("admin/offer_delete.html", offer=offer, preserve=preserve,
+                           in_history=in_history, csrf_token=_product_csrf_token())

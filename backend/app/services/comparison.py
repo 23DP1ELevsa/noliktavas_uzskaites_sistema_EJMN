@@ -1,4 +1,4 @@
-"""Offer comparison uses declared prices; VAT rates are not stored in the catalog."""
+"""Offer comparison uses declared EUR prices without adding VAT automatically."""
 
 import re
 import secrets

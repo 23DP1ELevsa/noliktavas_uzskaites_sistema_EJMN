@@ -34,6 +34,8 @@ class Offer(IdentityMixin, db.Model):
     __tablename__ = "offers"
     __table_args__ = (
         db.CheckConstraint("unit_price >= 0", name="unit_price_nonnegative"),
+        db.CheckConstraint("vat_rate IS NULL OR (vat_rate >= 0 AND vat_rate <= 100)", name="vat_rate_range"),
+        db.CheckConstraint("currency = 'EUR'", name="currency_supported"),
         db.CheckConstraint("min_order_qty >= 1", name="min_order_qty_positive"),
         db.CheckConstraint("stock_qty >= 0", name="stock_qty_nonnegative"),
         db.CheckConstraint("delivery_price >= 0", name="delivery_price_nonnegative"),
@@ -50,6 +52,8 @@ class Offer(IdentityMixin, db.Model):
     supplier_id = db.Column(ID_TYPE, db.ForeignKey("suppliers.id"), index=True)
     supplier_sku = db.Column(db.String(100))
     unit_price = db.Column(db.Numeric(10, 2), nullable=False)
+    vat_rate = db.Column(db.Numeric(5, 2))
+    currency = db.Column(db.String(3), nullable=False, default="EUR", server_default="EUR")
     # VAT must be supplied explicitly: silently assuming its status changes meaning.
     vat_included = db.Column(db.Boolean(create_constraint=True, name="vat_included_boolean"), nullable=False)
     min_order_qty = db.Column(db.Integer, nullable=False, default=1, server_default="1")

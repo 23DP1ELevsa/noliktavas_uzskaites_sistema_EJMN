@@ -1,7 +1,7 @@
 {% extends 'admin/base.html' %}
-{% block title %}{{ 'Rediģēt piegādātāja preci' if offer else 'Piesaistīt preci piegādātājam' }}{% endblock %}
+{% block title %}{{ 'Rediģēt piedāvājumu' if offer else 'Pievienot piedāvājumu' }}{% endblock %}
 {% block content %}
-<nav class="admin-breadcrumbs" aria-label="Atrašanās vieta"><a href="{{ url_for('admin.supplier_products') }}">Piegādātāju preces</a><span>/</span><span>{{ self.title() }}</span></nav>
+<nav class="admin-breadcrumbs" aria-label="Atrašanās vieta"><a href="{{ url_for('admin.supplier_products') }}">Piedāvājumi</a><span>/</span><span>{{ self.title() }}</span></nav>
 <section class="form-panel">
     <p class="account-help">Izvēlieties piegādātāju un preci, tad norādiet pasūtīšanas nosacījumus.</p>
     {% if errors %}<p class="flash flash-error" role="alert">Prece nav saglabāta. Pārbaudiet atzīmētos laukus.</p>{% endif %}
@@ -18,6 +18,8 @@
         <div class="form-field"><label for="supplier_sku">Piegādātāja preces kods</label><input id="supplier_sku" name="supplier_sku" value="{{ form_data.supplier_sku }}" maxlength="100" {% if errors.get('supplier_sku') %}aria-invalid="true" aria-describedby="supplier_sku-error"{% endif %}>{{ error('supplier_sku') }}</div>
         <div class="form-grid">
             {{ number('unit_price', 'Vienības cena (€)', 0, '99999999.99', '0.01') }}
+            <div class="form-field"><label for="currency">Valūta *</label><select id="currency" name="currency" required {% if errors.get('currency') %}aria-invalid="true" aria-describedby="currency-error"{% endif %}><option value="EUR">EUR — eiro</option></select>{{ error('currency') }}</div>
+            {{ number('vat_rate', 'PVN likme (%)', 0, 100, '0.01') }}
             <div class="form-field"><label for="vat_included">PVN *</label><select id="vat_included" name="vat_included" required {% if errors.get('vat_included') %}aria-invalid="true" aria-describedby="vat_included-error"{% endif %}><option value="">Izvēlieties</option><option value="1" {% if form_data.vat_included == '1' %}selected{% endif %}>Iekļauts cenā</option><option value="0" {% if form_data.vat_included == '0' %}selected{% endif %}>Nav iekļauts cenā</option></select>{{ error('vat_included') }}</div>
             {{ number('stock_qty', 'Atlikums', 0, 2147483647) }}
             {{ number('min_order_qty', 'Minimālais daudzums', 1, 2147483647) }}
@@ -28,6 +30,7 @@
         <p class="field-hint">Katalogā tā pieejama, ja arī piegādātājs un prece ir aktīvi. Deaktivizēšana saglabā pasūtījumu vēsturi.</p>
         <div class="admin-form-actions"><a class="admin-secondary-button" href="{{ url_for('admin.supplier_detail', supplier_id=supplier.id) if supplier else url_for('admin.supplier_products') }}">Atcelt</a><button class="admin-primary-button" type="submit" {% if not products or not suppliers %}disabled{% endif %}>Saglabāt</button></div>
     </form>
+    {% if offer %}<div class="offer-management-meta"><p class="field-hint">Atjaunināts: <time datetime="{{ offer.updated_at.isoformat() }}Z" data-local-time>{{ offer.updated_at.strftime('%d.%m.%Y. %H:%M') }} UTC</time></p><a class="admin-secondary-button" href="{{ url_for('admin.delete_offer', offer_id=offer.id) }}">Dzēst / deaktivizēt</a></div>{% endif %}
 </section>
 <script>
 const supplierSelect = document.getElementById('supplier_id');
@@ -39,4 +42,5 @@ supplierSelect.addEventListener('change', () => {
     document.getElementById('new-product-link').href = link.pathname + link.search;
 });
 </script>
+<script src="{{ url_for('static', filename='js/comparison.js') }}" defer></script>
 {% endblock %}

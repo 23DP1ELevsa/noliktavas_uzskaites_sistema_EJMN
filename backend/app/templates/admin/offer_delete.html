@@ -1,0 +1,15 @@
+{% extends 'admin/base.html' %}
+{% block title %}{{ 'Deaktivizēt piedāvājumu' if preserve else 'Dzēst piedāvājumu' }}{% endblock %}
+{% block content %}
+<nav class="admin-breadcrumbs" aria-label="Atrašanās vieta"><a href="{{ url_for('admin.supplier_products') }}">Piedāvājumi</a><span>/</span><span>{{ self.title() }}</span></nav>
+<section class="form-panel confirmation-panel">
+    <p class="account-kicker">Darbības apstiprinājums</p>
+    <h2>{{ offer.product.name }}</h2><p>{{ offer.supplier_name }} · {{ offer.supplier_sku or offer.product.sku }}</p>
+    <p><strong>{{ '%.2f'|format(offer.unit_price) }} {{ offer.currency }}</strong> / {{ offer.product.unit }}</p>
+    {% if preserve %}
+    <p>{{ 'Piedāvājums ir izmantots pasūtījumos.' if in_history else 'Piedāvājums ir pievienots grozam.' }} Tas tiks deaktivizēts, saglabājot saistītos datus.</p>
+    <p>Piedāvājumu varēs atkal aktivizēt rediģēšanas formā.</p>
+    {% else %}<p>Vai tiešām vēlaties dzēst šo piedāvājumu? Tam nav saistītu grozu vai pasūtījumu. Dzēšanu nevar atsaukt.</p>{% endif %}
+    <form method="post"><input name="csrf_token" type="hidden" value="{{ csrf_token }}"><input name="confirmed" type="hidden" value="1"><div class="admin-form-actions"><a class="admin-secondary-button" href="{{ url_for('admin.offer_form', offer_id=offer.id) }}">Atcelt</a><button class="admin-primary-button" type="submit">{{ 'Apstiprināt deaktivizēšanu' if preserve else 'Apstiprināt dzēšanu' }}</button></div></form>
+</section>
+{% endblock %}
