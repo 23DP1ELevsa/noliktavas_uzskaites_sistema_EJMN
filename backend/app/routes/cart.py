@@ -1,15 +1,17 @@
 from datetime import datetime, timezone
-from decimal import Decimal
 
 from flask import Blueprint, flash, redirect, render_template, request, url_for
 from flask_login import current_user, login_required
-from sqlalchemy.orm import joinedload
+from sqlalchemy.exc import SQLAlchemyError
 
 from ..extensions import db
 from ..models import Cart, CartItem, Offer, Product, User
 from ..services.comparison import cart_csrf_token, comparison_rows, parse_quantity, require_cart_csrf
+from ..services.cart import load_cart_summary
+from ..services.shopping_errors import shopping_database_error
 
 cart_bp = Blueprint("cart", __name__, url_prefix="/cart")
+cart_bp.register_error_handler(SQLAlchemyError, shopping_database_error)
 
 
 def _lock_user():
@@ -20,19 +22,7 @@ def _lock_user():
 @cart_bp.get("")
 @login_required
 def cart_page():
-    cart = db.session.scalar(db.select(Cart).where(Cart.user_id == current_user.id))
-    items = db.session.scalars(db.select(CartItem).where(CartItem.cart_id == cart.id).options(
-        joinedload(CartItem.offer).joinedload(Offer.product)
-    ).order_by(CartItem.id)).all() if cart else []
-    rows = []
-    for item in items:
-        row = comparison_rows([item.offer], item.quantity, "total-asc")[0]
-        row["item"] = item
-        if not item.offer.is_active or not item.offer.product.is_active:
-            row["error"] = "Piedāvājums vairs nav aktīvs."
-        rows.append(row)
-    return render_template("cart.html", rows=rows,
-                           total=sum((row["total"] for row in rows), Decimal("0.00")),
+    return render_template("cart.html", **load_cart_summary(current_user.id),
                            csrf_token=cart_csrf_token())
 
 

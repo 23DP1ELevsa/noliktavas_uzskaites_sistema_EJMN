@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="lv">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Pieteikums #{{ order.id }} | StockFlow</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body class="marketplace-page">
+    {% include '_market_header.html' %}
+    <main class="admin-shell">
+        <nav class="breadcrumbs" aria-label="Atrašanās vieta"><a href="{{ url_for('catalog.catalog_page') }}">Katalogs</a><span>/</span><span>Pieteikums #{{ order.id }}</span></nav>
+        <section class="order-receipt">
+            <p class="account-kicker">Pieteikums #{{ order.id }}</p><h1>{{ 'Pieteikums iesniegts' if order.status == 'iesniegts' else 'Pieteikums' }}</h1>
+            <p>Statuss: <strong>{{ order.status }}</strong></p>
+            <div class="receipt-items">
+                {% for item in order.items %}<div><span><strong>{{ item.product_name }}</strong><small>{{ item.supplier_name }} · {{ item.quantity }} × {{ '%.2f'|format(item.unit_price) }} € · {{ 'Ar PVN' if item.vat_included else 'Bez PVN' }} · Piegāde {{ '%.2f'|format(item.delivery_price) }} €</small></span><strong>{{ '%.2f'|format(item.line_total) }} €</strong></div>{% endfor %}
+            </div>
+            <div class="shopping-grand-total receipt-total"><span>Kopsumma</span><strong>{{ '%.2f'|format(order.total_amount) }} €</strong></div>
+            <a class="admin-primary-button" href="{{ url_for('catalog.catalog_page') }}">Atgriezties katalogā</a>
+        </section>
+    </main>
+    {% include '_footer.html' %}
+</body>
+</html>

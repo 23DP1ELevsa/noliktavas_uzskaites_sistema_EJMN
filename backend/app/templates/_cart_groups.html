@@ -1,0 +1,33 @@
+{% for group in groups %}
+<section class="supplier-group" aria-labelledby="supplier-{{ loop.index }}">
+    <div class="supplier-group-heading"><h2 id="supplier-{{ loop.index }}">{{ group.supplier }}</h2><span>{{ group.rows|length }} {{ 'prece' if group.rows|length == 1 else 'preces' }}</span></div>
+    {% for row in group.rows %}{% set offer = row.offer %}{% set item = row.item %}
+    <article class="shopping-row">
+        <div class="shopping-product">
+            <div class="cart-product-image">
+                <span class="image-fallback" aria-hidden="true" {% if offer.product.image_url %}hidden{% endif %}>{{ offer.product.name[:1]|upper }}</span>
+                {% if offer.product.image_url %}<img src="{{ offer.product.image_url }}" alt="{{ offer.product.name }}" loading="lazy" referrerpolicy="no-referrer" data-cart-image>{% endif %}
+            </div>
+            <div class="shopping-product-copy">
+                <h3><a href="{{ url_for('catalog.product_page', product_id=offer.product_id, quantity=item.quantity) }}">{{ offer.product.name }}</a></h3>
+                <p>{{ '%.2f'|format(offer.unit_price) }} € / {{ offer.product.unit }} <span class="price-vat">· {{ 'Ar PVN' if offer.vat_included else 'Bez PVN' }}</span></p>
+                <p class="field-hint">Piegāde: {{ '%.2f'|format(offer.delivery_price) }} € · {{ offer.delivery_days }} dienas</p>
+            </div>
+        </div>
+        {% if row.error %}<p class="flash flash-error shopping-row-error" role="alert">{{ row.error }}</p>{% endif %}
+        <div class="shopping-row-controls">
+            {% if editable %}
+            <form class="cart-quantity-form" method="post" action="{{ url_for('cart.update_item', item_id=item.id) }}">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+                <div class="form-field"><label for="quantity-{{ item.id }}">Daudzums ({{ offer.product.unit }})</label><input id="quantity-{{ item.id }}" type="number" name="quantity" min="{{ offer.min_order_qty }}" max="{{ offer.stock_qty }}" step="1" value="{{ item.quantity }}" required {% if not offer.is_active or not offer.product.is_active or offer.stock_qty < offer.min_order_qty %}disabled{% endif %}></div>
+                <button class="admin-secondary-button" type="submit" {% if not offer.is_active or not offer.product.is_active or offer.stock_qty < offer.min_order_qty %}disabled{% endif %}>Saglabāt</button>
+            </form>
+            {% else %}<span class="checkout-quantity">Daudzums: <strong>{{ item.quantity }} {{ offer.product.unit }}</strong></span>{% endif %}
+            <div class="shopping-line-total"><span>Preču summa</span><strong>{{ '%.2f'|format(row.subtotal) }} €</strong></div>
+            {% if editable %}<form method="post" action="{{ url_for('cart.remove_item', item_id=item.id) }}"><input type="hidden" name="csrf_token" value="{{ csrf_token }}"><button class="shopping-remove" type="submit" aria-label="Izņemt {{ offer.product.name }} no groza">Izņemt</button></form>{% endif %}
+        </div>
+    </article>
+    {% endfor %}
+    <div class="supplier-group-total"><span>Piegāde <strong>{{ '%.2f'|format(group.delivery) }} €</strong></span><span>Kopā <strong>{{ '%.2f'|format(group.total) }} €</strong></span></div>
+</section>
+{% endfor %}

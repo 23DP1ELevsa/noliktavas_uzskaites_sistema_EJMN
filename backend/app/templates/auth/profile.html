@@ -37,6 +37,8 @@
                 <a href="{{ url_for('index') }}">Sākums</a>
                 <span aria-hidden="true"> · </span>
                 <a href="{{ url_for('catalog.catalog_page') }}">Atvērt katalogu</a>
+                <span aria-hidden="true"> · </span>
+                <a href="{{ url_for('cart.cart_page') }}">Grozs</a>
                 {% if current_user.role == "admin" %}
                     <span aria-hidden="true"> · </span>
                     <a href="{{ url_for('admin.products') }}">Preces</a>

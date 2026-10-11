@@ -1,6 +1,6 @@
 import re
 
-from backend.app.services.demo_data import ADMIN_EMAIL, DEFAULT_ADMIN_PASSWORD
+from backend.app.services.demo_data import ADMIN_EMAIL, DEFAULT_ADMIN_PASSWORD, USER_EMAIL, DEFAULT_USER_PASSWORD
 
 
 def test_all_pages_render_the_same_single_footer(database_app):
@@ -24,6 +24,11 @@ def test_all_pages_render_the_same_single_footer(database_app):
     for path in ("/", "/catalog/page", "/catalog/products/1", "/auth/login", "/auth/register"):
         check_footer(path)
 
+    client.get('/auth/logout')
+    client.post('/auth/login', data={'email': USER_EMAIL, 'password': DEFAULT_USER_PASSWORD})
+    check_footer('/orders/checkout')
+
+    client.get('/auth/logout')
     client.post("/auth/login", data={"email": ADMIN_EMAIL, "password": DEFAULT_ADMIN_PASSWORD})
     for path in ("/auth/profile", "/cart", "/admin/products", "/admin/products/new",
                  "/admin/products/1", "/admin/products/1/edit", "/admin/products/1/delete",

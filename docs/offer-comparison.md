@@ -29,8 +29,25 @@ veselu daudzumu, minimālo pasūtījumu un atlikumu, ieskaitot grozā esošo dau
 Preču pievienošana grozam nerezervē atlikumu.
 
 **Grozs** (`/cart`) rāda aktuālās cenas un brīdina par deaktivizētiem piedāvājumiem
-vai nepietiekamu atlikumu. Tajā var atjaunināt daudzumu un izņemt preces. Grozs
+vai nepietiekamu atlikumu. Preces grupētas pēc piegādātāja, katrai grupai rādot
+piegādes maksu un kopējo summu. Kopsavilkumā atsevišķi redzama preču summa,
+piegādes maksas un kopsumma. Piegāde tiek summēta no katra piedāvājuma maksas;
+nav pieņemts, ka viena piegādātāja precēm ir viena kopīga piegādes maksa.
+Tajā var atjaunināt daudzumu un izņemt preces. Grozs
 saglabājas pēc iziešanas un atkārtotas pieslēgšanās. Groza darbības pieprasa
 pieslēgšanos un CSRF kodu; sveša lietotāja groza rindas nav pieejamas.
 
-Automātiskās pārbaudes: `tests/test_comparison.py`.
+**Noformēt pieteikumu** atver `/orders/checkout` ar preču pārskatu, uzņēmuma datiem
+un piegādes adresi no profila. Tukšs grozs vai nepieejamas preces bloķē noformēšanu.
+Pirms iesniegšanas jābūt aizpildītam uzņēmuma nosaukumam, reģistrācijas numuram un
+adresei. Ja pēc pārskata atvēršanas mainās cenas, daudzumi vai uzņēmuma dati,
+lietotājam jāpārskata aktuālā informācija un jāiesniedz atkārtoti.
+
+Iesniegšana izveido pieteikumu ar statusu `iesniegts`, saglabā preču nosaukumu,
+piegādātāju, cenu, daudzumu, piegādi un PVN pazīmi pieteikuma rindās un iztukšo
+grozu vienā datubāzes darījumā. Preces netiek rezervētas, maksājums netiek veikts.
+Apstiprinājums pieejams `/orders/<id>` tikai pieteikuma īpašniekam.
+Datubāzes kļūdu gadījumā darbības tiek atceltas un parādīta saprotama kļūdas lapa
+ar iespēju atvērt grozu atkārtoti.
+
+Automātiskās pārbaudes: `tests/test_comparison.py`, `tests/test_cart_checkout.py`.

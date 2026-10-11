@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="lv">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Pieteikuma noformēšana | StockFlow</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body class="marketplace-page">
+    {% include '_market_header.html' %}
+    <main class="admin-shell">
+        <nav class="breadcrumbs" aria-label="Atrašanās vieta"><a href="{{ url_for('cart.cart_page') }}">Grozs</a><span>/</span><span>Pieteikuma noformēšana</span></nav>
+        {% include '_messages.html' %}
+        <div class="admin-toolbar"><div><p class="account-kicker">Pēdējais solis</p><h1>Pieteikuma noformēšana</h1><p>Pārbaudiet preces un uzņēmuma datus pirms iesniegšanas.</p></div><a class="admin-secondary-button" href="{{ url_for('cart.cart_page') }}">Atgriezties grozā</a></div>
+        <div class="cart-layout">
+            <div class="supplier-groups">
+                <section class="checkout-company">
+                    <div class="admin-toolbar"><h2>Uzņēmums un piegāde</h2><a href="{{ url_for('auth.profile') }}">Labot profilu</a></div>
+                    {% if profile_complete %}
+                    <dl class="checkout-company-facts">
+                        <div><dt>Uzņēmums</dt><dd>{{ profile.company_name }}</dd></div>
+                        <div><dt>Reģistrācijas numurs</dt><dd>{{ profile.registration_no }}</dd></div>
+                        <div><dt>Piegādes adrese</dt><dd>{{ profile.effective_delivery_address }}</dd></div>
+                        <div><dt>Kontaktpersona</dt><dd>{{ current_user.full_name }} · {{ current_user.email }}{% if profile.phone %} · {{ profile.phone }}{% endif %}</dd></div>
+                    </dl>
+                    {% else %}<p class="flash flash-error" role="alert">Pirms iesniegšanas pievienojiet uzņēmuma nosaukumu, reģistrācijas numuru un adresi savā profilā.</p><a class="admin-secondary-button" href="{{ url_for('auth.profile') }}">Papildināt uzņēmuma profilu</a>{% endif %}
+                </section>
+                {% set editable = false %}{% include '_cart_groups.html' %}
+            </div>
+            <aside class="shopping-summary" aria-labelledby="summary-title">
+                <h2 id="summary-title">Pieteikuma kopsavilkums</h2>
+                {% include '_cart_totals.html' %}
+                <form method="post" id="checkout-submit">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+                    <input type="hidden" name="review_token" value="{{ review_token }}">
+                    <button class="admin-primary-button checkout-primary" type="submit" {% if not profile_complete %}disabled{% endif %}>Iesniegt pieteikumu</button>
+                </form>
+                <p class="field-hint summary-help">Pieteikums tiks nodots izskatīšanai. Maksājums netiek veikts.</p>
+            </aside>
+        </div>
+    </main>
+    {% include '_footer.html' %}
+    <script src="{{ url_for('static', filename='js/cart.js') }}" defer></script>
+</body>
+</html>
