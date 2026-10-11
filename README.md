@@ -77,6 +77,9 @@ Veselības pārbaude: `http://127.0.0.1:5000/health`
 
 ## Demonstrācijas dati
 
+Uzņēmuma profila izveide, saglabāšana un ievades pārbaudes ir aprakstītas
+failā [Uzņēmuma profils](docs/company-profile.md).
+
 Pēc migrāciju izpildes ielādē testa kategorijas, preces, piedāvājumus un lietotājus:
 
 ```powershell

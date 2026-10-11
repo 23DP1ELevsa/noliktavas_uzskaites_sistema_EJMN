@@ -50,6 +50,11 @@ class CompanyProfile(IdentityMixin, db.Model):
     vat_no = db.Column(db.String(50))
     phone = db.Column(db.String(50))
     address = db.Column(db.String(255), nullable=False)
+    delivery_address = db.Column(db.String(255))
 
     user = db.relationship("User", back_populates="company_profile")
     orders = db.relationship("Order", back_populates="company_profile", passive_deletes="all")
+
+    @property
+    def effective_delivery_address(self):
+        return self.delivery_address or self.address

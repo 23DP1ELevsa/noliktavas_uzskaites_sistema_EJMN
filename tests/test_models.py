@@ -219,3 +219,27 @@ def test_initial_migration_can_be_reversed_and_reapplied(database_app):
     assert result.exit_code != 0 and "Missing tables" in result.output
     upgrade(directory=MIGRATIONS)
     assert len(inspect(db.engine).get_table_names()) == 10
+
+
+def test_delivery_address_migration_preserves_existing_company_data(database_app):
+    downgrade(directory=MIGRATIONS, revision="0002_product_image")
+    user = User(email="existing@example.test", full_name="Esošs lietotājs")
+    user.set_password("test-password")
+    db.session.add(user)
+    db.session.commit()
+    user_id = user.id
+    with db.engine.begin() as connection:
+        connection.execute(text(
+            "INSERT INTO company_profiles (user_id, company_name, registration_no, address, phone) "
+            "VALUES (:user_id, :name, :registration, :address, :phone)"
+        ), {"user_id": user_id, "name": "Esošs SIA", "registration": "40100000001",
+            "address": "Rīga, iela 1", "phone": "+371 20000000"})
+
+    upgrade(directory=MIGRATIONS)
+    db.session.remove()
+    profile = db.session.scalar(db.select(CompanyProfile).where(CompanyProfile.user_id == user_id))
+    assert profile.company_name == "Esošs SIA"
+    assert profile.registration_no == "40100000001"
+    assert profile.phone == "+371 20000000"
+    assert profile.delivery_address is None
+    assert profile.effective_delivery_address == "Rīga, iela 1"

@@ -1,0 +1,7 @@
+{% from 'auth/_form_macros.html' import field with context %}
+{{ field('company_name', 'Uzņēmuma nosaukums', 255, true, autocomplete='organization') }}
+{{ field('registration_no', 'Reģistrācijas numurs', 50, true) }}
+{{ field('vat_no', 'PVN numurs', 50, hint='Nav obligāts, piemēram, LV40100000001.') }}
+{{ field('address', 'Uzņēmuma adrese', 255, true, autocomplete='section-company street-address') }}
+{{ field('delivery_address', 'Piegādes adrese', 255, autocomplete='section-delivery shipping street-address', hint='Ja lauks ir tukšs, piegādei izmantosim uzņēmuma adresi.') }}
+{{ field('phone', 'Kontakttālrunis', 50, type='tel', autocomplete='tel', hint='Nav obligāts, piemēram, +371 20000000.') }}
