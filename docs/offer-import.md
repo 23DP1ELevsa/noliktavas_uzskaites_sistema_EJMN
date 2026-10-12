@@ -3,8 +3,9 @@
 CSV, JSON un testa API adapteri izmanto vienu servisu:
 `backend.app.services.offer_import.save_imported_offers`. Adapteris vispirms
 nolasa avotu un izveido lauku/vērtību ierakstu sarakstu, pēc tam nodod visu
-paketi servisam. Šis posms ievieš kopīgo pārbaudi un saglabāšanu; failu
-nolasīšana, API pieprasījumi un importa lietotāja saskarne ir atsevišķi uzdevumi.
+paketi servisam. JSON faila nolasīšana un administratora augšupielādes lapa
+jau izmanto šo servisu; skatiet [JSON importa aprakstu](json-import.md).
+CSV nolasīšana un API pieprasījumi ir nākamie atsevišķie uzdevumi.
 
 ## Izmantošana
 
@@ -40,8 +41,8 @@ except OfferImportError as error:
 `admin_id` jāiegūst no autorizētā administratora, `source` — no izmantotā
 adaptera (`CSV`, `JSON` vai `API`). Importa ieraksts nedrīkst noteikt autoru,
 datu avotu vai atjaunināšanas laiku. Serviss pārbauda, vai administrators
-eksistē un ir aktīvs. Nākamo tīmekļa adapteru maršrutiem jāpieprasa
-administratora autorizācija un CSRF pārbaude.
+eksistē un ir aktīvs. JSON augšupielādes maršruts pieprasa administratora
+autorizāciju un CSRF pārbaudi; tas jānodrošina arī nākamajiem adapteriem.
 
 ## Ieraksta formāts
 

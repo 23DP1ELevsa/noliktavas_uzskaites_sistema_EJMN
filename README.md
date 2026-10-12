@@ -87,6 +87,10 @@ CSV, JSON un API adapteriem kopīgā piedāvājumu pārbaude un atomiskā saglab
 ierakstu formāts un dublikātu aizsardzība ir aprakstīta
 failā [Piedāvājumu imports](docs/offer-import.md).
 
+JSON failu var augšupielādēt **Admin panelis → Imports** (`/admin/import/json`).
+Paraugs: [`data_samples/offers_import.json`](data_samples/offers_import.json).
+Struktūra, datu tipi un izmantošana: [JSON imports](docs/json-import.md).
+
 Uzņēmuma profila izveide, saglabāšana un ievades pārbaudes ir aprakstītas
 failā [Uzņēmuma profils](docs/company-profile.md).
 

@@ -1,0 +1,28 @@
+[
+  {
+    "product_sku": "DEMO-USB-C-001",
+    "supplier_name": "Demo NordTech",
+    "supplier_sku": "DEMO-NT-USB",
+    "currency": "EUR",
+    "unit_price": "9.99",
+    "vat_included": true,
+    "vat_rate": "21.00",
+    "min_order_qty": 1,
+    "stock_qty": 120,
+    "delivery_price": "3.50",
+    "delivery_days": 1
+  },
+  {
+    "product_sku": "DEMO-DRILL-001",
+    "supplier_name": "Demo Baltic Supply",
+    "supplier_sku": "DEMO-BS-DRILL",
+    "currency": "EUR",
+    "unit_price": 74.00,
+    "vat_included": false,
+    "vat_rate": 21,
+    "min_order_qty": 2,
+    "stock_qty": 6,
+    "delivery_price": "7.50",
+    "delivery_days": 5
+  }
+]

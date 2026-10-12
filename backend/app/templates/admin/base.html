@@ -25,6 +25,7 @@
             <a href="{{ url_for('admin.products') }}" {% if request.endpoint in ['admin.products', 'admin.product_detail', 'admin.product_form', 'admin.delete_product'] %}aria-current="page"{% endif %}>Preces</a>
             <a href="{{ url_for('admin.supplier_products') }}" {% if request.endpoint in ['admin.supplier_products', 'admin.offer_form', 'admin.delete_offer'] %}aria-current="page"{% endif %}>Piedāvājumi</a>
             <a href="{{ url_for('admin.categories') }}" {% if request.endpoint in ['admin.categories', 'admin.create_category', 'admin.edit_category'] %}aria-current="page"{% endif %}>Kategorijas</a>
+            <a href="{{ url_for('import_data.json_page') }}" {% if request.blueprint == 'import_data' %}aria-current="page"{% endif %}>Imports</a>
         </nav>
         {% with messages = get_flashed_messages(with_categories=true) %}
             {% for category, message in messages %}<p class="flash flash-{{ category }}" role="status">{{ message }}</p>{% endfor %}

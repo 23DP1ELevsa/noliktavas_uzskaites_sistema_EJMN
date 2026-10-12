@@ -70,7 +70,8 @@ def _boolean(value, field, row):
     raise OfferImportError(f"Laukā {field} jānorāda true/false vai 1/0.", row=row, field=field)
 
 
-def _record(record, row):
+def validate_import_record(record, row):
+    """Validate and normalize one adapter record without accessing the database."""
     if not isinstance(record, Mapping):
         raise OfferImportError("Ierakstam jābūt lauku un vērtību kopai.", row=row)
     if set(record) - FIELDS:
@@ -126,7 +127,7 @@ def save_imported_offers(records, *, source, admin_id):
         prepared = []
         identities = set()
         for row, record in enumerate(records, 1):
-            data = _record(record, row)
+            data = validate_import_record(record, row)
             supplier = (session.get(Supplier, data["supplier_id"]) if "supplier_id" in data else
                         session.scalar(db.select(Supplier).where(
                             Supplier.name_key == data["supplier_name"].casefold())))
