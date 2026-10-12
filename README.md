@@ -83,6 +83,10 @@ Administratora piegādātāju pārvaldība aprakstīta failā
 Piedāvājumu salīdzināšana, daudzuma izvēle un lietotāja grozs ir aprakstīti
 failā [Piedāvājumu salīdzināšana](docs/offer-comparison.md).
 
+CSV, JSON un API adapteriem kopīgā piedāvājumu pārbaude un atomiskā saglabāšana,
+ierakstu formāts un dublikātu aizsardzība ir aprakstīta
+failā [Piedāvājumu imports](docs/offer-import.md).
+
 Uzņēmuma profila izveide, saglabāšana un ievades pārbaudes ir aprakstītas
 failā [Uzņēmuma profils](docs/company-profile.md).
 

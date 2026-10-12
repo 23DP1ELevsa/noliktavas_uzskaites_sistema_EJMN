@@ -33,6 +33,7 @@ class Product(IdentityMixin, CreatedMixin, db.Model):
 class Offer(IdentityMixin, db.Model):
     __tablename__ = "offers"
     __table_args__ = (
+        db.Index("uq_offers_supplier_sku", "supplier_id", "supplier_sku", unique=True),
         db.CheckConstraint("unit_price >= 0", name="unit_price_nonnegative"),
         db.CheckConstraint("vat_rate IS NULL OR (vat_rate >= 0 AND vat_rate <= 100)", name="vat_rate_range"),
         db.CheckConstraint("currency = 'EUR'", name="currency_supported"),

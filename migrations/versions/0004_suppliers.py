@@ -65,8 +65,8 @@ def upgrade():
 def downgrade():
     connection = op.get_bind()
     for table in ("order_items", "offers"):
-        op.drop_index(f"ix_{table}_supplier_id", table_name=table)
         if connection.dialect.name != "sqlite":
             op.drop_constraint(f"fk_{table}_supplier_id_suppliers", table, type_="foreignkey")
+        op.drop_index(f"ix_{table}_supplier_id", table_name=table)
         op.drop_column(table, "supplier_id")
     op.drop_table("suppliers")

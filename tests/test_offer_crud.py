@@ -12,6 +12,16 @@ from test_admin import admin_data
 from test_admin_panel import panel_inventory, create_offer
 
 
+def test_manual_offer_reports_duplicate_supplier_code(panel_inventory):
+    client, _, _, data = panel_inventory
+    offer = create_offer(panel_inventory)
+    response = client.post('/admin/supplier-products/new', data=data)
+    assert response.status_code == 422
+    assert 'id="supplier_sku-error"' in response.get_data(as_text=True)
+    assert db.session.scalar(db.select(db.func.count(Offer.id))) == 1
+    assert client.post(f'/admin/supplier-products/{offer.id}/edit', data=data).status_code == 302
+
+
 @pytest.mark.parametrize('field,value', [
     ('vat_rate', ''), ('vat_rate', '-1'), ('vat_rate', '100.01'), ('vat_rate', 'NaN'),
     ('vat_rate', '1.234'), ('vat_rate', '1e2'), ('vat_rate', '9' * 100),

@@ -84,6 +84,13 @@ def offer_form(offer_id=None):
             errors["product_id"] = "Izvēlieties esošu preci."
         if len(data["supplier_sku"]) > 100:
             errors["supplier_sku"] = "Kods nedrīkst pārsniegt 100 rakstzīmes."
+        elif supplier and data["supplier_sku"]:
+            duplicate_query = db.select(Offer.id).where(
+                Offer.supplier_id == supplier.id, Offer.supplier_sku == data["supplier_sku"])
+            if offer:
+                duplicate_query = duplicate_query.where(Offer.id != offer.id)
+            if db.session.scalar(duplicate_query) is not None:
+                errors["supplier_sku"] = "Šim piegādātājam piedāvājums ar šādu preces kodu jau pastāv."
         price_text = data["unit_price"].replace(",", ".")
         if not re.fullmatch(r"[0-9]{1,8}(?:\.[0-9]{1,2})?", price_text):
             errors["unit_price"] = "Norādiet cenu no 0 līdz 99 999 999,99 €, ar ne vairāk kā divām zīmēm aiz komata."
