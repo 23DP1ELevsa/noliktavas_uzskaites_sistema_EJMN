@@ -1,0 +1,17 @@
+{% extends 'admin/base.html' %}
+{% block title %}API piedāvājumu imports{% endblock %}
+{% block content %}
+{% include 'admin/_import_tabs.html' %}
+<div class="admin-toolbar"><div><h2>Saņemt piedāvājumus no testa API</h2><p>Pieprasiet aktuālos demonstrācijas piedāvājumus un saglabājiet tos vienā reizē.</p></div>
+<a class="admin-secondary-button" href="{{ url_for('test_api.offers') }}" target="_blank" rel="noopener">Atvērt komandas testa API</a></div>
+<section class="form-panel">
+    {% if error %}<p class="flash flash-error" role="alert">{{ error }} Importa dati nav saglabāti.</p>{% endif %}
+    <p class="field-hint">Datu avots</p><p class="admin-context">{{ api_url }}</p>
+    <p>API atgriež JSON piedāvājumus tajā pašā formātā kā failu imports. Preces un piegādātājiem jau jābūt izveidotiem un aktīviem.</p>
+    <p class="field-hint">Atbildes gaidīšanas ierobežojums: {{ timeout }} sekundes savienojumam un lasīšanai. Maksimālais atbildes izmērs: 2 MiB. Kļūdas gadījumā viss imports tiek atcelts.</p>
+    <form method="post" class="admin-form">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+        <div class="admin-form-actions"><a class="admin-secondary-button" href="{{ url_for('admin.supplier_products') }}">Atvērt piedāvājumus</a><button class="admin-primary-button" type="submit">Saņemt un importēt piedāvājumus</button></div>
+    </form>
+</section>
+{% endblock %}

@@ -1,10 +1,7 @@
 {% extends 'admin/base.html' %}
 {% block title %}{{ import_format }} piedāvājumu imports{% endblock %}
 {% block content %}
-<nav class="admin-section-nav" aria-label="Importa formāti">
-    <a href="{{ url_for('import_data.json_page') }}" {% if import_format == 'JSON' %}aria-current="page"{% endif %}>JSON</a>
-    <a href="{{ url_for('import_data.csv_page') }}" {% if import_format == 'CSV' %}aria-current="page"{% endif %}>CSV</a>
-</nav>
+{% include 'admin/_import_tabs.html' %}
 <div class="admin-toolbar">
     <div><h2>Ielādēt piegādātāju piedāvājumus</h2><p>Pārbaudiet un saglabājiet visus faila piedāvājumus vienā reizē.</p></div>
     <a class="admin-secondary-button" href="{{ url_for(sample_endpoint) }}">Lejupielādēt {{ import_format }} paraugu</a>

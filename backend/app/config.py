@@ -30,6 +30,7 @@ def environment_config():
     return {
         "SECRET_KEY": os.getenv("SECRET_KEY", "dev-only-change-me"),
         "SQLALCHEMY_DATABASE_URI": database_url,
+        "TEST_API_URL": os.getenv("TEST_API_URL") or f"http://127.0.0.1:{os.getenv('PORT', '5000')}/api/test/offers",
     }
 
 

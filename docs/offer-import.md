@@ -5,7 +5,8 @@ CSV, JSON un testa API adapteri izmanto vienu servisu:
 nolasa avotu un izveido lauku/vērtību ierakstu sarakstu, pēc tam nodod visu
 paketi servisam. CSV un JSON failu nolasīšana un administratora augšupielādes
 lapas jau izmanto šo servisu; skatiet [CSV](csv-import.md) un
-[JSON importa aprakstu](json-import.md). Testa API pieprasījumi ir nākamais uzdevums.
+[JSON importa aprakstu](json-import.md). Arī [testa API saņemšana](api-import.md)
+izmanto šo servisu ar avotu `API`.
 
 ## Izmantošana
 

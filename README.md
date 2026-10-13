@@ -95,6 +95,10 @@ CSV augšupielāde: **Admin panelis → Imports → CSV** (`/admin/import/csv`).
 Paraugs: [`data_samples/offers_import.csv`](data_samples/offers_import.csv).
 Kolonnas, atdalītāji un kļūdu rindu numerācija: [CSV imports](docs/csv-import.md).
 
+Komandas testa REST API: `GET /api/test/offers`. Piedāvājumu saņemšana:
+**Admin panelis → Imports → API** (`/admin/import/api`). HTTP pārbaudes,
+timeout un Railway konfigurācija: [API imports](docs/api-import.md).
+
 Uzņēmuma profila izveide, saglabāšana un ievades pārbaudes ir aprakstītas
 failā [Uzņēmuma profils](docs/company-profile.md).
 

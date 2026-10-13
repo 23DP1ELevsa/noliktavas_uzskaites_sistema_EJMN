@@ -1,0 +1,5 @@
+<nav class="admin-section-nav" aria-label="Importa formāti">
+    {% for kind in ['JSON', 'CSV', 'API'] %}
+    <a href="{{ url_for('import_data.' ~ kind|lower ~ '_page') }}" {% if import_format == kind %}aria-current="page"{% endif %}>{{ kind }}</a>
+    {% endfor %}
+</nav>
