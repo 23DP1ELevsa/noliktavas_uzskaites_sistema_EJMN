@@ -57,8 +57,8 @@ Obligāti ir `product_sku`, `supplier_sku`, `currency`, `unit_price`,
 `vat_included`, `min_order_qty`, `stock_qty`, `delivery_days`, kā arī
 `supplier_id` vai `supplier_name`. Cenai bez PVN obligāta arī `vat_rate`.
 Piegādes maksa un `is_active` ir neobligāti un izmanto kopīgā servisa noteikumus.
-CSV adapteris vēlāk pārvērtīs CSV lauku tekstu tajā pašā kopīgajā ieraksta
-formātā; CSV un JSON lauku nosaukumi netiek atšķirti.
+CSV adapteris pārvērš CSV lauku tekstu tajā pašā kopīgajā ieraksta formātā;
+CSV un JSON lauku nosaukumi netiek atšķirti. [CSV importa apraksts](csv-import.md).
 
 Tukšs fails nav derīgs. Tukšs masīvs `[]` ir derīgs un dod rezultātu 0/0.
 Atkārtoti JSON objekta lauki, neatbalstīti lauki, NaN, Infinity, nepareiza

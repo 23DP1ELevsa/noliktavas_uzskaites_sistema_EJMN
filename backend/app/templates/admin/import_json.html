@@ -1,23 +1,27 @@
 {% extends 'admin/base.html' %}
-{% block title %}JSON piedāvājumu imports{% endblock %}
+{% block title %}{{ import_format }} piedāvājumu imports{% endblock %}
 {% block content %}
+<nav class="admin-section-nav" aria-label="Importa formāti">
+    <a href="{{ url_for('import_data.json_page') }}" {% if import_format == 'JSON' %}aria-current="page"{% endif %}>JSON</a>
+    <a href="{{ url_for('import_data.csv_page') }}" {% if import_format == 'CSV' %}aria-current="page"{% endif %}>CSV</a>
+</nav>
 <div class="admin-toolbar">
     <div><h2>Ielādēt piegādātāju piedāvājumus</h2><p>Pārbaudiet un saglabājiet visus faila piedāvājumus vienā reizē.</p></div>
-    <a class="admin-secondary-button" href="{{ url_for('import_data.json_sample') }}">Lejupielādēt JSON paraugu</a>
+    <a class="admin-secondary-button" href="{{ url_for(sample_endpoint) }}">Lejupielādēt {{ import_format }} paraugu</a>
 </div>
 <section class="form-panel">
     {% if error %}<p class="flash flash-error" role="alert">{{ error }} Importa dati nav saglabāti.</p>{% endif %}
     <form method="post" enctype="multipart/form-data" class="admin-form">
         <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
         <div class="form-field">
-            <label for="import-file">JSON fails *</label>
-            <input id="import-file" name="file" type="file" accept=".json,application/json" required aria-describedby="import-file-hint">
-            <p class="field-hint" id="import-file-hint">UTF-8 kodējums · līdz 2 MiB · līdz 10 000 piedāvājumiem. Faila saknē jābūt masīvam [...].</p>
+            <label for="import-file">{{ import_format }} fails *</label>
+            <input id="import-file" name="file" type="file" accept="{{ '.csv,text/csv' if import_format == 'CSV' else '.json,application/json' }}" required aria-describedby="import-file-hint">
+            <p class="field-hint" id="import-file-hint">UTF-8 kodējums · līdz 2 MiB · līdz 10 000 piedāvājumiem. {{ 'Pirmā rinda: kolonnu nosaukumi. Atdalītājs: komats vai semikols.' if import_format == 'CSV' else 'Faila saknē jābūt masīvam [...].' }}</p>
         </div>
         <p class="admin-context">Jauns piedāvājums tiek pievienots, esošs — atjaunināts pēc piegādātāja un tā preces koda. Ja kāds ieraksts ir kļūdains, viss imports tiek atcelts.</p>
         <p class="field-hint">Preces un piegādātājiem jau jābūt izveidotiem un aktīviem. Paraugs izmanto demonstrācijas preces un piegādātājus; pielāgojiet kodus un nosaukumus savai datubāzei.</p>
         <p class="field-hint">Obligāti: product_sku, supplier_sku, supplier_id vai supplier_name, currency, unit_price, vat_included, min_order_qty, stock_qty, delivery_days. Cenai bez PVN norādiet arī vat_rate.</p>
-        <div class="admin-form-actions"><a class="admin-secondary-button" href="{{ url_for('admin.supplier_products') }}">Atvērt piedāvājumus</a><button class="admin-primary-button" type="submit">Importēt JSON</button></div>
+        <div class="admin-form-actions"><a class="admin-secondary-button" href="{{ url_for('admin.supplier_products') }}">Atvērt piedāvājumus</a><button class="admin-primary-button" type="submit">Importēt {{ import_format }}</button></div>
     </form>
 </section>
 {% endblock %}

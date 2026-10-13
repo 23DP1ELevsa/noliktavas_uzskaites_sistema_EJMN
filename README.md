@@ -91,6 +91,10 @@ JSON failu var augšupielādēt **Admin panelis → Imports** (`/admin/import/js
 Paraugs: [`data_samples/offers_import.json`](data_samples/offers_import.json).
 Struktūra, datu tipi un izmantošana: [JSON imports](docs/json-import.md).
 
+CSV augšupielāde: **Admin panelis → Imports → CSV** (`/admin/import/csv`).
+Paraugs: [`data_samples/offers_import.csv`](data_samples/offers_import.csv).
+Kolonnas, atdalītāji un kļūdu rindu numerācija: [CSV imports](docs/csv-import.md).
+
 Uzņēmuma profila izveide, saglabāšana un ievades pārbaudes ir aprakstītas
 failā [Uzņēmuma profils](docs/company-profile.md).
 

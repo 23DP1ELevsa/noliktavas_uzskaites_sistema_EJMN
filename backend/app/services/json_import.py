@@ -4,14 +4,10 @@ from decimal import Decimal
 import json
 from pathlib import Path
 
-from .offer_import import FIELDS, OfferImportError, save_imported_offers, validate_import_record
+from .offer_import import FIELDS, MAX_FILE_BYTES, MAX_RECORDS, REQUIRED_FIELDS, OfferImportError, save_imported_offers, validate_import_record
 
 
-MAX_FILE_BYTES = 2 * 1024 * 1024
-MAX_RECORDS = 10000
 SAMPLE_FILE = Path(__file__).resolve().parents[3] / "data_samples" / "offers_import.json"
-REQUIRED_FIELDS = ("product_sku", "supplier_sku", "currency", "unit_price", "vat_included",
-                   "min_order_qty", "stock_qty", "delivery_days")
 TEXT_FIELDS = {"product_sku", "supplier_sku", "supplier_name", "currency"}
 INTEGER_FIELDS = {"supplier_id", "min_order_qty", "stock_qty", "delivery_days"}
 BOOLEAN_FIELDS = {"vat_included", "is_active"}

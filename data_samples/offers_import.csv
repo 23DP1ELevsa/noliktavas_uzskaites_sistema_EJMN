@@ -1,0 +1,3 @@
+product_sku,supplier_name,supplier_sku,currency,unit_price,vat_included,vat_rate,min_order_qty,stock_qty,delivery_price,delivery_days
+DEMO-USB-C-001,Demo NordTech,DEMO-NT-USB,EUR,9.99,true,21.00,1,120,3.50,1
+DEMO-DRILL-001,Demo Baltic Supply,DEMO-BS-DRILL,EUR,74.00,false,21.00,2,6,7.50,5

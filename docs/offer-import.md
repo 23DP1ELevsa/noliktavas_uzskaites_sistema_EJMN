@@ -3,9 +3,9 @@
 CSV, JSON un testa API adapteri izmanto vienu servisu:
 `backend.app.services.offer_import.save_imported_offers`. Adapteris vispirms
 nolasa avotu un izveido lauku/vērtību ierakstu sarakstu, pēc tam nodod visu
-paketi servisam. JSON faila nolasīšana un administratora augšupielādes lapa
-jau izmanto šo servisu; skatiet [JSON importa aprakstu](json-import.md).
-CSV nolasīšana un API pieprasījumi ir nākamie atsevišķie uzdevumi.
+paketi servisam. CSV un JSON failu nolasīšana un administratora augšupielādes
+lapas jau izmanto šo servisu; skatiet [CSV](csv-import.md) un
+[JSON importa aprakstu](json-import.md). Testa API pieprasījumi ir nākamais uzdevums.
 
 ## Izmantošana
 

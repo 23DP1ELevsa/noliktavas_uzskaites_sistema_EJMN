@@ -12,6 +12,10 @@ from ..models import Offer, Product, Supplier, User
 
 
 SOURCES = {"CSV", "JSON", "API"}
+MAX_FILE_BYTES = 2 * 1024 * 1024
+MAX_RECORDS = 10000
+REQUIRED_FIELDS = ("product_sku", "supplier_sku", "currency", "unit_price", "vat_included",
+                   "min_order_qty", "stock_qty", "delivery_days")
 FIELDS = {"product_sku", "supplier_sku", "supplier_id", "supplier_name", "currency",
           "unit_price", "vat_included", "vat_rate", "min_order_qty", "stock_qty",
           "delivery_days", "delivery_price", "is_active"}
