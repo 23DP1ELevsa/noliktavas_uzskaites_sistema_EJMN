@@ -8,6 +8,7 @@
     {% if error %}<p class="flash flash-error" role="alert">{{ error }} Importa dati nav saglabāti.</p>{% endif %}
     <p class="field-hint">Datu avots</p><p class="admin-context">{{ api_url }}</p>
     <p>API atgriež JSON piedāvājumus tajā pašā formātā kā failu imports. Preces un piegādātājiem jau jābūt izveidotiem un aktīviem.</p>
+    <p class="field-hint">Avots norāda piegādātāja kopējo atlikumu pirms StockFlow pasūtījumiem. Jau pasūtītais daudzums tiek atņemts arī pēc atkārtota importa.</p>
     <p class="field-hint">Atbildes gaidīšanas ierobežojums: {{ timeout }} sekundes savienojumam un lasīšanai. Maksimālais atbildes izmērs: 2 MiB. Kļūdas gadījumā viss imports tiek atcelts.</p>
     <form method="post" class="admin-form">
         <input type="hidden" name="csrf_token" value="{{ csrf_token }}">

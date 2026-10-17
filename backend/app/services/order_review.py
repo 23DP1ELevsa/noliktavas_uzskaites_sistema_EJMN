@@ -1,4 +1,4 @@
-"""Check current offers without changing the submitted order or reserving stock."""
+"""Check current offers, accounting for stock already allocated to this order."""
 
 from collections import Counter
 
@@ -37,8 +37,11 @@ def approval_issues(order, *, lock=False):
                 or (offer.supplier_id is not None and (supplier is None or not supplier.is_active))):
             issues.append(prefix + "piedāvājums, prece vai piegādātājs vairs nav aktīvs.")
         quantity = quantities[item.offer_id]
-        if quantity > offer.stock_qty:
+        if not order.stock_deducted and quantity > offer.stock_qty:
             issues.append(prefix + f"pieprasītais daudzums ir {quantity}, atlikums — {offer.stock_qty}.")
+        if (order.stock_deducted and offer.imported_stock_qty is not None
+                and offer.allocated_qty > offer.imported_stock_qty):
+            issues.append(prefix + "piegādātāja atlikums vairs nesedz rezervētos pasūtījumus.")
         if quantity < offer.min_order_qty:
             issues.append(prefix + f"minimālais pasūtījuma daudzums tagad ir {offer.min_order_qty}.")
         if (item.unit_price != offer.unit_price or item.delivery_price != offer.delivery_price

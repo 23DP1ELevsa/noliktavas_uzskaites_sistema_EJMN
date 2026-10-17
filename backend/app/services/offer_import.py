@@ -178,8 +178,10 @@ def save_imported_offers(records, *, source, admin_id):
                 updated += 1
             offer.supplier_id, offer.supplier_name = supplier_id, supplier.name
             for field in ("supplier_sku", "currency", "unit_price", "vat_included", "vat_rate",
-                          "stock_qty", "min_order_qty", "delivery_days"):
+                          "min_order_qty", "delivery_days"):
                 setattr(offer, field, data[field])
+            offer.imported_stock_qty = data["stock_qty"]
+            offer.stock_qty = max(0, data["stock_qty"] - (offer.allocated_qty or 0))
             offer.delivery_price = data.get("delivery_price", supplier.delivery_price)
             if "is_active" in data:
                 offer.is_active = data["is_active"]

@@ -16,6 +16,7 @@
             <p class="field-hint" id="import-file-hint">UTF-8 kodējums · līdz 2 MiB · līdz 10 000 piedāvājumiem. {{ 'Pirmā rinda: kolonnu nosaukumi. Atdalītājs: komats vai semikols.' if import_format == 'CSV' else 'Faila saknē jābūt masīvam [...].' }}</p>
         </div>
         <p class="admin-context">Jauns piedāvājums tiek pievienots, esošs — atjaunināts pēc piegādātāja un tā preces koda. Ja kāds ieraksts ir kļūdains, viss imports tiek atcelts.</p>
+        <p class="field-hint">Failā norādiet piegādātāja kopējo atlikumu pirms StockFlow pasūtījumiem. Sistēma pati atņem jau pasūtīto daudzumu; atkārtots imports to neatjauno.</p>
         <p class="field-hint">Preces un piegādātājiem jau jābūt izveidotiem un aktīviem. Paraugs izmanto demonstrācijas preces un piegādātājus; pielāgojiet kodus un nosaukumus savai datubāzei.</p>
         <p class="field-hint">Obligāti: product_sku, supplier_sku, supplier_id vai supplier_name, currency, unit_price, vat_included, min_order_qty, stock_qty, delivery_days. Cenai bez PVN norādiet arī vat_rate.</p>
         <div class="admin-form-actions"><a class="admin-secondary-button" href="{{ url_for('admin.supplier_products') }}">Atvērt piedāvājumus</a><button class="admin-primary-button" type="submit">Importēt {{ import_format }}</button></div>

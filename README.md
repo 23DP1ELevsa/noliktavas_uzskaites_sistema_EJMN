@@ -1,5 +1,8 @@
 # StockFlow
 
+Railway datu apmaiņas un pasūtījumu atlikumu izvietošana/pārbaude:
+[soļi un nepieciešamie iestatījumi](docs/railway-verification.md).
+
 StockFlow ir B2B tīmekļa lietotne, kas apvieno vairāku piegādātāju preču piedāvājumus vienā katalogā. Lietotāji var meklēt preces, salīdzināt piedāvājumus, veidot grozu un iesniegt pasūtījumus.
 
 ## Tehnoloģijas

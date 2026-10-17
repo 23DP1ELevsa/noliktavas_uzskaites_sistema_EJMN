@@ -59,6 +59,9 @@ class Offer(IdentityMixin, db.Model):
     vat_included = db.Column(db.Boolean(create_constraint=True, name="vat_included_boolean"), nullable=False)
     min_order_qty = db.Column(db.Integer, nullable=False, default=1, server_default="1")
     stock_qty = db.Column(db.Integer, nullable=False, default=0, server_default="0")
+    # Local orders are not sent to suppliers: imports must retain their allocation.
+    allocated_qty = db.Column(db.BigInteger, nullable=False, default=0, server_default="0")
+    imported_stock_qty = db.Column(db.Integer)
     delivery_price = db.Column(db.Numeric(10, 2), nullable=False, default=0, server_default="0")
     delivery_days = db.Column(db.Integer, nullable=False, default=0, server_default="0")
     data_source = db.Column(db.String(20), nullable=False, default="manual", server_default="manual")

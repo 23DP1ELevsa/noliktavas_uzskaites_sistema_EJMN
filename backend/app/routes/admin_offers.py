@@ -61,7 +61,12 @@ def _selected_id(value, model):
 @admin_bp.route("/supplier-products/<int:offer_id>/edit", methods=["GET", "POST"])
 @admin_required
 def offer_form(offer_id=None):
-    offer = db.get_or_404(Offer, offer_id) if offer_id is not None else None
+    offer = None
+    if offer_id is not None:
+        query = db.select(Offer).where(Offer.id == offer_id)
+        if request.method == "POST":
+            query = query.with_for_update().execution_options(populate_existing=True)
+        offer = db.first_or_404(query)
     fields = ("supplier_id", "product_id", "supplier_sku", "unit_price", "vat_included", "vat_rate", "currency", "stock_qty", "min_order_qty", "delivery_days")
     errors = {}
     if request.method == "POST":
@@ -111,6 +116,9 @@ def offer_form(offer_id=None):
             errors["vat_rate"] = "Norādiet PVN likmi no 0 līdz 100 %, ar ne vairāk kā divām zīmēm aiz komata."
         if data["currency"] != "EUR":
             errors["currency"] = "Izvēlieties EUR — kataloga un groza valūtu."
+        if (offer and "stock_qty" not in errors
+                and int(data["stock_qty"]) + offer.allocated_qty > 2147483647):
+            errors["stock_qty"] = "Atlikums kopā ar rezervēto daudzumu pārsniedz atļauto robežu."
         if not errors:
             item = offer or Offer(created_by_admin_id=current_user.id, data_source="manual")
             item.supplier = supplier
@@ -126,6 +134,8 @@ def offer_form(offer_id=None):
             item.delivery_price = supplier.delivery_price
             for field in ("stock_qty", "min_order_qty", "delivery_days"):
                 setattr(item, field, int(data[field]))
+            # Manual editing explicitly sets the free balance, unlike supplier feeds.
+            item.imported_stock_qty = None
             db.session.add(item)
             try:
                 db.session.commit()

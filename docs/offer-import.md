@@ -69,6 +69,13 @@ lai saglabātu avota precizitāti. Tukša pakete atgriež abus skaitītājus ar 
 
 ## Identitāte, atjaunināšana un atomiskums
 
+No migrācijas `0008_order_stock` importa `stock_qty` nozīmē piegādātāja kopējo
+atlikumu pirms lokālajiem StockFlow pasūtījumiem. Saglabā avota atlikumu un
+katalogā pieejamo daudzumu aprēķina, atņemot `allocated_qty` (iesniegti un
+apstiprināti StockFlow pasūtījumi). Atkārtots imports neatjauno pasūtītās vienības.
+Piemērs: avotā 20, StockFlow pasūtītas 2 → pieejamas 18 arī pēc atkārtota importa.
+Skatiet [krājumu dzīves ciklu un ārējo sistēmu robežas](order-workflow.md#krājumu-migrācija-un-imports).
+
 - Piedāvājuma identitāte ir `(supplier_id, supplier_sku)`, neatkarīgi no
   importa avota. Ja CSV ierakstu vēlāk saņem no API, to atjaunina.
 - Vienā paketē atkārtota identitāte tiek noraidīta, nevis klusi pārrakstīta.

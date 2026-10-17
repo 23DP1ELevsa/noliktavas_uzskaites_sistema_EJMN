@@ -2,6 +2,7 @@ from datetime import datetime
 from decimal import Decimal
 
 import pytest
+from sqlalchemy import MetaData, Table, select, func
 from flask_migrate import downgrade, upgrade
 from sqlalchemy.exc import IntegrityError
 
@@ -287,12 +288,13 @@ def test_migration_rejects_existing_duplicates_without_removing_them(inventory, 
                             supplier_sku=original.supplier_sku, unit_price=1, vat_included=True)
     db.session.rollback()
     downgrade(directory=MIGRATIONS, revision="0006_order_notifications")
-    duplicate = Offer(**duplicate_values)
-    db.session.add(duplicate)
+    # Use the historical table shape, not the current ORM's newer columns.
+    historical = Table("offers", MetaData(), autoload_with=db.engine)
+    duplicate_id = db.session.execute(historical.insert().values(**duplicate_values)).inserted_primary_key[0]
     db.session.commit()
     result = database_app.test_cli_runner().invoke(args=["db", "upgrade"])
     assert result.exit_code == 1 and "Duplicate supplier offer codes" in result.output
-    assert len(offers()) == 2
-    db.session.delete(duplicate)
+    assert db.session.scalar(select(func.count()).select_from(historical)) == 2
+    db.session.execute(historical.delete().where(historical.c.id == duplicate_id))
     db.session.commit()
     upgrade(directory=MIGRATIONS)

@@ -20,7 +20,8 @@ def test_approval_rechecks_current_offers_and_preserves_submitted_order(comparis
     csrf = sign_in_admin(client, order.id)
     offer = offers[0]
     if change == 'stock':
-        offer.stock_qty = 1
+        offer.imported_stock_qty = 1
+        offer.stock_qty = 0
     elif change == 'minimum':
         offer.min_order_qty = 3
     elif change == 'price':
@@ -78,6 +79,9 @@ def test_approval_checks_total_quantity_for_duplicate_offer_lines(comparison_dat
                           vat_included=source.vat_included, vat_rate=source.vat_rate, currency=source.currency)
     db.session.add(duplicate)
     offers[0].stock_qty = 3
+    # Exercise historical, unallocated order lines, including duplicate offers.
+    offers[0].allocated_qty = 0
+    order.stock_deducted = False
     order.total_amount = Decimal('28.00')
     db.session.commit()
     csrf = sign_in_admin(client, order.id)

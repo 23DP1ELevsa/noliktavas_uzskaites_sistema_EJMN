@@ -28,7 +28,7 @@ def load_cart_summary(user_id, *, lock=False):
             query = query.options(joinedload(CartItem.offer).joinedload(Offer.product))
         items = db.session.scalars(query).all()
     if lock and items:
-        # Consistent lock order across users; checkout does not reserve stock.
+        # Refresh under locks before checking availability and allocating stock.
         offers = db.session.scalars(db.select(Offer).where(Offer.id.in_([item.offer_id for item in items]))
                                     .order_by(Offer.id).with_for_update()
                                     .execution_options(populate_existing=True)).all()

@@ -1,4 +1,5 @@
 from datetime import datetime, timezone
+from collections import Counter
 import re
 
 from flask import abort, flash, redirect, render_template, request, url_for
@@ -7,7 +8,8 @@ from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import joinedload
 
 from ..extensions import db
-from ..models import Order
+from ..models import Offer, Order
+from ..services.stock import allocate, release_order_stock
 from ..services.orders import customer_details, notify_decision
 from ..services.order_review import approval_issues
 from .admin import admin_bp, admin_required, _check_product_csrf, _product_csrf_token
@@ -65,6 +67,16 @@ def application_detail(order_id):
                     error, status_code = "Pieteikumu nevar apstiprināt: piedāvājumu dati ir mainījušies vai daudzums nav pieejams.", 409
                     db.session.rollback()
                 else:
+                    if decision == "decline":
+                        release_order_stock(order)
+                    elif not order.stock_deducted:
+                        # Orders submitted before migration 0008 were not allocated.
+                        quantities = Counter()
+                        for item in order.items:
+                            quantities[item.offer_id] += item.quantity
+                        for offer in db.session.scalars(db.select(Offer).where(Offer.id.in_(quantities))):
+                            allocate(offer, quantities[offer.id])
+                        order.stock_deducted = True
                     order.status = "apstiprināts" if decision == "approve" else "noraidīts"
                     order.admin_note = note or None
                     order.processed_by_admin_id = current_user.id

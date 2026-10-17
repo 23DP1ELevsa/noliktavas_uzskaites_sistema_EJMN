@@ -12,6 +12,7 @@ from ..services.cart import checkout_fingerprint, load_cart_summary
 from ..services.comparison import cart_csrf_token, require_cart_csrf
 from ..services.shopping_errors import shopping_database_error
 from ..services.orders import customer_details, notify_submission
+from ..services.stock import allocate
 import re
 
 orders_bp = Blueprint("orders", __name__, url_prefix="/orders")
@@ -65,10 +66,11 @@ def checkout():
                             vat_no=profile.vat_no or "", address=profile.address,
                             full_name=current_user.full_name, email=current_user.email, **form_data)
             order = Order(user_id=current_user.id, company_profile_id=profile.id,
-                          total_amount=summary["total"], customer_snapshot=snapshot)
+                          total_amount=summary["total"], customer_snapshot=snapshot, stock_deducted=True)
             db.session.add(order)
             for row in summary["rows"]:
                 offer, item = row["offer"], row["item"]
+                allocate(offer, item.quantity)
                 db.session.add(OrderItem(order=order, offer=offer, supplier_id=offer.supplier_id, product_name=offer.product.name,
                                         supplier_name=offer.supplier_name, unit_price=offer.unit_price,
                                         quantity=item.quantity, delivery_price=offer.delivery_price,

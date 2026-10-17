@@ -21,7 +21,7 @@
             <div class="form-field"><label for="currency">Valūta *</label><select id="currency" name="currency" required {% if errors.get('currency') %}aria-invalid="true" aria-describedby="currency-error"{% endif %}><option value="EUR">EUR — eiro</option></select>{{ error('currency') }}</div>
             {{ number('vat_rate', 'PVN likme (%)', 0, 100, '0.01') }}
             <div class="form-field"><label for="vat_included">PVN *</label><select id="vat_included" name="vat_included" required {% if errors.get('vat_included') %}aria-invalid="true" aria-describedby="vat_included-error"{% endif %}><option value="">Izvēlieties</option><option value="1" {% if form_data.vat_included == '1' %}selected{% endif %}>Iekļauts cenā</option><option value="0" {% if form_data.vat_included == '0' %}selected{% endif %}>Nav iekļauts cenā</option></select>{{ error('vat_included') }}</div>
-            {{ number('stock_qty', 'Atlikums', 0, 2147483647) }}
+            {{ number('stock_qty', 'Brīvais atlikums', 0, 2147483647) }}
             {{ number('min_order_qty', 'Minimālais daudzums', 1, 2147483647) }}
             {{ number('delivery_days', 'Piegādes termiņš (dienas)', 0, 2147483647) }}
             <div class="form-field"><label for="delivery_fee">Piegādes maksa</label><output id="delivery_fee">{{ '%.2f'|format(supplier.delivery_price) ~ ' €' if supplier else 'Izvēlieties piegādātāju' }}</output><p class="field-hint">Maksa tiek ņemta no piegādātāja iestatījumiem.</p></div>

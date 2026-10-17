@@ -10,7 +10,8 @@ pārskatīšanas kodu. Ja groza vai profila dati mainījušies, klients pārskat
 vēlreiz. Nederīga adrese, tālrunis vai piezīme tiek atzīmēta formā, saglabājot ievadi.
 
 Iesniegšana vienā datubāzes transakcijā saglabā pieteikumu, preču cenu un klienta
-datu kopiju, iztukšo grozu un izveido paziņojumus klientam un visiem aktīvajiem
+datu kopiju, samazina izvēlēto piedāvājumu pieejamo atlikumu, iztukšo grozu
+un izveido paziņojumus klientam un visiem aktīvajiem
 administratoriem. Klients redz pieteikuma numuru, statusu un iesniegtos datus.
 Profila izmaiņas vēlāk nepārraksta jauno pieteikumu kontaktinformāciju.
 
@@ -33,10 +34,13 @@ Klienta un administratora skatā noraidīta pieteikuma komentārs tiek attēlots
 ka iemesls nav norādīts. Lēmums, administrators, izskatīšanas laiks un paziņojumi tiek
 saglabāti vienā transakcijā. Pieteikuma rindas un summas netiek mainītas. Rindas
 bloķēšana un statusa pārbaude nepieļauj atkārtotu vai pretēju lēmumu pēc izskatīšanas.
-Pieteikums pats par sevi neveic maksājumu vai krājumu rezervāciju.
+Preces rezervē jau iesniegšanas brīdī. Apstiprināšana tās atkārtoti nenoraksta;
+noraidīšana atceļ rezervāciju. Maksājums netiek veikts. Kļūda atceļ gan
+pieteikuma, gan atlikumu un paziņojumu izmaiņas vienā transakcijā.
 
 Pirms apstiprināšanas pārbauda aktuālos piedāvājumus: preces, piedāvājuma un
-piegādātāja aktivitāti, kopējo daudzumu katram piedāvājumam pret atlikumu un
+piegādātāja aktivitāti, daudzumu pret brīvo atlikumu (vecām pieteikumu rindām
+bez rezervācijas) un
 minimumu, kā arī saglabātās cenas, PVN, valūtas, piegādes maksas un piegādātāja
 atbilstību. Pieteikums bez precēm vai ar dzēstu piedāvājumu nav apstiprināms.
 Neatbilstības rāda administratoram; apstiprināšanas pieprasījums tās atkārtoti
@@ -82,3 +86,27 @@ klienta datu kopijas attēlo saistītā profila datus. Pārbaudes:
 `tests/test_order_workflow.py`, `tests/test_cart_checkout.py`, `tests/test_layout.py`.
 Administratora saraksta un piekļuves pārbaudes: `tests/test_admin_orders.py`.
 Aktuālo piedāvājumu un atkārtotu lēmumu pārbaudes: `tests/test_order_review.py`.
+
+## Krājumu migrācija un imports
+
+Migrācija `0008_order_stock` pievieno `orders.stock_deducted`,
+`offers.allocated_qty` un `offers.imported_stock_qty`. Esošās summas, rindas
+un atlikumi paliek nemainīgi. Veciem iesniegtiem pieteikumiem preces noraksta
+vienu reizi apstiprinot; noraidīšana neatgriež daudzumu, kas nebija norakstīts.
+Vecie apstiprinātie pieteikumi netiek automātiski pārrēķināti.
+
+CSV/JSON/API `stock_qty` ir piegādātāja kopējais daudzums **pirms StockFlow
+lokālajiem pasūtījumiem**. Pieejamais daudzums ir `max(0, stock_qty - allocated_qty)`.
+Atkārtots identisks imports neatceļ rezervācijas, arī pēc apstiprināšanas.
+Ja piegādātāja jaunais atlikums nesedz rezervācijas, katalogā rāda 0 un
+administrators nevar apstiprināt pieteikumu. Noraidot atjauno tikai reāli
+pieejamo daudzumu atbilstoši pēdējam importam.
+
+Manuālajā piedāvājuma formā ievada brīvo atlikumu; tā ir apzināta atlikuma
+korekcija. StockFlow vēl nesūta pasūtījumus ārējam piegādātājam un neveic
+nosūtītu/izpildītu pasūtījumu sinhronizāciju. Ārējai sistēmai, kura jau
+atņēmusi tos pašus StockFlow pasūtījumus, vajadzīga atsevišķa saskaņošanas
+integrācija; šādu neto atlikumu nedrīkst importēt kā kopējo daudzumu.
+
+Pārbaudes: `tests/test_order_stock.py` (iesniegšana, pēdējās vienības,
+atkārtoti pieprasījumi, lēmumi, rollback, imports un migrācija).
