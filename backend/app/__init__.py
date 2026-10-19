@@ -1,4 +1,4 @@
-from flask import Flask, render_template
+from flask import Flask, render_template, request
 from flask_login import current_user
 from sqlalchemy.exc import SQLAlchemyError
 
@@ -29,6 +29,30 @@ def create_app(config_class=Config):
     login_manager.init_app(app)
     register_blueprints(app)
     register_commands(app)
+
+    def browser_error(error):
+        # Keep the existing API error contract; localize browser-facing pages.
+        if request.path.startswith("/api/") or request.path == "/catalog" or request.blueprint == "offers":
+            return error
+        messages = {
+            400: ("Pieprasījumu neizdevās apstrādāt", "Pārbaudiet ievadītos datus un mēģiniet vēlreiz."),
+            403: ("Piekļuve nav atļauta", "Jūsu kontam nav tiesību atvērt šo sadaļu."),
+            404: ("Lapa nav atrasta", "Lapa vai izvēlētais ieraksts vairs nav pieejams. Atgriezieties katalogā, lai turpinātu."),
+            405: ("Darbība nav atļauta", "Šai lapai izmantojiet paredzētās saites un veidlapas."),
+            413: ("Fails ir pārāk liels", "Izvēlieties mazāku failu un mēģiniet augšupielādēt vēlreiz."),
+            500: ("Neizdevās atvērt lapu", "Radās neparedzēta kļūda. Lūdzu, mēģiniet vēlreiz pēc brīža."),
+            503: ("Pakalpojums īslaicīgi nav pieejams", "Lūdzu, mēģiniet vēlreiz pēc brīža."),
+        }
+        title, message = messages[error.code]
+        if error.code < 500 and error.description != type(error).description:
+            message = error.description
+        response = error.get_response()
+        response.set_data(render_template("error.html", code=error.code, error_title=title, error_message=message))
+        response.content_type = "text/html; charset=utf-8"
+        return response
+
+    for code in (400, 403, 404, 405, 413, 500, 503):
+        app.register_error_handler(code, browser_error)
 
     @app.context_processor
     def navigation_notifications():

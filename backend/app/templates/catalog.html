@@ -10,48 +10,48 @@
 <body class="marketplace-page" data-catalog-url="{{ url_for('catalog.get_catalog') }}">
     {% include '_market_header.html' %}
 
-    <main>
+    <main id="main-content">
         <section class="market-hero">
-            <div class="breadcrumbs"><a href="/">StockFlow</a><span>/</span> Katalogs</div>
+            <nav class="breadcrumbs" aria-label="Atrašanās vieta"><a href="{{ url_for('index') }}">Sākumlapa</a><span>/</span><span>Katalogs</span></nav>
             <div class="hero-banner">
-                <p class="hero-label">Piegādātāju katalogs</p>
-                <h1>Atrodi preci.<br><strong>Salīdzini piedāvājumus.</strong></h1>
-                <p>Meklē aktīvas preces un izvēlies sev piemērotāko cenu no pieejamajiem piegādātājiem.</p>
+                <div><p class="hero-label">Preces jūsu uzņēmumam</p>
+                <h1>Preču katalogs</h1>
+                <p>Atrodiet vajadzīgo un salīdziniet piegādātāju piedāvājumus.</p></div>
                 <form class="global-search catalog-page-search" id="catalog-search-form" role="search">
-                    <span aria-hidden="true">⌕</span>
+                    {% from '_icons.html' import icon %}{{ icon('search') }}
                     <label class="sr-only" for="catalog-search">Meklēt pēc preces nosaukuma</label>
                     <input id="catalog-search" name="q" type="search"
-                           placeholder="Meklē pēc preces nosaukuma..." autocomplete="off">
+                           placeholder="Meklēt pēc preces nosaukuma…" autocomplete="off">
                     <button type="submit">Meklēt</button>
                 </form>
-                <div class="hero-shapes" aria-hidden="true"><span></span><span></span><span></span></div>
             </div>
         </section>
 
         <section class="market-layout" aria-label="Preču katalogs">
             <aside class="filters">
                 <div class="filter-heading">
-                    <h2>Filtri</h2>
+                    <h2>{{ icon('filter', 18) }} Filtri</h2>
                     <button id="clear-filters" type="button">Notīrīt</button>
                 </div>
                 <div class="filter-divider"></div>
-                <label class="supplier-title" for="supplier-filter">Piegādātājs</label>
-                <input class="filter-input" id="supplier-filter" type="text" placeholder="Piem., North">
+                <div class="filter-field"><label class="supplier-title" for="supplier-filter">Piegādātājs</label>
+                <input class="filter-input" id="supplier-filter" type="text" placeholder="Piegādātāja nosaukums"></div>
                 <div class="filter-divider"></div>
-                <p class="supplier-title">Cena, EUR</p>
+                <div class="filter-field"><p class="supplier-title">Cena, EUR</p>
                 <div class="price-fields">
                     <label><span class="sr-only">Minimālā cena</span><input id="min-price" type="number" min="0" step="0.01" placeholder="No"></label>
                     <span aria-hidden="true">—</span>
                     <label><span class="sr-only">Maksimālā cena</span><input id="max-price" type="number" min="0" step="0.01" placeholder="Līdz"></label>
-                </div>
+                </div></div>
                 <label class="filter-check">
                     <input id="stock-filter" type="checkbox">
                     <span>Tikai pieejamās</span>
                 </label>
                 <button class="apply-filters" id="apply-filters" type="button">Piemērot filtrus</button>
+                <p class="filter-caption">Cena un pieejamība atbilst izvēlētajiem filtriem.</p>
             </aside>
 
-            <div class="catalog-content">
+            <div class="catalog-content" aria-busy="true">
                 <div class="catalog-toolbar">
                     <div>
                         <h2>Visas preces</h2>
@@ -68,6 +68,7 @@
                     </label>
                 </div>
                 <p class="catalog-message" id="catalog-message" role="status"></p>
+                <noscript><p class="flash flash-error">Lai meklētu un atlasītu preces katalogā, pārlūkprogrammā jāiespējo JavaScript.</p></noscript>
                 <div class="product-grid" id="product-grid" aria-live="polite"></div>
             </div>
         </section>

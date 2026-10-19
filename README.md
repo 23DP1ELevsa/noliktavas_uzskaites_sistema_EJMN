@@ -5,6 +5,10 @@ Railway datu apmaiņas un pasūtījumu atlikumu izvietošana/pārbaude:
 
 StockFlow ir B2B tīmekļa lietotne, kas apvieno vairāku piegādātāju preču piedāvājumus vienā katalogā. Lietotāji var meklēt preces, salīdzināt piedāvājumus, veidot grozu un iesniegt pasūtījumus.
 
+Saskarnes pārveide: [dizaina sistēma un lapu pārklājums](docs/ui-redesign.md),
+[pārlūka pārbaužu palaišana](docs/ui-verification.md) un
+[pārveides rezultāti](docs/ui-redesign-report.md).
+
 ## Tehnoloģijas
 
 - Python 3.11+

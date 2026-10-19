@@ -8,37 +8,78 @@
 </head>
 <body class="account-page profile-page">
     {% include '_market_header.html' %}
-    <main class="admin-shell profile-shell">
-            <p class="account-kicker">Konta un uzņēmuma profils</p>
-            <h1>Mans profils</h1>
-            <p class="account-help">Pārskatiet paziņojumus un pieteikumus vai atjaunojiet uzņēmuma datus.</p>
-            {% if not profile %}<p class="flash">Pievienojiet sava uzņēmuma datus, lai tos izmantotu pieteikuma noformēšanā.</p>{% endif %}
-            {% with messages = get_flashed_messages(with_categories=true) %}
-                {% for category, message in messages %}
-                    <p class="flash flash-{{ category }}" role="{{ 'alert' if category == 'error' else 'status' }}">{{ message }}</p>
-                {% endfor %}
-            {% endwith %}
-            <div class="profile-grid"><aside class="profile-sidebar">
-            <section class="profile-notifications" aria-labelledby="notifications-title">
-                <div class="admin-toolbar"><h2 id="notifications-title">Paziņojumi{% if unread %} <span class="notification-count">{{ unread }}</span>{% endif %}</h2>{% if current_user.role == 'admin' %}<a href="{{ url_for('admin.applications') }}">Pieteikumi</a>{% else %}<a href="{{ url_for('orders.order_list') }}">Mani pieteikumi</a>{% endif %}</div>
-                {% for notification in notifications %}<article class="notification-row {{ 'notification-unread' if not notification.is_read else '' }}"><div><a href="{{ url_for('admin.application_detail', order_id=notification.order_id) if current_user.role == 'admin' else url_for('orders.order_detail', order_id=notification.order_id) }}">{{ notification.message }}</a><p class="field-hint"><time datetime="{{ notification.created_at.isoformat() }}Z" data-local-time>{{ notification.created_at.strftime('%d.%m.%Y. %H:%M') }} UTC</time>{% if not notification.is_read %} · Jauns{% endif %}</p></div>{% if not notification.is_read %}<form method="post" action="{{ url_for('auth.read_notification', notification_id=notification.id) }}"><input name="csrf_token" type="hidden" value="{{ csrf_token }}"><button class="notification-read-button" type="submit">Atzīmēt kā lasītu</button></form>{% endif %}</article>{% else %}<p class="field-hint">Pagaidām nav paziņojumu.</p>{% endfor %}
+    <main id="main-content" class="admin-shell profile-shell">
+        <div class="admin-toolbar">
+            <div>
+                <p class="account-kicker">Jūsu darba vide</p>
+                <h1>Mans profils</h1>
+                <p class="account-help">Pārskatiet paziņojumus un pieteikumus vai atjaunojiet uzņēmuma datus.</p>
+            </div>
+            <a class="admin-secondary-button" href="{{ url_for('catalog.catalog_page') }}">Atvērt katalogu <span aria-hidden="true">→</span></a>
+        </div>
+        {% if not profile %}<p class="flash" role="status">Pievienojiet sava uzņēmuma datus, lai tos izmantotu pieteikuma noformēšanā.</p>{% endif %}
+        {% include '_messages.html' %}
+        <div class="profile-grid">
+            <aside class="profile-sidebar">
+                <section class="profile-notifications" aria-labelledby="notifications-title">
+                    <div class="section-heading">
+                        <h2 id="notifications-title">Paziņojumi{% if unread %} <span class="notification-count" aria-label="{{ unread }} nelasīti paziņojumi">{{ unread }}</span>{% endif %}</h2>
+                        {% if current_user.role == 'admin' %}<a href="{{ url_for('admin.applications') }}">Pieteikumi <span aria-hidden="true">↗</span></a>{% else %}<a href="{{ url_for('orders.order_list') }}">Mani pieteikumi <span aria-hidden="true">↗</span></a>{% endif %}
+                    </div>
+                    {% for notification in notifications %}
+                    <article class="notification-row {{ 'notification-unread' if not notification.is_read else '' }}">
+                        <div>
+                            <a href="{{ url_for('admin.application_detail', order_id=notification.order_id) if current_user.role == 'admin' else url_for('orders.order_detail', order_id=notification.order_id) }}">{{ notification.message }}</a>
+                            <p class="field-hint"><time datetime="{{ notification.created_at.isoformat() }}Z" data-local-time>{{ notification.created_at.strftime('%d.%m.%Y. %H:%M') }} UTC</time>{% if not notification.is_read %} · Jauns{% endif %}</p>
+                        </div>
+                        {% if not notification.is_read %}
+                        <form method="post" action="{{ url_for('auth.read_notification', notification_id=notification.id) }}">
+                            <input name="csrf_token" type="hidden" value="{{ csrf_token }}">
+                            <button class="notification-read-button" type="submit">Atzīmēt kā lasītu</button>
+                        </form>
+                        {% endif %}
+                    </article>
+                    {% else %}
+                    <div class="notification-empty"><p>Pagaidām nav paziņojumu.</p><p class="field-hint">Šeit saņemsiet ziņas par saviem pieteikumiem.</p></div>
+                    {% endfor %}
+                </section>
+                <section class="profile-orders" aria-labelledby="profile-orders-title">
+                    <div class="section-heading"><h2 id="profile-orders-title">Mani pieteikumi</h2><a href="{{ url_for('orders.order_list') }}">Visi pieteikumi <span aria-hidden="true">→</span></a></div>
+                    {% for order in orders %}
+                    <a class="profile-order-row" href="{{ url_for('orders.order_detail', order_id=order.id) }}">
+                        <strong>#{{ order.id }}</strong>
+                        <span class="status-badge order-status-{{ order.status }}">{{ order.status }}</span>
+                        <strong>{{ '%.2f'|format(order.total_amount) }} €</strong>
+                    </a>
+                    {% else %}
+                    <div class="notification-empty"><p>Jums vēl nav pieteikumu.</p><a href="{{ url_for('catalog.catalog_page') }}">Atrast preces katalogā <span aria-hidden="true">→</span></a></div>
+                    {% endfor %}
+                </section>
+            </aside>
+            <section class="profile-settings" aria-labelledby="profile-settings-title">
+                <div class="section-heading"><div><h2 id="profile-settings-title">Profila dati</h2><p class="field-hint">Ar * atzīmētie lauki ir obligāti.</p></div></div>
+                <form method="post" class="account-form">
+                    {% from 'auth/_form_macros.html' import field with context %}
+                    <fieldset class="form-section">
+                        <legend>Kontaktpersona</legend>
+                        <div class="form-grid">
+                            {{ field('full_name', 'Vārds un uzvārds', 150, true, autocomplete='name') }}
+                            <div class="form-field">
+                                <label for="email">E-pasts</label>
+                                <input id="email" name="email" type="email" value="{{ current_user.email }}" disabled aria-describedby="email-hint">
+                                <p class="field-hint" id="email-hint">Konta e-pasta adresi nevar mainīt.</p>
+                            </div>
+                        </div>
+                    </fieldset>
+                    <fieldset class="form-section">
+                        <legend>Uzņēmums un piegāde</legend>
+                        <div class="form-grid">{% include 'auth/_company_fields.html' %}</div>
+                    </fieldset>
+                    <div class="form-actions"><button class="admin-primary-button" type="submit">Saglabāt profilu</button></div>
+                </form>
             </section>
-            {% if orders %}<section class="profile-orders" aria-labelledby="profile-orders-title"><div class="admin-toolbar"><h2 id="profile-orders-title">Mani pieteikumi</h2><a href="{{ url_for('orders.order_list') }}">Visi pieteikumi</a></div>{% for order in orders %}<a class="profile-order-row" href="{{ url_for('orders.order_detail', order_id=order.id) }}"><strong>#{{ order.id }}</strong><span class="status-badge order-status-{{ order.status }}">{{ order.status }}</span><strong>{{ '%.2f'|format(order.total_amount) }} €</strong></a>{% endfor %}</section>{% endif %}
-            </aside><section class="profile-settings"><h2>Profila dati</h2><p class="field-hint">Ar * atzīmētie lauki ir obligāti.</p>
-            <form method="post" class="account-form">
-                {% from 'auth/_form_macros.html' import field with context %}
-                {{ field('full_name', 'Vārds un uzvārds', 150, true, autocomplete='name') }}
-
-                <label for="email">E-pasts</label>
-                <input id="email" name="email" type="email" value="{{ current_user.email }}" disabled>
-
-                {% include 'auth/_company_fields.html' %}
-
-                <button type="submit">Saglabāt profilu</button>
-            </form>
-</section></div>
-
-        </main>
+        </div>
+    </main>
     {% include '_footer.html' %}
     <script src="{{ url_for('static', filename='js/comparison.js') }}" defer></script>
 </body>

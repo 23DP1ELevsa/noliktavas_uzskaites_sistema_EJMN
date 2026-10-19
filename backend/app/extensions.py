@@ -14,6 +14,8 @@ db = SQLAlchemy(metadata=MetaData(naming_convention={
 migrate = Migrate()
 login_manager = LoginManager()
 login_manager.login_view = "auth.login"
+login_manager.login_message = "Lai turpinātu, lūdzu, pieslēdzieties savam kontam."
+login_manager.login_message_category = "error"
 
 
 def configure_engine(engine):

@@ -8,18 +8,36 @@
 </head>
 <body class="marketplace-page">
     {% include '_market_header.html' %}
-    <main class="admin-shell">
+    <main id="main-content" class="admin-shell shopping-shell">
         <nav class="breadcrumbs" aria-label="Atrašanās vieta"><a href="{{ url_for('orders.order_list') }}">Mani pieteikumi</a><span>/</span><span>Pieteikums #{{ order.id }}</span></nav>
-        <section class="order-receipt">
-            <p class="account-kicker">Pieteikums #{{ order.id }}</p><h1>{{ 'Pieteikums iesniegts' if order.status == 'iesniegts' else 'Pieteikums' }}</h1>
-            <p>Statuss: <span class="status-badge order-status-{{ order.status }}">{{ order.status }}</span></p>
-            <p class="field-hint">Iesniegts: <time datetime="{{ order.created_at.isoformat() }}Z" data-local-time>{{ order.created_at.strftime('%d.%m.%Y. %H:%M') }} UTC</time>{% if order.processed_at %}<br>Lēmums pieņemts: <time datetime="{{ order.processed_at.isoformat() }}Z" data-local-time>{{ order.processed_at.strftime('%d.%m.%Y. %H:%M') }} UTC</time>{% endif %}</p>
-            {% if order.status == 'iesniegts' %}<p>Administrators saņēmis pieteikumu izskatīšanai. Par lēmumu saņemsiet paziņojumu savā profilā.</p>{% else %}{% include '_order_decision.html' %}{% endif %}
-            {% include '_order_customer.html' %}
-            {% include '_order_items.html' %}
-            <div class="shopping-grand-total receipt-total"><span>Kopsumma</span><strong>{{ '%.2f'|format(order.total_amount) }} €</strong></div>
-            <a class="admin-primary-button" href="{{ url_for('orders.order_list') }}">Mani pieteikumi</a>
-            <a class="admin-secondary-button" href="{{ url_for('auth.profile') }}">Mans profils</a>
+        <section class="order-receipt" aria-labelledby="order-title">
+            <div class="receipt-heading">
+                <div><p class="account-kicker">Pieteikums #{{ order.id }}</p><h1 id="order-title">{{ 'Pieteikums iesniegts' if order.status == 'iesniegts' else 'Pieteikums #' ~ order.id }}</h1><p class="field-hint">Iesniegts: <time datetime="{{ order.created_at.isoformat() }}Z" data-local-time>{{ order.created_at.strftime('%d.%m.%Y. %H:%M') }} UTC</time></p></div>
+                <span class="status-badge order-status-{{ order.status }}">{{ order.status }}</span>
+            </div>
+            <div class="cart-layout">
+                <div class="supplier-groups">
+                    {% include '_order_customer.html' %}
+                    <div class="section-heading"><h2>Pieteikuma preces</h2><span class="field-hint">{{ order.items|length }} {{ 'prece' if order.items|length == 1 else 'preces' }}</span></div>
+                    {% include '_order_items.html' %}
+                </div>
+                <aside class="shopping-summary" aria-labelledby="order-summary-title">
+                    <p class="account-kicker">Pieteikums #{{ order.id }}</p>
+                    <h2 id="order-summary-title">Pieteikuma pārskats</h2>
+                    <div class="receipt-status">
+                        <span class="field-hint">Statuss</span>
+                        <span class="status-badge order-status-{{ order.status }}">{{ order.status }}</span>
+                    </div>
+                    {% if order.processed_at %}<p class="field-hint">Lēmums pieņemts: <time datetime="{{ order.processed_at.isoformat() }}Z" data-local-time>{{ order.processed_at.strftime('%d.%m.%Y. %H:%M') }} UTC</time></p>{% endif %}
+                    {% if order.status == 'iesniegts' %}<p class="summary-help">Administrators saņēmis pieteikumu izskatīšanai. Par lēmumu saņemsiet paziņojumu savā profilā.</p>{% else %}{% include '_order_decision.html' %}{% endif %}
+                    <div class="shopping-grand-total receipt-total"><span>Kopsumma</span><strong>{{ '%.2f'|format(order.total_amount) }} €</strong></div>
+                    <p class="field-hint">Pieteikumā saglabātās cenas un piegādes maksas.</p>
+                    <div class="receipt-actions">
+                        <a class="admin-primary-button" href="{{ url_for('orders.order_list') }}">Mani pieteikumi</a>
+                        <a class="admin-secondary-button" href="{{ url_for('auth.profile') }}">Mans profils</a>
+                    </div>
+                </aside>
+            </div>
         </section>
     </main>
     {% include '_footer.html' %}

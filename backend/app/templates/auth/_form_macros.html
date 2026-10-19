@@ -1,6 +1,6 @@
 {% macro field(name, label, limit, required=false, type='text', autocomplete='', hint='') %}
     <div class="form-field">
-        <label for="{{ name }}">{{ label }}{% if required %} *{% endif %}</label>
+        <label for="{{ name }}">{{ label }}{% if required %} <span class="required-mark" aria-hidden="true">*</span>{% endif %}</label>
         <input id="{{ name }}" name="{{ name }}" type="{{ type }}" value="{{ form_data[name] }}" maxlength="{{ limit }}" {% if required %}required{% endif %} {% if autocomplete %}autocomplete="{{ autocomplete }}"{% endif %} {% if errors.get(name) %}aria-invalid="true"{% endif %} {% if errors.get(name) or hint %}aria-describedby="{% if errors.get(name) %}{{ name }}-error {% endif %}{% if hint %}{{ name }}-hint{% endif %}"{% endif %}>
         {% if hint %}<p class="field-hint" id="{{ name }}-hint">{{ hint }}</p>{% endif %}
         {% if errors.get(name) %}<p class="field-error" id="{{ name }}-error">{{ errors[name] }}</p>{% endif %}

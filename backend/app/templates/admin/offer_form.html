@@ -3,9 +3,10 @@
 {% block content %}
 <nav class="admin-breadcrumbs" aria-label="Atrašanās vieta"><a href="{{ url_for('admin.supplier_products') }}">Piedāvājumi</a><span>/</span><span>{{ self.title() }}</span></nav>
 <section class="form-panel">
-    <p class="account-help">Izvēlieties piegādātāju un preci, tad norādiet pasūtīšanas nosacījumus.</p>
-    {% if errors %}<p class="flash flash-error" role="alert">Prece nav saglabāta. Pārbaudiet atzīmētos laukus.</p>{% endif %}
+    <div class="form-section-heading"><p class="eyebrow">Piegādātāja piedāvājums</p><h2>Cena, atlikums un piegāde</h2><p>Izvēlieties piegādātāju un preci, tad norādiet pasūtīšanas nosacījumus. Ar * atzīmētie lauki ir obligāti.</p></div>
+    {% if errors %}<p class="flash flash-error" role="alert">Piedāvājums nav saglabāts. Pārbaudiet atzīmētos laukus.</p>{% endif %}
     {% if not suppliers %}<p class="flash flash-error">Vispirms <a href="{{ url_for('admin.supplier_form') }}">pievienojiet piegādātāju</a>.</p>{% endif %}
+    {% if not products %}<p class="flash flash-error">Vispirms <a href="{{ url_for('admin.product_form') }}">pievienojiet preci</a> kopējam katalogam.</p>{% endif %}
     {% macro error(name) %}{% if errors.get(name) %}<p class="field-error" id="{{ name }}-error">{{ errors[name] }}</p>{% endif %}{% endmacro %}
     {% macro number(name, label, minimum, maximum, step='1') %}
     <div class="form-field"><label for="{{ name }}">{{ label }} *</label><input id="{{ name }}" name="{{ name }}" type="number" min="{{ minimum }}" max="{{ maximum }}" step="{{ step }}" value="{{ form_data[name] }}" required {% if errors.get(name) %}aria-invalid="true" aria-describedby="{{ name }}-error"{% endif %}>{{ error(name) }}</div>
@@ -13,14 +14,23 @@
     <form method="post" class="admin-form supplier-form">
         <input name="csrf_token" type="hidden" value="{{ csrf_token }}">
         {% if offer %}<input name="product_id" type="hidden" value="{{ offer.product_id }}">{% if offer.supplier_id %}<input name="supplier_id" type="hidden" value="{{ offer.supplier_id }}">{% endif %}{% endif %}
+        <section class="form-section" aria-label="Prece un piegādātājs">
         <div class="form-field"><label for="supplier_id">Piegādātājs *</label><select id="supplier_id" name="supplier_id" required {% if offer and offer.supplier_id %}disabled{% endif %} {% if errors.get('supplier_id') %}aria-invalid="true" aria-describedby="supplier_id-error"{% endif %}><option value="">Izvēlieties piegādātāju</option>{% for item in suppliers %}<option value="{{ item.id }}" data-fee="{{ '%.2f'|format(item.delivery_price) }}" {% if form_data.supplier_id|string == item.id|string %}selected{% endif %}>{{ item.name }}{{ ' (neaktīvs)' if not item.is_active else '' }}</option>{% endfor %}</select>{{ error('supplier_id') }}</div>
         <div class="form-field"><label for="product_id">Prece *</label><select id="product_id" name="product_id" required {% if offer %}disabled{% endif %} {% if errors.get('product_id') %}aria-invalid="true" aria-describedby="product_id-error"{% endif %}><option value="">Izvēlieties preci</option>{% for item in products %}<option value="{{ item.id }}" {% if form_data.product_id|string == item.id|string %}selected{% endif %}>{{ item.name }} · {{ item.sku }}{{ ' (neaktīva)' if not item.is_active else '' }}</option>{% endfor %}</select>{{ error('product_id') }}<a id="new-product-link" class="field-hint" href="{{ url_for('admin.product_form', supplier_id=supplier.id) if supplier else url_for('admin.product_form') }}">+ Izveidot jaunu preci</a></div>
         <div class="form-field"><label for="supplier_sku">Piegādātāja preces kods</label><input id="supplier_sku" name="supplier_sku" value="{{ form_data.supplier_sku }}" maxlength="100" {% if errors.get('supplier_sku') %}aria-invalid="true" aria-describedby="supplier_sku-error"{% endif %}>{{ error('supplier_sku') }}</div>
+        </section>
+        <section class="form-section" aria-label="Cena un PVN">
+        <div class="form-section-heading"><h2>Cena un PVN</h2><p>Norādiet vienas preces vienības cenu un tās nodokļu nosacījumus.</p></div>
         <div class="form-grid">
             {{ number('unit_price', 'Vienības cena (€)', 0, '99999999.99', '0.01') }}
             <div class="form-field"><label for="currency">Valūta *</label><select id="currency" name="currency" required {% if errors.get('currency') %}aria-invalid="true" aria-describedby="currency-error"{% endif %}><option value="EUR">EUR — eiro</option></select>{{ error('currency') }}</div>
             {{ number('vat_rate', 'PVN likme (%)', 0, 100, '0.01') }}
             <div class="form-field"><label for="vat_included">PVN *</label><select id="vat_included" name="vat_included" required {% if errors.get('vat_included') %}aria-invalid="true" aria-describedby="vat_included-error"{% endif %}><option value="">Izvēlieties</option><option value="1" {% if form_data.vat_included == '1' %}selected{% endif %}>Iekļauts cenā</option><option value="0" {% if form_data.vat_included == '0' %}selected{% endif %}>Nav iekļauts cenā</option></select>{{ error('vat_included') }}</div>
+        </div>
+        </section>
+        <section class="form-section" aria-label="Atlikums un piegāde">
+        <div class="form-section-heading"><h2>Atlikums un piegāde</h2><p>Šie nosacījumi palīdz klientam plānot pasūtījumu.</p></div>
+        <div class="form-grid">
             {{ number('stock_qty', 'Brīvais atlikums', 0, 2147483647) }}
             {{ number('min_order_qty', 'Minimālais daudzums', 1, 2147483647) }}
             {{ number('delivery_days', 'Piegādes termiņš (dienas)', 0, 2147483647) }}
@@ -28,6 +38,7 @@
         </div>
         <label class="filter-check"><input name="is_active" type="checkbox" value="1" {% if form_data.is_active %}checked{% endif %}><span>Aktīva piegādātāja prece</span></label>
         <p class="field-hint">Katalogā tā pieejama, ja arī piegādātājs un prece ir aktīvi. Deaktivizēšana saglabā pasūtījumu vēsturi.</p>
+        </section>
         <div class="admin-form-actions"><a class="admin-secondary-button" href="{{ url_for('admin.supplier_detail', supplier_id=supplier.id) if supplier else url_for('admin.supplier_products') }}">Atcelt</a><button class="admin-primary-button" type="submit" {% if not products or not suppliers %}disabled{% endif %}>Saglabāt</button></div>
     </form>
     {% if offer %}<div class="offer-management-meta"><p class="field-hint">Atjaunināts: <time datetime="{{ offer.updated_at.isoformat() }}Z" data-local-time>{{ offer.updated_at.strftime('%d.%m.%Y. %H:%M') }} UTC</time></p><a class="admin-secondary-button" href="{{ url_for('admin.delete_offer', offer_id=offer.id) }}">Dzēst / deaktivizēt</a></div>{% endif %}

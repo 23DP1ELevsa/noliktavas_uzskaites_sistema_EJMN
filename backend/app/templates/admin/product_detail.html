@@ -1,29 +1,22 @@
-{% extends "admin/base.html" %}
+{% extends 'admin/base.html' %}
 {% block title %}Preces informācija{% endblock %}
 {% block content %}
-    <nav class="admin-breadcrumbs" aria-label="Atrašanās vieta"><a href="{{ url_for('admin.products') }}">Preces</a><span>/</span><span>{{ product.name }}</span></nav>
-    <section class="product-detail">
-        <div class="detail-image">{% if product.image_url %}<img src="{{ product.image_url }}" alt="{{ product.name }}" referrerpolicy="no-referrer">{% else %}<span aria-hidden="true">{{ product.name[:1]|upper }}</span>{% endif %}</div>
-        <div class="detail-copy">
-            <span class="status-badge {% if not product.is_active %}status-inactive{% endif %}">{{ 'Aktīva' if product.is_active else 'Neaktīva' }}</span>
-            <h2>{{ product.name }}</h2>
-            <p class="detail-description">{{ product.description or 'Apraksts nav pievienots.' }}</p>
-            <dl class="product-facts">
-                <div><dt>SKU</dt><dd>{{ product.sku }}</dd></div>
-                <div><dt>Kategorija</dt><dd>{{ product.category.name }}</dd></div>
-                <div><dt>Zīmols</dt><dd>{{ product.brand or 'Nav norādīts' }}</dd></div>
-                <div><dt>Modelis</dt><dd>{{ product.model or 'Nav norādīts' }}</dd></div>
-                <div><dt>Mērvienība</dt><dd>{{ product.unit }}</dd></div>
-                <div><dt>Piedāvājumi</dt><dd>{{ product.offers|length }}</dd></div>
-            </dl>
-            <div class="admin-form-actions">
-                <a class="admin-primary-button" href="{{ url_for('admin.product_form', product_id=product.id) }}">Rediģēt preci</a>
-                <a class="admin-secondary-button" href="{{ url_for('admin.delete_product', product_id=product.id) }}">{{ 'Deaktivizēt preci' if product.offers else 'Dzēst preci' }}</a>
-            </div>
-        </div>
-    </section>
-    <div class="admin-toolbar supplier-offers-heading"><h2>Piegādātāji un cenas</h2><a class="admin-primary-button" href="{{ url_for('admin.offer_form', product_id=product.id) }}">Piesaistīt piegādātāju</a></div>
-    <section class="category-list" aria-label="Preces piegādātāji">
-        {% for offer in product.offers %}<article class="category-row supplier-product-row"><div><h3>{{ offer.supplier.name if offer.supplier else offer.supplier_name }}</h3><p>{{ 'Aktīvs' if offer.is_active and offer.supplier_active else 'Neaktīvs' }} · Atlikums {{ offer.stock_qty }}</p></div><strong>{{ '%.2f'|format(offer.unit_price) }} € / {{ product.unit }}</strong><div class="category-row-actions"><a href="{{ url_for('admin.offer_form', offer_id=offer.id) }}">Rediģēt</a></div></article>{% else %}<p class="empty-state">Precei vēl nav piesaistīts piegādātājs.</p>{% endfor %}
-    </section>
+<nav class="admin-breadcrumbs" aria-label="Atrašanās vieta"><a href="{{ url_for('admin.products') }}">Preces</a><span aria-hidden="true">/</span><span>{{ product.name }}</span></nav>
+<section class="product-detail panel">
+    <div class="detail-image"><span class="image-fallback" aria-hidden="true" {% if product.image_url %}hidden{% endif %}>{{ product.name[:1]|upper }}</span>{% if product.image_url %}<img src="{{ product.image_url }}" alt="{{ product.name }}" referrerpolicy="no-referrer" data-admin-image>{% endif %}</div>
+    <div class="detail-copy">
+        <span class="status-badge {% if not product.is_active %}status-inactive{% endif %}">{{ 'Aktīva' if product.is_active else 'Neaktīva' }}</span>
+        <h2>{{ product.name }}</h2><p class="detail-description">{{ product.description or 'Apraksts nav pievienots.' }}</p>
+        <dl class="product-facts"><div><dt>SKU</dt><dd>{{ product.sku }}</dd></div><div><dt>Kategorija</dt><dd>{{ product.category.name }}</dd></div><div><dt>Zīmols</dt><dd>{{ product.brand or 'Nav norādīts' }}</dd></div><div><dt>Modelis</dt><dd>{{ product.model or 'Nav norādīts' }}</dd></div><div><dt>Mērvienība</dt><dd>{{ product.unit }}</dd></div><div><dt>Piedāvājumi</dt><dd>{{ product.offers|length }}</dd></div></dl>
+        <div class="admin-form-actions"><a class="admin-primary-button" href="{{ url_for('admin.product_form', product_id=product.id) }}">Rediģēt preci</a><a class="admin-secondary-button" href="{{ url_for('admin.delete_product', product_id=product.id) }}">{{ 'Deaktivizēt preci' if product.offers else 'Dzēst preci' }}</a></div>
+    </div>
+</section>
+<div class="admin-page-heading supplier-offers-heading"><div><h2>Piegādātāji un cenas</h2><p>Vienas preces piedāvājumi no dažādiem piegādātājiem.</p></div><a class="admin-primary-button" href="{{ url_for('admin.offer_form', product_id=product.id) }}"><span aria-hidden="true">+</span> Piesaistīt piegādātāju</a></div>
+<section class="panel" aria-label="Preces piegādātāji">
+    {% if product.offers %}
+    <div class="table-scroll" role="region" aria-label="Piegādātāju cenas" tabindex="0"><table class="admin-table"><thead><tr><th scope="col">Piegādātājs</th><th scope="col">Statuss</th><th scope="col">Vienības cena</th><th scope="col">Atlikums</th><th scope="col"><span class="sr-only">Darbības</span></th></tr></thead><tbody>
+    {% for offer in product.offers %}<tr><td class="cell-primary">{{ offer.supplier.name if offer.supplier else offer.supplier_name }}</td><td><span class="status-badge {{ 'status-inactive' if not (offer.is_active and offer.supplier_active) else '' }}">{{ 'Aktīvs' if offer.is_active and offer.supplier_active else 'Neaktīvs' }}</span></td><td><strong>{{ '%.2f'|format(offer.unit_price) }} €</strong><span class="cell-meta">/ {{ product.unit }}</span></td><td>{{ offer.stock_qty }} {{ product.unit }}</td><td><a href="{{ url_for('admin.offer_form', offer_id=offer.id) }}">Rediģēt<span class="sr-only"> {{ offer.supplier_name }} piedāvājumu</span></a></td></tr>{% endfor %}
+    </tbody></table></div>
+    {% else %}<div class="empty-state"><h2>Piegādātājs vēl nav piesaistīts</h2><p>Pievienojiet piedāvājumu, lai norādītu preces cenu un atlikumu.</p><a class="admin-secondary-button" href="{{ url_for('admin.offer_form', product_id=product.id) }}">Piesaistīt piegādātāju</a></div>{% endif %}
+</section>
 {% endblock %}

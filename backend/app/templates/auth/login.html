@@ -1,3 +1,4 @@
+{% from '_icons.html' import icon %}
 <!doctype html>
 <html lang="lv">
 <head>
@@ -8,25 +9,38 @@
 </head>
 <body class="account-page">
     {% include '_market_header.html' %}
-    <div class="account-content">
-        <main class="account-card">
-
-            <p class="account-kicker">Jūsu konts</p>
-            <h1>Pieslēgties</h1>
-            {% with messages = get_flashed_messages(with_categories=true) %}
-                {% for category, message in messages %}<p class="flash flash-{{ category }}">{{ message }}</p>{% endfor %}
-            {% endwith %}
+    <main id="main-content" class="account-content account-layout">
+        <aside class="account-intro" aria-labelledby="account-intro-title">
+            <span class="account-intro-icon" aria-hidden="true">{{ icon('layers', 32) }}</span>
+            <p class="account-kicker">Iepirkumi vienuviet</p>
+            <h2 id="account-intro-title">Pārskatāmi iepirkumi.<br>Pamatota izvēle.</h2>
+            <p>Salīdziniet piegādātāju piedāvājumus un pārvaldiet uzņēmuma iepirkumus vienā darba vidē.</p>
+            <ul class="account-benefits">
+                <li>Salīdzināmas cenas un piegādes nosacījumi</li>
+                <li>Vienots grozs vairākiem piegādātājiem</li>
+                <li>Pieteikumu vēsture un statusa paziņojumi</li>
+            </ul>
+        </aside>
+        <section class="account-card" aria-labelledby="login-title">
+            <p class="account-kicker">Laipni lūdzam atpakaļ</p>
+            <h1 id="login-title">Pieslēgties</h1>
+            <p class="account-help">Ievadiet sava uzņēmuma konta piekļuves datus.</p>
+            {% include '_messages.html' %}
             <form method="post" class="account-form">
                 <input type="hidden" name="next" value="{{ next_url }}">
-                <label for="email">E-pasts</label>
-                <input id="email" name="email" type="email" value="{{ request.form.get('email', '') }}" required autocomplete="email">
-                <label for="password">Parole</label>
-                <input id="password" name="password" type="password" required autocomplete="current-password">
-                <button type="submit">Pieslēgties</button>
+                <div class="form-field">
+                    <label for="email">E-pasts</label>
+                    <input id="email" name="email" type="email" value="{{ request.form.get('email', '') }}" required autocomplete="email" placeholder="vards@uznemums.lv">
+                </div>
+                <div class="form-field">
+                    <label for="password">Parole</label>
+                    <input id="password" name="password" type="password" required autocomplete="current-password">
+                </div>
+                <button class="admin-primary-button" type="submit">Pieslēgties <span aria-hidden="true">→</span></button>
             </form>
             <p class="account-switch">Vēl nav konta? <a href="{{ url_for('auth.register') }}">Reģistrēties</a></p>
-        </main>
-    </div>
+        </section>
+    </main>
     {% include '_footer.html' %}
 </body>
 </html>

@@ -1,3 +1,4 @@
+{% from '_icons.html' import icon %}
 <!doctype html>
 <html lang="lv">
 <head>
@@ -8,30 +9,53 @@
 </head>
 <body class="account-page">
     {% include '_market_header.html' %}
-    <div class="account-content">
-        <main class="account-card account-card-wide">
-
-            <p class="account-kicker">Izveidojiet kontu</p>
-            <h1>Izveidot kontu</h1>
+    <main id="main-content" class="account-content account-layout account-register-layout">
+        <aside class="account-intro" aria-labelledby="account-intro-title">
+            <span class="account-intro-icon" aria-hidden="true">{{ icon('layers', 32) }}</span>
+            <p class="account-kicker">Jūsu uzņēmuma darba vide</p>
+            <h2 id="account-intro-title">Vieta pārdomātiem<br>iepirkumu lēmumiem.</h2>
+            <p>Izveidojiet uzņēmuma kontu, lai saglabātu izvēlētās preces un iesniegtu iepirkumu pieteikumus.</p>
+            <ul class="account-benefits">
+                <li>Piegādātāju piedāvājumu salīdzināšana</li>
+                <li>Uzņēmuma un piegādes dati vienuviet</li>
+                <li>Pieteikumu pārskats un paziņojumi</li>
+            </ul>
+        </aside>
+        <section class="account-card account-card-wide" aria-labelledby="register-title">
+            <p class="account-kicker">Sāciet ar uzņēmuma kontu</p>
+            <h1 id="register-title">Izveidot kontu</h1>
             <p class="account-help">Ar * atzīmētie lauki ir obligāti.</p>
-            {% with messages = get_flashed_messages(with_categories=true) %}
-                {% for category, message in messages %}<p class="flash flash-{{ category }}">{{ message }}</p>{% endfor %}
-            {% endwith %}
+            {% include '_messages.html' %}
             <form method="post" class="account-form">
                 {% from 'auth/_form_macros.html' import field with context %}
-                {{ field('full_name', 'Vārds un uzvārds', 150, true, autocomplete='name') }}
-                <label for="email">E-pasts *</label>
-                <input id="email" name="email" type="email" value="{{ request.form.get('email', '') }}" maxlength="255" required autocomplete="email">
-                <label for="password">Parole *</label>
-                <input id="password" name="password" type="password" required minlength="8" autocomplete="new-password">
-                <label for="password_confirmation">Atkārtot paroli *</label>
-                <input id="password_confirmation" name="password_confirmation" type="password" required minlength="8" autocomplete="new-password">
-                {% include 'auth/_company_fields.html' %}
-                <button type="submit">Izveidot kontu</button>
+                <fieldset class="form-section">
+                    <legend>Piekļuves dati</legend>
+                    <div class="form-grid">
+                        {{ field('full_name', 'Vārds un uzvārds', 150, true, autocomplete='name') }}
+                        <div class="form-field">
+                            <label for="email">E-pasts *</label>
+                            <input id="email" name="email" type="email" value="{{ request.form.get('email', '') }}" maxlength="255" required autocomplete="email">
+                        </div>
+                        <div class="form-field">
+                            <label for="password">Parole *</label>
+                            <input id="password" name="password" type="password" required minlength="8" autocomplete="new-password" aria-describedby="password-hint">
+                            <p class="field-hint" id="password-hint">Vismaz 8 rakstzīmes.</p>
+                        </div>
+                        <div class="form-field">
+                            <label for="password_confirmation">Atkārtot paroli *</label>
+                            <input id="password_confirmation" name="password_confirmation" type="password" required minlength="8" autocomplete="new-password">
+                        </div>
+                    </div>
+                </fieldset>
+                <fieldset class="form-section">
+                    <legend>Uzņēmuma dati</legend>
+                    <div class="form-grid">{% include 'auth/_company_fields.html' %}</div>
+                </fieldset>
+                <div class="form-actions"><button class="admin-primary-button" type="submit">Izveidot kontu <span aria-hidden="true">→</span></button></div>
             </form>
             <p class="account-switch">Jau ir konts? <a href="{{ url_for('auth.login') }}">Pieslēgties</a></p>
-        </main>
-    </div>
+        </section>
+    </main>
     {% include '_footer.html' %}
 </body>
 </html>

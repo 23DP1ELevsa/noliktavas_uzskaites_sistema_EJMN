@@ -3,41 +3,35 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="StockFlow — vienkāršāks veids, kā atrast un salīdzināt piegādātāju piedāvājumus.">
+    <meta name="description" content="StockFlow — uzņēmumu preču katalogs, piegādātāju piedāvājumu salīdzināšana un pārskatāmi iepirkumi.">
     <title>StockFlow | Sākumlapa</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
 <body class="landing-page">
     {% include '_market_header.html' %}
-
-    <main>
-        {% with messages = get_flashed_messages(with_categories=true) %}
-            {% if messages %}
-                <div class="flash-stack">
-                    {% for category, message in messages %}
-                        <p class="flash flash-{{ category }}">{{ message }}</p>
-                    {% endfor %}
-                </div>
-            {% endif %}
-        {% endwith %}
+    {% from '_icons.html' import icon %}
+    <main id="main-content">
+        <div class="flash-stack">{% include '_messages.html' %}</div>
         <section class="landing-hero">
             <div class="landing-copy">
-                <h1>Atrodi labāko<br><strong>piedāvājumu.</strong></h1>
-                <p class="landing-lede">StockFlow palīdz uzņēmumiem ātri atrast, salīdzināt un izvēlēties preces no vairākiem piegādātājiem.</p>
-                <a class="landing-primary-button" href="{{ url_for('catalog.catalog_page') }}" aria-label="Atvērt preču katalogu">Atvērt katalogu</a>
-                <div class="landing-steps" aria-label="StockFlow darbības princips">
-                    <div><span>01</span><p>Meklē</p></div>
-                    <div><span>02</span><p>Salīdzini</p></div>
-                    <div><span>03</span><p>Izvēlies</p></div>
-                </div>
+                <p class="hero-label"><span class="label-dot" aria-hidden="true"></span> Jūsu uzņēmuma iepirkumiem</p>
+                <h1>Vairāk skaidrības.<br><strong>Labāki iepirkumi.</strong></h1>
+                <p class="landing-lede">Preces, piegādātāji un piedāvājumi vienuviet. Salīdziniet cenas un piegādes nosacījumus, lai izvēlētos savam uzņēmumam piemērotāko.</p>
+                <div class="landing-cta"><a class="landing-primary-button" href="{{ url_for('catalog.catalog_page') }}">Atvērt katalogu {{ icon('arrow', 18) }}</a>{% if not current_user.is_authenticated %}<a class="landing-secondary-link" href="{{ url_for('auth.register') }}">Izveidot uzņēmuma kontu</a>{% endif %}</div>
+                <p class="landing-assurance">{{ icon('check', 16) }} Pārskatāmas cenas un piegādes nosacījumi</p>
             </div>
             <aside class="landing-preview" aria-label="StockFlow iespējas">
-                <div class="preview-heading"><strong>Viss vienā katalogā</strong><span>StockFlow</span></div>
-                <div class="preview-item"><span class="preview-icon" aria-hidden="true">01</span><div><strong>Preces un kategorijas</strong><small>Sakārtots katalogs ērtai meklēšanai</small></div></div>
-                <div class="preview-item"><span class="preview-icon" aria-hidden="true">02</span><div><strong>Piegādātāju piedāvājumi</strong><small>Cena, pieejamība un piegādes laiks</small></div></div>
-                <div class="preview-item"><span class="preview-icon" aria-hidden="true">03</span><div><strong>Pārskatāma izvēle</strong><small>Salīdziniet un atrodiet piemērotāko</small></div></div>
-                <p class="preview-note">Mazāk laika meklēšanai. Vairāk skaidrības izvēlē.</p>
+                <div class="preview-heading"><div><p class="eyebrow">Vienota darba vieta</p><h2>Viss, kas vajadzīgs izvēlei</h2></div><span class="preview-brand-icon">{{ icon('layers', 26) }}</span></div>
+                <div class="preview-item"><span class="preview-icon">{{ icon('search', 22) }}</span><div><strong>Atrodiet vajadzīgo</strong><small>Meklējiet preces un sašauriniet atlasi ar filtriem.</small></div><span class="preview-number" aria-hidden="true">01</span></div>
+                <div class="preview-item"><span class="preview-icon">{{ icon('compare', 22) }}</span><div><strong>Salīdziniet piedāvājumus</strong><small>Izvērtējiet cenu, atlikumu un piegādes termiņu.</small></div><span class="preview-number" aria-hidden="true">02</span></div>
+                <div class="preview-item"><span class="preview-icon">{{ icon('clipboard', 22) }}</span><div><strong>Noformējiet pieteikumu</strong><small>Apvienojiet izvēlētās preces vienā grozā.</small></div><span class="preview-number" aria-hidden="true">03</span></div>
+                <div class="preview-note">{{ icon('shield', 18) }} Pieteikumu gaita un paziņojumi jūsu profilā</div>
             </aside>
+        </section>
+        <section class="landing-features" aria-label="Iepirkumu priekšrocības">
+            <article><span class="feature-index">01 / KATALOGS</span><h2>Preces vienuviet</h2><p>Sakārtotas kategorijas un meklēšana palīdz ātrāk nonākt pie vajadzīgā.</p></article>
+            <article><span class="feature-index">02 / SALĪDZINĀŠANA</span><h2>Pamatota izvēle</h2><p>Salīdziniet vairāku piegādātāju piedāvājumus vienādam preču daudzumam.</p></article>
+            <article><span class="feature-index">03 / PĀRSKATĀMĪBA</span><h2>Kontrole pār iepirkumiem</h2><p>Saglabājiet uzņēmuma datus un sekojiet iesniegto pieteikumu statusam.</p></article>
         </section>
     </main>
     {% include '_footer.html' %}

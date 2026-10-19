@@ -7,13 +7,12 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
 <body class="admin-page">
-    <a class="skip-link" href="#main-content">Pāriet uz saturu</a>
     {% include '_market_header.html' %}
     <main class="admin-shell" id="main-content">
         <header class="admin-header">
             <div class="admin-heading">
 
-                <p class="account-kicker">Administratora panelis</p>
+                <p class="account-kicker">StockFlow administrēšana</p>
                 <h1>{{ self.title() }}</h1>
             </div>
 
@@ -27,9 +26,7 @@
             <a href="{{ url_for('admin.categories') }}" {% if request.endpoint in ['admin.categories', 'admin.create_category', 'admin.edit_category'] %}aria-current="page"{% endif %}>Kategorijas</a>
             <a href="{{ url_for('import_data.json_page') }}" {% if request.blueprint == 'import_data' %}aria-current="page"{% endif %}>Imports</a>
         </nav>
-        {% with messages = get_flashed_messages(with_categories=true) %}
-            {% for category, message in messages %}<p class="flash flash-{{ category }}" role="status">{{ message }}</p>{% endfor %}
-        {% endwith %}
+        {% include '_messages.html' %}
         {% block content %}{% endblock %}
     </main>
     {% include '_footer.html' %}

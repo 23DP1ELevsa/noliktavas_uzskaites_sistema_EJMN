@@ -1,36 +1,30 @@
-{% extends "admin/base.html" %}
+{% extends 'admin/base.html' %}
+{% from '_icons.html' import icon %}
 {% block title %}Kategorijas{% endblock %}
 {% block content %}
-        <div class="admin-toolbar">
-            <p>Izveidojiet, apskatiet, rediģējiet un dzēsiet preču kategorijas.</p>
-            <a class="admin-primary-button" href="{{ url_for('admin.create_category') }}">＋ Pievienot kategoriju</a>
-        </div>
-        <section class="category-list" aria-label="Kategoriju saraksts">
-            {% if categories %}
-                {% for category in categories %}
-                    <article class="category-row">
-                        <div>
-                            <h2>{{ category.name }}</h2>
-                            <p>{{ category.description or "Apraksts nav pievienots." }}</p>
-                            <small>{{ category.products|length }} piesaistītas preces</small>
-                        </div>
-                        <div class="category-row-actions">
-                            <a href="{{ url_for('admin.edit_category', category_id=category.id) }}">Rediģēt</a>
-                            <form method="post" action="{{ url_for('admin.delete_category', category_id=category.id) }}">
-                                <button type="submit" data-confirm-delete>Dzēst</button>
-                            </form>
-                        </div>
-                    </article>
-                {% endfor %}
-            {% else %}
-                <p class="empty-state">Kategorijas vēl nav izveidotas.</p>
-            {% endif %}
-        </section>
-    <script>
-        document.querySelectorAll("[data-confirm-delete]").forEach((button) => {
-            button.form.addEventListener("submit", (event) => {
-                if (!window.confirm("Vai tiešām dzēst šo kategoriju?")) event.preventDefault();
-            });
-        });
-    </script>
+<div class="admin-page-heading">
+    <div><h2>Sakārtots preču katalogs</h2><p>Veidojiet kategorijas, lai klienti ātrāk atrastu nepieciešamo.</p></div>
+    <a class="admin-primary-button" href="{{ url_for('admin.create_category') }}"><span aria-hidden="true">+</span> Pievienot kategoriju</a>
+</div>
+<section class="panel" aria-label="Kategoriju saraksts">
+    <div class="panel-heading"><h2>Visas kategorijas</h2><span class="results-count">{{ categories|length }} kategorijas</span></div>
+    {% if categories %}
+    <div class="table-scroll" role="region" aria-label="Kategorijas" tabindex="0">
+        <table class="admin-table"><thead><tr><th scope="col">Kategorija</th><th scope="col">Apraksts</th><th scope="col">Preces</th><th scope="col"><span class="sr-only">Darbības</span></th></tr></thead><tbody>
+        {% for category in categories %}
+        <tr><td class="cell-primary"><a href="{{ url_for('admin.edit_category', category_id=category.id) }}">{{ category.name }}</a></td><td>{{ category.description or 'Apraksts nav pievienots.' }}</td><td>{{ category.products|length }}</td><td><div class="category-row-actions"><a href="{{ url_for('admin.edit_category', category_id=category.id) }}">Rediģēt<span class="sr-only"> {{ category.name }}</span></a><form method="post" action="{{ url_for('admin.delete_category', category_id=category.id) }}"><button type="submit" data-confirm-delete>Dzēst<span class="sr-only"> {{ category.name }}</span></button></form></div></td></tr>
+        {% endfor %}
+        </tbody></table>
+    </div>
+    {% else %}
+    <div class="empty-state"><span class="empty-icon">{{ icon('layers', 28) }}</span><h2>Kategorijas vēl nav izveidotas</h2><p>Izveidojiet pirmo kategoriju un sāciet kārtot preces.</p><a class="admin-primary-button" href="{{ url_for('admin.create_category') }}">Pievienot kategoriju</a></div>
+    {% endif %}
+</section>
+<dialog class="confirmation-dialog" data-confirm-dialog aria-labelledby="delete-dialog-title" aria-describedby="delete-dialog-description">
+    <span class="confirmation-icon">{{ icon('warning', 24) }}</span>
+    <p class="eyebrow">Darbības apstiprinājums</p>
+    <h2 id="delete-dialog-title" tabindex="-1" autofocus>Dzēst kategoriju?</h2>
+    <p id="delete-dialog-description">Vai tiešām dzēst šo kategoriju? Kategoriju ar piesaistītām precēm izdzēst nevar.</p>
+    <div class="admin-form-actions"><button class="admin-secondary-button" type="button" data-confirm-cancel>Atcelt</button><button class="admin-danger-button" type="button" data-confirm-accept>Dzēst kategoriju</button></div>
+</dialog>
 {% endblock %}

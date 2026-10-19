@@ -1,22 +1,23 @@
+{% from '_icons.html' import icon %}
+<a class="skip-link" href="#main-content">Pāriet uz saturu</a>
 <header class="market-header">
     <div class="header-top">
-        <a class="brand" href="{{ url_for('index') }}" aria-label="StockFlow sākumlapa">
-            <span class="brand-mark" aria-hidden="true"><span></span><span></span><span></span></span>
-            <span>Stock<span class="brand-accent">Flow</span></span>
-        </a>
-        <nav class="header-actions user-navigation" aria-label="Galvenā navigācija">
+        <a class="brand" href="{{ url_for('index') }}" aria-label="StockFlow sākumlapa"><span class="brand-symbol">{{ icon('box', 25) }}</span><span>Stock<span class="brand-accent">Flow</span></span></a>
+        <button class="nav-toggle" type="button" aria-controls="site-navigation" aria-expanded="false">{{ icon('menu') }}<span>Izvēlne</span></button>
+        <nav class="header-actions user-navigation" id="site-navigation" aria-label="Galvenā navigācija">
             <a href="{{ url_for('catalog.catalog_page') }}" {% if request.blueprint == 'catalog' %}aria-current="page"{% endif %}>Katalogs</a>
-            <a href="{{ url_for('cart.cart_page') }}" {% if request.blueprint == 'cart' or request.endpoint == 'orders.checkout' %}aria-current="page"{% endif %}>Grozs</a>
+            <a href="{{ url_for('cart.cart_page') }}" {% if request.blueprint == 'cart' or request.endpoint == 'orders.checkout' %}aria-current="page"{% endif %}>{{ icon('cart', 18) }}Grozs</a>
             {% if current_user.is_authenticated %}
                 <a href="{{ url_for('orders.order_list') }}" {% if request.endpoint in ['orders.order_list', 'orders.order_detail'] %}aria-current="page"{% endif %}>Mani pieteikumi</a>
+                {% if current_user.role == 'admin' %}<a href="{{ url_for('admin.dashboard') }}" {% if request.blueprint in ['admin', 'import_data'] %}aria-current="page"{% endif %}>Admin panelis</a>{% endif %}
                 <a class="profile-nav-link" href="{{ url_for('auth.profile') }}" {% if request.endpoint == 'auth.profile' %}aria-current="page"{% endif %}><span class="profile-avatar" aria-hidden="true">{{ current_user.full_name[:1]|upper }}</span><span>Mans profils</span>{% if nav_unread %}<span class="nav-notification-count" aria-label="{{ nav_unread }} nelasīti paziņojumi">{{ nav_unread }}</span>{% endif %}</a>
-                {% if current_user.role == 'admin' %}<a href="{{ url_for('admin.dashboard') }}" {% if request.blueprint == 'admin' %}aria-current="page"{% endif %}>Admin panelis</a>{% endif %}
                 <a class="nav-logout" href="{{ url_for('auth.logout') }}">Iziet</a>
             {% else %}
                 <a href="{{ url_for('auth.login', next=request.full_path) }}">Pieslēgties</a>
-                <a class="admin-secondary-button" href="{{ url_for('auth.register') }}">Reģistrēties</a>
+                <a class="nav-register" href="{{ url_for('auth.register') }}">Reģistrēties {{ icon('arrow', 16) }}</a>
             {% endif %}
         </nav>
     </div>
-    {% if request.endpoint == 'catalog.catalog_page' %}<nav class="category-nav" aria-label="Kategorijas"><a class="category-active" href="{{ url_for('catalog.catalog_page') }}" data-category="">Visas preces</a>{% for category in categories %}<a href="?category_id={{ category.id }}" data-category="{{ category.id }}">{{ category.name }}</a>{% endfor %}</nav>{% endif %}
+    {% if request.endpoint == 'catalog.catalog_page' %}<div class="category-nav-shell"><nav class="category-nav" aria-label="Kategorijas"><a class="category-active" href="{{ url_for('catalog.catalog_page') }}" data-category="">Visas preces</a>{% for category in categories %}<a href="?category_id={{ category.id }}" data-category="{{ category.id }}">{{ category.name }}</a>{% endfor %}</nav></div>{% endif %}
 </header>
+<script src="{{ url_for('static', filename='js/ui.js') }}" defer></script>

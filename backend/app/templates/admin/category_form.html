@@ -1,20 +1,13 @@
-{% extends "admin/base.html" %}
+{% extends 'admin/base.html' %}
 {% block title %}{% if category %}Rediģēt kategoriju{% else %}Izveidot kategoriju{% endif %}{% endblock %}
 {% block content %}
-        <nav class="admin-breadcrumbs" aria-label="Atrašanās vieta">
-            <a href="{{ url_for('admin.categories') }}">Kategorijas</a><span>/</span>
-            <span>{% if category %}Rediģēt{% else %}Jauna kategorija{% endif %}</span>
-        </nav>
+<nav class="admin-breadcrumbs" aria-label="Atrašanās vieta"><a href="{{ url_for('admin.categories') }}">Kategorijas</a><span aria-hidden="true">/</span><span>{% if category %}Rediģēt{% else %}Jauna kategorija{% endif %}</span></nav>
 <section class="form-panel">
-        <form method="post" class="admin-form">
-            <label for="name">Kategorijas nosaukums</label>
-            <input id="name" name="name" value="{{ form_data.name }}" maxlength="150" required autofocus>
-            <label for="description">Apraksts</label>
-            <textarea id="description" name="description" rows="5">{{ form_data.description or "" }}</textarea>
-            <div class="admin-form-actions">
-                <a class="admin-secondary-button" href="{{ url_for('admin.categories') }}">Atcelt</a>
-                <button class="admin-primary-button" type="submit">{% if category %}Saglabāt izmaiņas{% else %}Izveidot kategoriju{% endif %}</button>
-            </div>
-        </form>
+    <div class="form-section-heading"><p class="eyebrow">Kataloga struktūra</p><h2>Kategorijas informācija</h2><p>Izvēlieties īsu, saprotamu nosaukumu. Apraksts palīdz precizēt kategorijas saturu.</p></div>
+    <form method="post" class="admin-form">
+        <div class="form-field"><label for="name">Kategorijas nosaukums *</label><input id="name" name="name" value="{{ form_data.name }}" maxlength="150" required autofocus placeholder="Piemēram, biroja piederumi"></div>
+        <div class="form-field"><label for="description">Apraksts <span class="field-hint">(neobligāts)</span></label><textarea id="description" name="description" rows="5" placeholder="Kādas preces ietilpst šajā kategorijā?">{{ form_data.description or '' }}</textarea></div>
+        <div class="admin-form-actions"><a class="admin-secondary-button" href="{{ url_for('admin.categories') }}">Atcelt</a><button class="admin-primary-button" type="submit">{% if category %}Saglabāt izmaiņas{% else %}Izveidot kategoriju{% endif %}</button></div>
+    </form>
 </section>
 {% endblock %}

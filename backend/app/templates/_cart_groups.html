@@ -1,6 +1,7 @@
+{% from '_icons.html' import icon %}
 {% for group in groups %}
 <section class="supplier-group" aria-labelledby="supplier-{{ loop.index }}">
-    <div class="supplier-group-heading"><h2 id="supplier-{{ loop.index }}">{{ group.supplier }}</h2><span>{{ group.rows|length }} {{ 'prece' if group.rows|length == 1 else 'preces' }}</span></div>
+    <div class="supplier-group-heading"><div><p class="account-kicker">Piegādātājs</p><h2 id="supplier-{{ loop.index }}">{{ group.supplier }}</h2></div><span class="count-badge">{{ group.rows|length }} {{ 'prece' if group.rows|length == 1 else 'preces' }}</span></div>
     {% for row in group.rows %}{% set offer = row.offer %}{% set item = row.item %}
     <article class="shopping-row">
         <div class="shopping-product">
@@ -10,7 +11,7 @@
             </div>
             <div class="shopping-product-copy">
                 <h3><a href="{{ url_for('catalog.product_page', product_id=offer.product_id, quantity=item.quantity) }}">{{ offer.product.name }}</a></h3>
-                <p>{{ '%.2f'|format(offer.unit_price) }} € / {{ offer.product.unit }} <span class="price-vat">· {{ 'Ar PVN' if offer.vat_included else 'Bez PVN' }}</span></p>
+                <p class="shopping-unit-price">{{ '%.2f'|format(offer.unit_price) }} € / {{ offer.product.unit }} <span class="price-vat">· {{ 'Ar PVN' if offer.vat_included else 'Bez PVN' }}</span></p>
                 <p class="field-hint">Piegāde: {{ '%.2f'|format(offer.delivery_price) }} € · {{ offer.delivery_days }} dienas</p>
             </div>
         </div>
@@ -24,7 +25,7 @@
             </form>
             {% else %}<span class="checkout-quantity">Daudzums: <strong>{{ item.quantity }} {{ offer.product.unit }}</strong></span>{% endif %}
             <div class="shopping-line-total"><span>Preču summa</span><strong>{{ '%.2f'|format(row.subtotal) }} €</strong></div>
-            {% if editable %}<form method="post" action="{{ url_for('cart.remove_item', item_id=item.id) }}"><input type="hidden" name="csrf_token" value="{{ csrf_token }}"><button class="shopping-remove" type="submit" aria-label="Izņemt {{ offer.product.name }} no groza">Izņemt</button></form>{% endif %}
+            {% if editable %}<form method="post" action="{{ url_for('cart.remove_item', item_id=item.id) }}"><input type="hidden" name="csrf_token" value="{{ csrf_token }}"><button class="shopping-remove" type="submit" aria-label="Izņemt {{ offer.product.name }} no groza">{{ icon('trash', 16) }} Izņemt</button></form>{% endif %}
         </div>
     </article>
     {% endfor %}

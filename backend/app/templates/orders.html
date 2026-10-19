@@ -1,13 +1,67 @@
+{% from '_icons.html' import icon %}
 <!doctype html>
 <html lang="lv">
-<head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Mani pieteikumi | StockFlow</title><link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}"></head>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Mani pieteikumi | StockFlow</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
 <body class="marketplace-page">
-{% include '_market_header.html' %}
-<main class="admin-shell"><div class="admin-toolbar"><h1>Mani pieteikumi</h1><a class="admin-secondary-button" href="{{ url_for('auth.profile') }}">Mans profils</a></div>
-<p class="account-help">Šeit redzami jūsu iesniegtie pieteikumi, to statuss un saglabātās summas.</p>
-<form class="inventory-filters history-filters" method="get"><div class="form-field"><label for="status">Statuss</label><select id="status" name="status">{% for value,label in [('all','Visi statusi'), ('iesniegts','Gaida izskatīšanu'), ('apstiprināts','Apstiprināti'), ('noraidīts','Noraidīti')] %}<option value="{{ value }}" {% if status == value %}selected{% endif %}>{{ label }}</option>{% endfor %}</select></div><div class="form-field"><label for="sort">Iesniegšanas datums</label><select id="sort" name="sort"><option value="date-desc" {% if sort == 'date-desc' %}selected{% endif %}>Jaunākie vispirms</option><option value="date-asc" {% if sort == 'date-asc' %}selected{% endif %}>Vecākie vispirms</option></select></div><button class="admin-primary-button" type="submit">Atlasīt</button>{% if status != 'all' or sort != 'date-desc' %}<a href="{{ url_for('orders.order_list') }}">Notīrīt atlasi</a>{% endif %}</form>
-<p class="field-hint history-count">{{ total }} {{ 'pieteikums' if total % 10 == 1 and total % 100 != 11 else 'pieteikumi' }}{% if pages > 1 %} · {{ page }}. lapa no {{ pages }}{% endif %}</p>
-<section class="category-list" aria-label="Mani pieteikumi">{% for order in orders %}<article class="category-row supplier-product-row"><div><h2><a href="{{ url_for('orders.order_detail', order_id=order.id) }}">Pieteikums #{{ order.id }}</a></h2><p class="field-hint"><time datetime="{{ order.created_at.isoformat() }}Z" data-local-time>{{ order.created_at.strftime('%d.%m.%Y. %H:%M') }} UTC</time></p></div><span class="status-badge order-status-{{ order.status }}">{{ order.status }}</span><strong>{{ '%.2f'|format(order.total_amount) }} €</strong><div class="category-row-actions"><a href="{{ url_for('orders.order_detail', order_id=order.id) }}">Apskatīt</a></div></article>{% else %}<div class="empty-state">{% if status != 'all' %}<p>Šajā statusā pieteikumu nav.</p><a class="admin-secondary-button" href="{{ url_for('orders.order_list') }}">Rādīt visus pieteikumus</a>{% else %}<p>Jums vēl nav pieteikumu.</p><a class="admin-primary-button" href="{{ url_for('catalog.catalog_page') }}">Atvērt katalogu</a>{% endif %}</div>{% endfor %}</section>
-{% if pages > 1 %}<nav class="history-pagination" aria-label="Pieteikumu saraksta lapas">{% if page > 1 %}<a class="admin-secondary-button" href="{{ url_for('orders.order_list', status=status, sort=sort, page=page-1) }}">← Iepriekšējā</a>{% endif %}{% if page < pages %}<a class="admin-secondary-button" href="{{ url_for('orders.order_list', status=status, sort=sort, page=page+1) }}">Nākamā →</a>{% endif %}</nav>{% endif %}
-</main>{% include '_footer.html' %}<script src="{{ url_for('static', filename='js/comparison.js') }}" defer></script>
-</body></html>
+    {% include '_market_header.html' %}
+    <main id="main-content" class="admin-shell">
+        <nav class="breadcrumbs" aria-label="Atrašanās vieta"><a href="{{ url_for('auth.profile') }}">Mans profils</a><span>/</span><span>Mani pieteikumi</span></nav>
+        <div class="admin-toolbar">
+            <div><p class="account-kicker">Iepirkumu vēsture</p><h1>Mani pieteikumi</h1><p class="account-help">Šeit redzami jūsu iesniegtie pieteikumi, to statuss un saglabātās summas.</p></div>
+            <a class="admin-secondary-button" href="{{ url_for('auth.profile') }}">Mans profils</a>
+        </div>
+        <form class="inventory-filters history-filters" method="get" aria-label="Pieteikumu atlase">
+            <div class="form-field">
+                <label for="status">Statuss</label>
+                <select id="status" name="status">
+                    {% for value,label in [('all','Visi statusi'), ('iesniegts','Gaida izskatīšanu'), ('apstiprināts','Apstiprināti'), ('noraidīts','Noraidīti')] %}<option value="{{ value }}" {% if status == value %}selected{% endif %}>{{ label }}</option>{% endfor %}
+                </select>
+            </div>
+            <div class="form-field">
+                <label for="sort">Iesniegšanas datums</label>
+                <select id="sort" name="sort">
+                    <option value="date-desc" {% if sort == 'date-desc' %}selected{% endif %}>Jaunākie vispirms</option>
+                    <option value="date-asc" {% if sort == 'date-asc' %}selected{% endif %}>Vecākie vispirms</option>
+                </select>
+            </div>
+            <button class="admin-primary-button" type="submit">Atlasīt</button>
+            {% if status != 'all' or sort != 'date-desc' %}<a href="{{ url_for('orders.order_list') }}">Notīrīt atlasi</a>{% endif %}
+        </form>
+        <div class="history-list-heading"><h2>Pieteikumu pārskats</h2><p class="field-hint history-count">{{ total }} {{ 'pieteikums' if total % 10 == 1 and total % 100 != 11 else 'pieteikumi' }}{% if pages > 1 %} · {{ page }}. lapa no {{ pages }}{% endif %}</p></div>
+        <section class="category-list history-list" aria-label="Mani pieteikumi">
+            {% if orders %}<div class="history-table-head" aria-hidden="true"><span>Pieteikums un datums</span><span>Statuss</span><span>Kopsumma</span><span></span></div>{% endif %}
+            {% for order in orders %}
+            <article class="category-row supplier-product-row history-row">
+                <div class="history-row-meta">
+                    <h2><a href="{{ url_for('orders.order_detail', order_id=order.id) }}">Pieteikums #{{ order.id }}</a></h2>
+                    <p class="field-hint"><time datetime="{{ order.created_at.isoformat() }}Z" data-local-time>{{ order.created_at.strftime('%d.%m.%Y. %H:%M') }} UTC</time></p>
+                </div>
+                <span class="status-badge order-status-{{ order.status }}">{{ order.status }}</span>
+                <strong>{{ '%.2f'|format(order.total_amount) }} €</strong>
+                <div class="category-row-actions"><a href="{{ url_for('orders.order_detail', order_id=order.id) }}" aria-label="Apskatīt pieteikumu #{{ order.id }}">Apskatīt <span aria-hidden="true">→</span></a></div>
+            </article>
+            {% else %}
+            <div class="empty-state">
+                <span class="empty-state-icon" aria-hidden="true">{{ icon('clipboard', 32) }}</span>
+                {% if status != 'all' %}<h2>Nav atbilstošu pieteikumu</h2><p>Šajā statusā pieteikumu nav.</p><a class="admin-secondary-button" href="{{ url_for('orders.order_list') }}">Rādīt visus pieteikumus</a>
+                {% else %}<h2>Sāciet ar pirmo iepirkumu</h2><p>Jums vēl nav pieteikumu.</p><p class="field-hint">Izvēlieties preces katalogā un iesniedziet pieteikumu no groza.</p><a class="admin-primary-button" href="{{ url_for('catalog.catalog_page') }}">Atvērt katalogu <span aria-hidden="true">→</span></a>{% endif %}
+            </div>
+            {% endfor %}
+        </section>
+        {% if pages > 1 %}
+        <nav class="history-pagination" aria-label="Pieteikumu saraksta lapas">
+            {% if page > 1 %}<a class="admin-secondary-button" href="{{ url_for('orders.order_list', status=status, sort=sort, page=page-1) }}">← Iepriekšējā</a>{% endif %}
+            <span class="field-hint">{{ page }}. lapa no {{ pages }}</span>
+            {% if page < pages %}<a class="admin-secondary-button" href="{{ url_for('orders.order_list', status=status, sort=sort, page=page+1) }}">Nākamā →</a>{% endif %}
+        </nav>
+        {% endif %}
+    </main>
+    {% include '_footer.html' %}
+    <script src="{{ url_for('static', filename='js/comparison.js') }}" defer></script>
+</body>
+</html>

@@ -8,7 +8,7 @@
 </head>
 <body class="marketplace-page">
     {% include '_market_header.html' %}
-    <main class="admin-shell">
+    <main class="admin-shell" id="main-content">
         <nav class="breadcrumbs" aria-label="Atrašanās vieta"><a href="{{ url_for('catalog.catalog_page') }}">Katalogs</a><span>/</span><span>{{ product.name }}</span></nav>
         {% include '_messages.html' %}
         <section class="product-detail">
@@ -21,7 +21,7 @@
                 <h1>{{ product.name }}</h1>
                 <p class="detail-description">{{ product.description or 'Apraksts nav pievienots.' }}</p>
                 <dl class="product-facts">
-                    <div><dt>SKU</dt><dd>{{ product.sku }}</dd></div>
+                    <div><dt>Preces kods (SKU)</dt><dd>{{ product.sku }}</dd></div>
                     <div><dt>Zīmols</dt><dd>{{ product.brand or 'Nav norādīts' }}</dd></div>
                     <div><dt>Modelis</dt><dd>{{ product.model or 'Nav norādīts' }}</dd></div>
                     <div><dt>Mērvienība</dt><dd>{{ product.unit }}</dd></div>
@@ -31,7 +31,7 @@
         </section>
         <section class="comparison-section" aria-labelledby="comparison-title">
             <div class="admin-toolbar">
-                <div><p class="account-kicker">Izvēlies piemērotāko</p><h2 id="comparison-title">Piedāvājumu salīdzinājums</h2><p>{{ offers|length }} aktīvi piedāvājumi</p></div>
+                <div><p class="account-kicker">Pamatota izvēle</p><h2 id="comparison-title">Piedāvājumu salīdzinājums</h2><p>{{ offers|length }} aktīvi piedāvājumi · vienāds daudzums visiem piegādātājiem</p></div>
                 <a class="admin-secondary-button" href="{{ url_for('cart.cart_page') }}">Atvērt grozu →</a>
             </div>
             <form class="comparison-controls" method="get" id="comparison-form">
@@ -48,7 +48,7 @@
                 <button class="admin-primary-button" type="submit">Salīdzināt</button>
             </form>
             {% if comparison_error %}<p class="flash flash-error" role="alert">{{ comparison_error }}</p>{% endif %}
-            <p class="comparison-note">Visiem piedāvājumiem izmanto vienādu daudzumu. Kopsumma = preču summa ar PVN + norādītā piegādes maksa. Cenām bez PVN nodokli aprēķina pēc piedāvājuma PVN likmes; cenām ar PVN to atkārtoti nepieskaita. Piegādes maksu izmanto kā norādītu gala maksu.</p>
+            <details class="help-disclosure"><summary>Kā tiek aprēķināta salīdzinājuma kopsumma?</summary><p>Visiem piedāvājumiem izmanto vienādu daudzumu. Kopsumma = preču summa ar PVN + norādītā piegādes maksa. Cenām bez PVN nodokli aprēķina pēc piedāvājuma PVN likmes; cenām ar PVN to atkārtoti nepieskaita. Piegādes maksu izmanto kā norādītu gala maksu.</p></details>
             <div class="offer-list">
                 {% for row in rows %}{% set offer = row.offer %}
                 <article class="offer-card">

@@ -1,3 +1,4 @@
+{% from '_icons.html' import icon %}
 <!doctype html>
 <html lang="lv">
 <head>
@@ -8,8 +9,14 @@
 </head>
 <body class="marketplace-page">
     {% include '_market_header.html' %}
-    <main class="admin-shell">
-        <section class="shopping-empty empty-state" role="alert"><h1>Darbību neizdevās pabeigt</h1><p>Serveris pašlaik nav pieejams. Mēģiniet vēlreiz pēc brīža.</p><a class="admin-primary-button" href="{{ url_for('cart.cart_page') }}">Atvērt grozu vēlreiz</a></section>
+    <main id="main-content" class="admin-shell">
+        <section class="shopping-empty empty-state" role="alert">
+            <span class="empty-state-icon" aria-hidden="true">{{ icon('warning', 32) }}</span>
+            <p class="account-kicker">Īslaicīgs pārtraukums</p>
+            <h1>Darbību neizdevās pabeigt</h1>
+            <p>Serveris pašlaik nav pieejams. Mēģiniet vēlreiz pēc brīža.</p>
+            <div class="receipt-actions"><a class="admin-primary-button" href="{{ url_for('cart.cart_page') }}">Atvērt grozu vēlreiz</a><a class="admin-secondary-button" href="{{ url_for('catalog.catalog_page') }}">Atvērt katalogu</a></div>
+        </section>
     </main>
     {% include '_footer.html' %}
 </body>

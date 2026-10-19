@@ -15,6 +15,7 @@ const applyFiltersButton = document.querySelector("#apply-filters");
 const categoryLinks = document.querySelectorAll("[data-category]");
 
 let products = [];
+let latestRequest = 0;
 
 function currentParams() {
     const params = new URLSearchParams(window.location.search);
@@ -38,7 +39,9 @@ function updateUrl(params) {
 }
 
 function formatPrice(price) {
-    return price === null ? "Cena nav norādīta" : `${price.toFixed(2)} €`;
+    return price === null ? "Cena nav norādīta" : new Intl.NumberFormat('lv-LV', {
+        style: 'currency', currency: 'EUR', minimumFractionDigits: 2,
+    }).format(price);
 }
 
 function escapeHtml(value) {
@@ -69,7 +72,8 @@ function sortProducts(items) {
 
 function renderProducts() {
     const sorted = sortProducts(products);
-    catalogCount.textContent = `${sorted.length} ${sorted.length === 1 ? "prece" : "preces"}`;
+    const singular = sorted.length % 10 === 1 && sorted.length % 100 !== 11;
+    catalogCount.textContent = `${sorted.length} ${singular ? "prece" : "preces"}`;
     productGrid.replaceChildren();
 
     if (!sorted.length) {
@@ -84,11 +88,12 @@ function renderProducts() {
         card.innerHTML = `
             <div class="product-image" aria-hidden="true">${escapeHtml(product.name.slice(0, 1).toUpperCase())}</div>
             <p class="product-category">${escapeHtml(product.category)}</p>
-            <h3>${escapeHtml(product.name)}</h3>
-            <p class="product-sku">SKU: ${escapeHtml(product.sku)}</p>
+            <h3><a href="${escapeHtml(product.detail_url)}">${escapeHtml(product.name)}</a></h3>
+            <p class="product-sku">Preces kods: ${escapeHtml(product.sku)}</p>
             <p class="price">${formatPrice(product.price)}</p>
-            <p class="offer-count">${product.offer_count} ${product.offer_count === 1 ? "piedāvājums" : "piedāvājumi"} · ${escapeHtml(availability)}</p>
-            <a class="card-button" href="${escapeHtml(product.detail_url)}">Skatīt piedāvājumus</a>
+            <p class="offer-count">${product.offer_count} ${product.offer_count % 10 === 1 && product.offer_count % 100 !== 11 ? "piedāvājums" : "piedāvājumi"}</p>
+            <p class="availability ${product.available ? '' : 'availability-unavailable'}">${escapeHtml(availability)}</p>
+            <a class="card-button" href="${escapeHtml(product.detail_url)}" aria-label="${escapeHtml('Skatīt piedāvājumus: ' + product.name)}">Skatīt piedāvājumus <span aria-hidden="true">→</span></a>
         `;
         if (product.image_url) {
             const image = document.createElement("img");
@@ -109,7 +114,11 @@ function renderProducts() {
 }
 
 async function loadCatalog() {
+    const requestNumber = ++latestRequest;
+    const content = productGrid.closest('.catalog-content');
+    content.setAttribute('aria-busy', 'true');
     catalogMessage.textContent = "Ielādē katalogu...";
+    let errorMessage = "Katalogu neizdevās ielādēt. Pārbaudiet savienojumu un mēģiniet vēlreiz.";
     const params = currentParams();
     updateUrl(params);
     try {
@@ -117,15 +126,20 @@ async function loadCatalog() {
             headers: { Accept: "application/json" },
         });
         const data = await response.json();
+        if (requestNumber !== latestRequest) return;
         if (!response.ok) {
-            throw new Error(data.message || "Katalogu neizdevās ielādēt.");
+            errorMessage = data.message || errorMessage;
+            throw new Error(errorMessage);
         }
         products = data.items;
         renderProducts();
     } catch (error) {
+        if (requestNumber !== latestRequest) return;
         catalogCount.textContent = "Kļūda";
-        catalogMessage.textContent = error.message;
+        catalogMessage.textContent = errorMessage;
         productGrid.replaceChildren();
+    } finally {
+        if (requestNumber === latestRequest) content.setAttribute('aria-busy', 'false');
     }
 }
 

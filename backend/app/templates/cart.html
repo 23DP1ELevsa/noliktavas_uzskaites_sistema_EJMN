@@ -1,3 +1,4 @@
+{% from '_icons.html' import icon %}
 <!doctype html>
 <html lang="lv">
 <head>
@@ -8,29 +9,35 @@
 </head>
 <body class="marketplace-page">
     {% include '_market_header.html' %}
-    <main class="admin-shell">
+    <main id="main-content" class="admin-shell shopping-shell">
         <nav class="breadcrumbs" aria-label="Atrašanās vieta"><a href="{{ url_for('catalog.catalog_page') }}">Katalogs</a><span>/</span><span>Grozs</span></nav>
         {% include '_messages.html' %}
         <div class="admin-toolbar">
-            <div><p class="account-kicker">Tava izvēle</p><h1>Grozs</h1><p>{{ rows|length }} {{ 'prece' if rows|length == 1 else 'preces' }} · {{ groups|length }} {{ 'piegādātājs' if groups|length == 1 else 'piegādātāji' }}</p></div>
-            <a class="admin-secondary-button" href="{{ url_for('catalog.catalog_page') }}">Turpināt iepirkties</a>
+            <div><p class="account-kicker">Jūsu iepirkumi</p><h1>Grozs</h1><p class="account-help">{{ rows|length }} {{ 'prece' if rows|length == 1 else 'preces' }} · {{ groups|length }} {{ 'piegādātājs' if groups|length == 1 else 'piegādātāji' }}</p></div>
+            <a class="admin-secondary-button" href="{{ url_for('catalog.catalog_page') }}"><span aria-hidden="true">←</span> Turpināt iepirkties</a>
         </div>
         {% if rows %}
+        <ol class="checkout-progress" aria-label="Pieteikuma soļi">
+            <li class="is-current" aria-current="step"><span>1</span> Grozs</li>
+            <li><span>2</span> Pieteikuma noformēšana</li>
+            <li><span>3</span> Iesniegts pieteikums</li>
+        </ol>
         <div class="cart-layout">
             <div class="supplier-groups">{% set editable = true %}{% include '_cart_groups.html' %}</div>
             <aside class="shopping-summary" aria-labelledby="summary-title">
+                <p class="account-kicker">Pirms turpināt</p>
                 <h2 id="summary-title">Pasūtījuma kopsavilkums</h2>
                 {% include '_cart_totals.html' %}
                 {% if can_checkout %}<a class="admin-primary-button checkout-primary" href="{{ url_for('orders.checkout') }}">Noformēt pieteikumu →</a>
                 {% else %}<p class="field-error">{{ checkout_error or 'Lai turpinātu, labojiet atzīmētās preces vai izņemiet tās.' }}</p><button class="admin-primary-button checkout-primary" type="button" disabled>Noformēt pieteikumu →</button>{% endif %}
-                <p class="field-hint summary-help">Preces grozā netiek rezervētas.</p>
+                <p class="field-hint summary-help">{{ icon('lock', 16) }} Preces grozā netiek rezervētas.</p>
             </aside>
         </div>
         {% else %}
         <div class="shopping-empty empty-state">
-            <span class="empty-cart-mark" aria-hidden="true">＋</span>
+            <span class="empty-state-icon" aria-hidden="true">{{ icon('cart', 32) }}</span>
             <h2>Grozs vēl ir tukšs</h2><p>Izvēlieties preces katalogā un pievienojiet piemērotākos piedāvājumus.</p>
-            <a class="admin-primary-button" href="{{ url_for('catalog.catalog_page') }}">Atvērt katalogu</a>
+            <a class="admin-primary-button" href="{{ url_for('catalog.catalog_page') }}">Atvērt katalogu <span aria-hidden="true">→</span></a>
         </div>
         {% endif %}
     </main>
