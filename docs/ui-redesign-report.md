@@ -2,8 +2,8 @@
 
 ## Dizaina izmaiņas
 
-Visas esošās lapas izmanto vienotu gaišu noformējumu: grafīta teksts, balti
-paneļi, atturīgs zaļš akcents, kopīga tipogrāfija un vienāda komponentu sistēma.
+Visas esošās lapas izmanto vienotu gaišu noformējumu: tumši zils teksts, balti
+paneļi, zili un violeti akcenti, kopīga tipogrāfija un vienāda komponentu sistēma.
 Pārveidota sākumlapa, navigācija un kājene, katalogs, preču kartītes, piedāvājumu
 salīdzināšana, grozs, noformēšana, pieteikumi, autentifikācija, profils,
 paziņojumi un visas administrēšanas un importa lapas.

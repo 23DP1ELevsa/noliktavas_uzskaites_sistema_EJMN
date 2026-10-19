@@ -11,7 +11,7 @@ from ..models import CompanyProfile, Order, OrderItem, User
 from ..services.cart import checkout_fingerprint, load_cart_summary
 from ..services.comparison import cart_csrf_token, require_cart_csrf
 from ..services.shopping_errors import shopping_database_error
-from ..services.orders import customer_details, notify_submission
+from ..services.orders import customer_details, mark_order_notifications_read, notify_submission
 from ..services.stock import allocate
 import re
 
@@ -94,6 +94,7 @@ def checkout():
 def order_detail(order_id):
     order = db.first_or_404(db.select(Order).where(Order.id == order_id, Order.user_id == current_user.id)
                            .options(selectinload(Order.items)))
+    mark_order_notifications_read(current_user.id, order.id)
     return render_template("order.html", order=order, customer=customer_details(order))
 
 

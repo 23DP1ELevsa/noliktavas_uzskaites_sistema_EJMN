@@ -54,12 +54,13 @@ Noraidīšana ar iemeslu paliek pieejama arī tad, ja piedāvājums vairs nav de
 Profila sadaļā **Paziņojumi** redzami līdz 20 jaunākajiem paziņojumiem, nelasītos
 rādot pirmos. Klients saņem apstiprinājumu par iesniegšanu un administratora lēmumu;
 aktīvie administratori saņem jaunus pieteikumus un paziņojumus par izskatīšanu.
-Paziņojumi satur saiti uz pieteikumu un tos var atzīmēt kā lasītus.
+Paziņojumi satur saiti uz pieteikumu. Atverot saistīto pieteikumu, attiecīgā
+lietotāja paziņojumi par to automātiski tiek atzīmēti kā izlasīti.
 
 Klienta profilā redzami pieci pēdējie pieteikumi ar statusu un summu. Pilns saraksts
 pieejams `/orders`. Klients var apskatīt tikai savus pieteikumus un mainīt tikai savu
 paziņojumu lasīšanas statusu. Pieteikumu lēmumus pieņem tikai administrators.
-Lēmumiem un paziņojumu izmaiņām nepieciešams CSRF kods.
+Manuālās paziņojumu statusa izmaiņas maršrutam nepieciešams CSRF kods.
 
 ## Vēstures atlase un navigācija
 

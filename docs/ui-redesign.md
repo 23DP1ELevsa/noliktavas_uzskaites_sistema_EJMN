@@ -1,7 +1,7 @@
 # StockFlow saskarnes dizaina sistēma
 
-Saskarne izmanto gaišu neitrālu fonu, baltus paneļus, grafīta tekstu un vienu
-atturīgu zaļu akcentu. Lietotnes teksti ir latviešu valodā. Saglabāts esošais
+Saskarne izmanto gaišu fonu, baltus paneļus, tumši zilu tekstu un saskaņotus
+zilus un violetus akcentus. Lietotnes teksti ir latviešu valodā. Saglabāts esošais
 Flask, Jinja2, HTML, CSS un JavaScript risinājums.
 
 ## Dizaina mainīgie
@@ -10,14 +10,16 @@ Mainīgie definēti `backend/app/static/css/style.css` faila `:root` blokā.
 
 | Mainīgais | Vērtība | Lietojums |
 | --- | --- | --- |
-| `--canvas` | `#f5f6f7` | Lapas fons |
+| `--canvas` | `#f6f8fc` | Lapas fons |
 | `--surface` | `#ffffff` | Paneļi, kartītes un lauki |
-| `--surface-subtle` | `#f0f3f2` | Papildu informācija un kopsavilkumi |
-| `--ink` | `#202925` | Pamatteksts un virsraksti |
-| `--muted` | `#58635e` | Paskaidrojumi un metadati |
-| `--accent` | `#176b52` | Galvenās darbības, saites un aktīvā sadaļa |
-| `--accent-hover` | `#10513e` | Galvenās darbības kursora stāvoklī |
-| `--accent-soft` | `#eaf4ee` | Statusu un akcentu fons |
+| `--surface-subtle` | `#f0f3fa` | Papildu informācija un kopsavilkumi |
+| `--ink` | `#18233c` | Pamatteksts un virsraksti |
+| `--muted` | `#53617d` | Paskaidrojumi un metadati |
+| `--accent` | `#315ccf` | Galvenās darbības, saites un aktīvā sadaļa |
+| `--accent-hover` | `#2447a7` | Galvenās darbības kursora stāvoklī |
+| `--accent-soft` | `#edf2ff` | Zilo akcentu fons |
+| `--violet` | `#7651c9` | Zīmola un statusu akcents |
+| `--violet-soft` | `#f2edff` | Violeto akcentu fons |
 | `--danger` | `#a22d37` | Kļūdas un dzēšanas darbības |
 | `--warning` | `#805519` | Darbību apstiprinājumi |
 | `--line` | `#dce2de` | Paneļu un tabulu robežas |

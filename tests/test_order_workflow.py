@@ -107,6 +107,21 @@ def test_decline_requires_reason_without_changing_order_or_notifications(compari
     assert 'Noraidīšanas iemesls' in html and 'Prece vairs nav pieejama.' in html
 
 
+def test_opening_linked_order_marks_own_notifications_read(comparison_data):
+    client, _, _, buyer = comparison_data
+    submit(comparison_data)
+    order = db.session.scalar(db.select(Order))
+    buyer_notice = db.session.scalar(db.select(Notification).where(
+        Notification.user_id == buyer.id, Notification.order_id == order.id))
+    assert buyer_notice and not buyer_notice.is_read
+
+    response = client.get(f'/orders/{order.id}')
+
+    assert response.status_code == 200
+    db.session.refresh(buyer_notice)
+    assert buyer_notice.is_read
+
+
 @pytest.mark.parametrize('field,value', [('delivery_address', ''), ('delivery_address', 'a' * 256),
     ('delivery_address', 'Bad\x00address'), ('phone', 'letters'), ('phone', '123'), ('note', 'a' * 1001)])
 def test_invalid_checkout_details_preserve_cart(comparison_data, field, value):

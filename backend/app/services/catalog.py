@@ -38,6 +38,8 @@ class CatalogFilters:
         for field in ("q", "supplier"):
             if len(values[field]) > 255:
                 raise CatalogFilterError(field, "Teksts nedrīkst pārsniegt 255 rakstzīmes.")
+        if values["supplier"] and len(values["supplier"]) < 3:
+            raise CatalogFilterError("supplier", "Piegādātāja meklēšanai ievadiet vismaz 3 simbolus.")
 
         category_id = None
         if values["category_id"]:
@@ -77,7 +79,12 @@ def search_catalog(filters):
     if filters.max_price is not None:
         offer_conditions.append(Offer.unit_price <= filters.max_price)
     if filters.supplier:
-        offer_conditions.append(func.lower(Offer.supplier_name) == filters.supplier.lower())
+        # Match the entered characters in order, allowing gaps: "dte" finds
+        # "Demo NordTech". Escape LIKE metacharacters so user input stays literal.
+        escaped = [character.replace("\\", "\\\\").replace("%", "\\%").replace("_", "\\_")
+                   for character in filters.supplier.lower()]
+        supplier_pattern = "%" + "%".join(escaped) + "%"
+        offer_conditions.append(func.lower(Offer.supplier_name).like(supplier_pattern, escape="\\"))
 
     available = Offer.stock_qty >= Offer.min_order_qty
     if filters.in_stock is True:

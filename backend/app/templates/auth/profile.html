@@ -32,12 +32,6 @@
                             <a href="{{ url_for('admin.application_detail', order_id=notification.order_id) if current_user.role == 'admin' else url_for('orders.order_detail', order_id=notification.order_id) }}">{{ notification.message }}</a>
                             <p class="field-hint"><time datetime="{{ notification.created_at.isoformat() }}Z" data-local-time>{{ notification.created_at.strftime('%d.%m.%Y. %H:%M') }} UTC</time>{% if not notification.is_read %} · Jauns{% endif %}</p>
                         </div>
-                        {% if not notification.is_read %}
-                        <form method="post" action="{{ url_for('auth.read_notification', notification_id=notification.id) }}">
-                            <input name="csrf_token" type="hidden" value="{{ csrf_token }}">
-                            <button class="notification-read-button" type="submit">Atzīmēt kā lasītu</button>
-                        </form>
-                        {% endif %}
                     </article>
                     {% else %}
                     <div class="notification-empty"><p>Pagaidām nav paziņojumu.</p><p class="field-hint">Šeit saņemsiet ziņas par saviem pieteikumiem.</p></div>

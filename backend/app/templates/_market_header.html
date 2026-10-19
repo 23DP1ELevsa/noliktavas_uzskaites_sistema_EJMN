@@ -18,6 +18,5 @@
             {% endif %}
         </nav>
     </div>
-    {% if request.endpoint == 'catalog.catalog_page' %}<div class="category-nav-shell"><nav class="category-nav" aria-label="Kategorijas"><a class="category-active" href="{{ url_for('catalog.catalog_page') }}" data-category="">Visas preces</a>{% for category in categories %}<a href="?category_id={{ category.id }}" data-category="{{ category.id }}">{{ category.name }}</a>{% endfor %}</nav></div>{% endif %}
 </header>
 <script src="{{ url_for('static', filename='js/ui.js') }}" defer></script>

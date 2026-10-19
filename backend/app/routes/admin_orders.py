@@ -10,7 +10,7 @@ from sqlalchemy.orm import joinedload
 from ..extensions import db
 from ..models import Offer, Order
 from ..services.stock import allocate, release_order_stock
-from ..services.orders import customer_details, notify_decision
+from ..services.orders import customer_details, mark_order_notifications_read, notify_decision
 from ..services.order_review import approval_issues
 from .admin import admin_bp, admin_required, _check_product_csrf, _product_csrf_token
 
@@ -46,6 +46,8 @@ def application_detail(order_id):
     if request.method == "POST":
         query = query.with_for_update().execution_options(populate_existing=True)
     order = db.first_or_404(query)
+    if request.method == "GET":
+        mark_order_notifications_read(current_user.id, order.id)
     note = request.form.get("admin_note", "").strip() if request.method == "POST" else ""
     error = None
     issues = None

@@ -33,3 +33,14 @@ def notify_decision(order):
         db.session.add(Notification(user_id=user_id, order_id=order.id, kind=kind, message=message))
     db.session.execute(db.update(Notification).where(Notification.order_id == order.id,
                         Notification.kind == "submitted", Notification.user_id.in_(recipients)).values(is_read=True))
+
+
+def mark_order_notifications_read(user_id, order_id):
+    """Mark the current user's notifications read when the linked order is viewed."""
+    result = db.session.execute(db.update(Notification).where(
+        Notification.user_id == user_id,
+        Notification.order_id == order_id,
+        Notification.is_read.is_(False),
+    ).values(is_read=True))
+    if result.rowcount:
+        db.session.commit()

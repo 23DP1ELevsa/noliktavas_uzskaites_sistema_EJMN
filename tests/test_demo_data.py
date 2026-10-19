@@ -218,7 +218,7 @@ def test_demo_categories_are_available_on_current_catalog_page(database_app):
     assert 'data-catalog-url="/catalog"' in html
     for category in db.session.scalars(db.select(Category)):
         assert category.name in html
-        assert f'data-category="{category.id}"' in html
+        assert f'<option value="{category.id}">{category.name}</option>' in html
     assert 'href="/catalog/page"' in client.get("/").get_data(as_text=True)
 
 

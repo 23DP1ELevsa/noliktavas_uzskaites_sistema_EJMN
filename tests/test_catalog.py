@@ -103,8 +103,9 @@ def test_category_filter(catalog):
     ({"min_price": "5", "max_price": "6"}, set()),
     ({"max_price": "1"}, set()),
     ({"supplier": " north "}, {"cable", "mouse", "limited"}),
+    ({"supplier": "Nrh"}, {"cable", "mouse", "limited"}),
     ({"supplier": "North%"}, set()),
-    ({"supplier": "ātra sia %_"}, {"special"}),
+    ({"supplier": "āta%_"}, {"special"}),
     ({"in_stock": "true"}, {"cable", "paper", "special"}),
     ({"in_stock": "1"}, {"cable", "paper", "special"}),
     ({"in_stock": "false"}, {"mouse", "empty", "archived", "limited"}),
@@ -185,7 +186,7 @@ def test_blank_filters_are_ignored(catalog):
     ("min_price", "-1"), ("min_price", "NaN"), ("max_price", "Infinity"),
     ("max_price", "abc"), ("max_price", "8,99"), ("min_price", "1.001"),
     ("max_price", "100000000"), ("min_price", "1e2"), ("in_stock", "maybe"),
-    ("q", "x" * 256), ("supplier", "x" * 256),
+    ("q", "x" * 256), ("supplier", "x" * 256), ("supplier", "ab"),
 ])
 def test_invalid_filters_return_400_before_database_queries(database_app, field, value):
     response = database_app.test_client().get("/catalog", query_string={field: value})

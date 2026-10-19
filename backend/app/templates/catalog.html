@@ -34,8 +34,15 @@
                     <button id="clear-filters" type="button">Notīrīt</button>
                 </div>
                 <div class="filter-divider"></div>
+                <div class="filter-field"><label class="supplier-title" for="category-filter">Kategorija</label>
+                <select id="category-filter" name="category_id">
+                    <option value="">Visas preces</option>
+                    {% for category in categories %}<option value="{{ category.id }}">{{ category.name }}</option>{% endfor %}
+                </select></div>
+                <div class="filter-divider"></div>
                 <div class="filter-field"><label class="supplier-title" for="supplier-filter">Piegādātājs</label>
-                <input class="filter-input" id="supplier-filter" type="text" placeholder="Piegādātāja nosaukums"></div>
+                <input class="filter-input" id="supplier-filter" type="search" minlength="3" maxlength="255" placeholder="Vismaz 3 simboli" aria-describedby="supplier-filter-hint">
+                <p class="field-hint" id="supplier-filter-hint">Varat ievadīt arī nosaukuma burtu secību, piemēram, “dte”.</p></div>
                 <div class="filter-divider"></div>
                 <div class="filter-field"><p class="supplier-title">Cena, EUR</p>
                 <div class="price-fields">

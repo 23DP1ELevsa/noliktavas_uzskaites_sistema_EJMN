@@ -3,6 +3,7 @@ const catalogUrl = body.dataset.catalogUrl;
 const searchForm = document.querySelector("#catalog-search-form");
 const searchInput = document.querySelector("#catalog-search");
 const supplierInput = document.querySelector("#supplier-filter");
+const categorySelect = document.querySelector("#category-filter");
 const minPriceInput = document.querySelector("#min-price");
 const maxPriceInput = document.querySelector("#max-price");
 const stockInput = document.querySelector("#stock-filter");
@@ -12,7 +13,6 @@ const catalogCount = document.querySelector("#catalog-count");
 const catalogMessage = document.querySelector("#catalog-message");
 const clearFiltersButton = document.querySelector("#clear-filters");
 const applyFiltersButton = document.querySelector("#apply-filters");
-const categoryLinks = document.querySelectorAll("[data-category]");
 
 let products = [];
 let latestRequest = 0;
@@ -21,6 +21,7 @@ function currentParams() {
     const params = new URLSearchParams(window.location.search);
     const fields = [
         ["q", searchInput.value.trim()],
+        ["category_id", categorySelect.value],
         ["supplier", supplierInput.value.trim()],
         ["min_price", minPriceInput.value.trim()],
         ["max_price", maxPriceInput.value.trim()],
@@ -147,13 +148,10 @@ function restoreFilters() {
     const params = new URLSearchParams(window.location.search);
     searchInput.value = params.get("q") || "";
     supplierInput.value = params.get("supplier") || "";
+    categorySelect.value = params.get("category_id") || "";
     minPriceInput.value = params.get("min_price") || "";
     maxPriceInput.value = params.get("max_price") || "";
     stockInput.checked = params.get("in_stock") === "true";
-    const selectedCategory = params.get("category_id") || "";
-    categoryLinks.forEach((link) => {
-        link.classList.toggle("category-active", link.dataset.category === selectedCategory);
-    });
 }
 
 searchForm.addEventListener("submit", (event) => {
@@ -162,28 +160,17 @@ searchForm.addEventListener("submit", (event) => {
 });
 
 applyFiltersButton.addEventListener("click", loadCatalog);
+categorySelect.addEventListener("change", loadCatalog);
 sortSelect.addEventListener("change", renderProducts);
 clearFiltersButton.addEventListener("click", () => {
     searchInput.value = "";
     supplierInput.value = "";
+    categorySelect.value = "";
     minPriceInput.value = "";
     maxPriceInput.value = "";
     stockInput.checked = false;
     window.history.replaceState({}, "", window.location.pathname);
-    categoryLinks.forEach((link) => link.classList.toggle("category-active", !link.dataset.category));
     loadCatalog();
-});
-
-categoryLinks.forEach((link) => {
-    link.addEventListener("click", (event) => {
-        event.preventDefault();
-        const params = currentParams();
-        if (link.dataset.category) params.set("category_id", link.dataset.category);
-        else params.delete("category_id");
-        updateUrl(params);
-        categoryLinks.forEach((item) => item.classList.toggle("category-active", item === link));
-        loadCatalog();
-    });
 });
 
 restoreFilters();
