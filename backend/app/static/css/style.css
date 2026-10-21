@@ -117,12 +117,12 @@ button:disabled, button:disabled:hover { background: #e9edf5; border-color: #bcc
 .user-navigation .nav-logout { color: var(--muted); }
 .nav-toggle { display: none; }
 .site-footer { flex-shrink: 0; margin-top: auto; border-top: 1px solid var(--line); background: var(--surface); color: var(--muted); }
-.footer-content { display: grid; grid-template-columns: 1fr auto; gap: 26px; width: min(var(--page-width), calc(100% - 64px)); margin: auto; padding: 34px 0 20px; }
+.footer-content { display: grid; grid-template-columns: 1fr auto; gap: 12px; width: min(var(--page-width), calc(100% - 64px)); margin: auto; padding: 18px 0 12px; }
 .footer-logo { color: var(--ink); font-size: 1.2rem; font-weight: 750; letter-spacing: -.05em; }
-.footer-brand p { margin: 7px 0 0; font-size: .85rem; }
+.footer-brand p { margin: 4px 0 0; font-size: .85rem; }
 .footer-links { display: flex; align-items: start; flex-wrap: wrap; gap: 25px; padding-top: 6px; }
 .footer-links a { color: var(--muted); font-size: .84rem; }
-.footer-bottom { grid-column: 1 / -1; display: flex; justify-content: space-between; flex-wrap: wrap; gap: 8px 20px; padding-top: 18px; border-top: 1px solid var(--line); font-size: .76rem; }
+.footer-bottom { grid-column: 1 / -1; display: flex; justify-content: space-between; flex-wrap: wrap; gap: 8px 20px; font-size: .76rem; }
 
 /* Landing page */
 .landing-page { background: #f7f9fd; }
@@ -415,7 +415,7 @@ a.cell-primary, span.cell-primary { display: block; margin-bottom: 4px; }
 .supplier-group-total { display: flex; justify-content: flex-end; flex-wrap: wrap; gap: 12px 22px; padding: 15px 22px; border-top: 1px solid var(--line); color: var(--muted); font-size: .79rem; }
 .supplier-group-total strong { margin-left: 6px; color: var(--ink); }
 .shopping-summary { position: sticky; top: 24px; padding: 25px; box-shadow: var(--shadow); }
-.order-receipt .shopping-summary { position: sticky; top: 24px; align-self: start; }
+.order-receipt .shopping-summary { position: static; align-self: start; }
 .shopping-summary h2 { margin-bottom: 24px; font-size: 1.12rem; }
 .shopping-totals > div { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 6px 16px; margin-bottom: 15px; }
 .shopping-totals dt { color: var(--muted); font-size: .85rem; }
@@ -575,7 +575,7 @@ aside.comparison-note p { margin: 0; }
     .user-navigation { gap: 4px; padding-top: 8px; border-top: 1px solid var(--line); }
     .user-navigation > a { flex: 1 1 auto; padding: 10px; font-size: .8rem; }
     .user-navigation > .nav-register { margin-left: 0; }
-    .footer-content { grid-template-columns: 1fr; gap: 20px; }
+    .footer-content { grid-template-columns: 1fr; gap: 12px; }
     .footer-links { gap: 20px; }
     .footer-bottom { flex-direction: column; }
     .landing-hero { padding-top: 34px; }
