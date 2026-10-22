@@ -3,7 +3,7 @@
 {% block content %}
 <nav class="admin-breadcrumbs" aria-label="Atrašanās vieta"><a href="{{ url_for('admin.suppliers') }}">Piegādātāji</a><span>/</span><span>{{ self.title() }}</span></nav>
 <section class="form-panel">
-    <div class="form-section-heading"><p class="eyebrow">Sadarbības partneris</p><h2>Piegādātāja informācija</h2><p>Saglabājiet kontaktus un piegādes nosacījumus. Ar * atzīmētie lauki ir obligāti.</p></div>
+    <div class="form-section-heading"><h2>Piegādātāja informācija</h2></div>
     {% if errors %}<p class="flash flash-error" role="alert">Piegādātājs nav saglabāts. Pārbaudiet atzīmētos laukus.</p>{% endif %}
     {% from 'auth/_form_macros.html' import field with context %}
     <form method="post" class="admin-form supplier-form">
@@ -12,10 +12,10 @@
         {{ field('name', 'Nosaukums', 255, true) }}
         {{ field('contact_person', 'Kontaktpersona', 150) }}
         <div class="form-grid">{{ field('email', 'E-pasts', 255, type='email') }}{{ field('phone', 'Tālrunis', 50, type='tel') }}</div>
-        {{ field('website', 'Tīmekļa vietne', 2048, type='url', hint='Pilna saite, piemēram, https://piemers.lv.') }}
+        {{ field('website', 'Tīmekļa vietne', 2048, type='url') }}
         </section>
         <section class="form-section" aria-label="Piegāde un pieejamība">
-        <div class="form-section-heading"><h2>Piegāde un pieejamība</h2><p>Šie iestatījumi attiecas uz visiem piegādātāja piedāvājumiem.</p></div>
+        <div class="form-section-heading"><h2>Piegāde un pieejamība</h2></div>
         <div class="form-field"><label for="delivery_price">Piegādes maksa, EUR *</label><input id="delivery_price" name="delivery_price" type="text" inputmode="decimal" maxlength="11" value="{{ form_data.delivery_price }}" required aria-describedby="delivery-price-hint{% if errors.get('delivery_price') %} delivery_price-error{% endif %}" {% if errors.get('delivery_price') %}aria-invalid="true"{% endif %}><p class="field-hint" id="delivery-price-hint">Mainot maksu, tā tiks piemērota piegādātāja esošajiem piedāvājumiem. 0 — bezmaksas piegāde.</p>{% if errors.get('delivery_price') %}<p class="field-error" id="delivery_price-error">{{ errors.delivery_price }}</p>{% endif %}</div>
         <label class="filter-check"><input type="checkbox" name="is_active" value="1" {% if form_data.is_active %}checked{% endif %}><span>Aktīvs piegādātājs</span></label>
         <p class="field-hint">Neaktīva piegādātāja piedāvājumi nav pieejami pasūtīšanai.</p>

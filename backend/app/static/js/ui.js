@@ -1,5 +1,35 @@
 // Navigation remains available without JavaScript.
 document.documentElement.classList.add('js');
+document.querySelectorAll('[data-toast]').forEach((toast) => {
+    const closeButton = toast.querySelector('.toast-close');
+    let timer;
+    let closing = false;
+    const dismiss = () => {
+        if (closing) return;
+        closing = true;
+        clearTimeout(timer);
+        toast.classList.add('is-leaving');
+        window.setTimeout(() => {
+            const stack = toast.parentElement;
+            toast.remove();
+            if (!stack.children.length) stack.remove();
+        }, window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 0 : 600);
+    };
+    const pause = () => clearTimeout(timer);
+    const resume = () => {
+        pause();
+        if (!closing && !toast.matches(':hover') && !toast.contains(document.activeElement)) {
+            timer = window.setTimeout(dismiss, 3000);
+        }
+    };
+    closeButton.hidden = false;
+    closeButton.addEventListener('click', dismiss);
+    toast.addEventListener('mouseenter', pause);
+    toast.addEventListener('mouseleave', resume);
+    toast.addEventListener('focusin', pause);
+    toast.addEventListener('focusout', () => window.setTimeout(resume, 0));
+    resume();
+});
 const navigationToggle = document.querySelector('.nav-toggle');
 const navigation = document.querySelector('#site-navigation');
 const setNavigationOpen = (open) => {

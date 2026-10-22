@@ -1,7 +1,7 @@
 {% extends 'admin/base.html' %}
 {% block title %}Pieteikumi{% endblock %}
 {% block content %}
-<div class="admin-page-heading"><div><h2>Klientu pieteikumi</h2><p>Pārskatiet pasūtījumu informāciju un pieņemiet lēmumu.</p></div><p class="admin-context"><strong>{{ pending }}</strong> gaida izskatīšanu</p></div>
+<div class="admin-page-heading"><div><h2>Klientu pieteikumi</h2></div><p class="admin-context"><strong>{{ pending }}</strong> gaida izskatīšanu</p></div>
 <section class="panel" aria-label="Klientu pieteikumi">
     <form class="inventory-filters history-filters" method="get">
         <div class="form-field"><label for="status">Statuss</label><select id="status" name="status">{% for value,label in [('iesniegts','Gaida izskatīšanu'), ('apstiprināts','Apstiprināti'), ('noraidīts','Noraidīti'), ('all','Visi pieteikumi')] %}<option value="{{ value }}" {% if status == value %}selected{% endif %}>{{ label }}</option>{% endfor %}</select></div>
@@ -15,7 +15,7 @@
         <tr><td><a class="cell-primary" href="{{ url_for('admin.application_detail', order_id=order.id) }}">Pieteikums #{{ order.id }}</a></td><td><strong>{{ customer.company_name }}</strong><span class="cell-meta">{{ customer.full_name }}</span></td><td><time datetime="{{ order.created_at.isoformat() }}Z" data-local-time>{{ order.created_at.strftime('%d.%m.%Y. %H:%M') }} UTC</time></td><td><strong>{{ '%.2f'|format(order.total_amount) }} €</strong></td><td><span class="status-badge order-status-{{ order.status }}">{{ order.status }}</span></td><td><a class="admin-secondary-button" href="{{ url_for('admin.application_detail', order_id=order.id) }}">{{ 'Izskatīt' if order.status == 'iesniegts' else 'Apskatīt' }}<span class="sr-only"> pieteikumu #{{ order.id }}</span></a></td></tr>
     {% endfor %}
     </tbody></table></div>
-    {% else %}<div class="empty-state"><h2>{{ 'Pieteikumu vēl nav.' if status == 'all' else 'Šajā statusā pieteikumu nav.' }}</h2><p>Jaunie klientu pieteikumi būs pieejami šajā sadaļā.</p>{% if status != 'all' %}<a class="admin-secondary-button" href="{{ url_for('admin.applications', status='all') }}">Rādīt visus pieteikumus</a>{% endif %}</div>{% endif %}
+    {% else %}<div class="empty-state"><h2>{{ 'Pieteikumu vēl nav.' if status == 'all' else 'Šajā statusā pieteikumu nav.' }}</h2>{% if status != 'all' %}<a class="admin-secondary-button" href="{{ url_for('admin.applications', status='all') }}">Rādīt visus pieteikumus</a>{% endif %}</div>{% endif %}
 </section>
 {% if pages > 1 %}<nav class="history-pagination" aria-label="Pieteikumu saraksta lapas">{% if page > 1 %}<a class="admin-secondary-button" href="{{ url_for('admin.applications', status=status, sort=sort, page=page-1) }}">← Iepriekšējā</a>{% endif %}<span class="field-hint">{{ page }}. lapa no {{ pages }}</span>{% if page < pages %}<a class="admin-secondary-button" href="{{ url_for('admin.applications', status=status, sort=sort, page=page+1) }}">Nākamā →</a>{% endif %}</nav>{% endif %}
 <script src="{{ url_for('static', filename='js/comparison.js') }}" defer></script>

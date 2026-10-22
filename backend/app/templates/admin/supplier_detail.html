@@ -17,13 +17,13 @@
         <div><dt>Saistītie pasūtījumi</dt><dd>{{ order_count }}</dd></div>
     </dl>
 </section>
-<div class="admin-page-heading supplier-offers-heading"><div><h2>Piegādātāja preces</h2><p>{{ supplier.offers|length }} piedāvājumi katalogā</p></div><div class="admin-section-actions"><a class="admin-primary-button" href="{{ url_for('admin.product_form', supplier_id=supplier.id) }}"><span aria-hidden="true">+</span> Pievienot jaunu preci</a><a class="admin-secondary-button" href="{{ url_for('admin.offer_form', supplier_id=supplier.id) }}">Piesaistīt esošu preci</a></div></div>
+<div class="admin-page-heading supplier-offers-heading"><div><h2>Piegādātāja preces</h2></div><div class="admin-section-actions"><a class="admin-primary-button" href="{{ url_for('admin.product_form', supplier_id=supplier.id) }}"><span aria-hidden="true">+</span> Pievienot jaunu preci</a><a class="admin-secondary-button" href="{{ url_for('admin.offer_form', supplier_id=supplier.id) }}">Piesaistīt esošu preci</a></div></div>
 <section class="panel" aria-label="Piegādātāja piedāvājumi">
     {% if supplier.offers %}
     <div class="table-scroll" role="region" aria-label="Piegādātāja preces" tabindex="0"><table class="admin-table"><thead><tr><th scope="col">Prece</th><th scope="col">Statuss</th><th scope="col">Cena</th><th scope="col">Atlikums</th><th scope="col">Piegāde</th><th scope="col"><span class="sr-only">Darbības</span></th></tr></thead><tbody>
     {% for offer in supplier.offers|sort(attribute='id') %}<tr><td><a class="cell-primary" href="{{ url_for('admin.product_detail', product_id=offer.product_id) }}">{{ offer.product.name }}</a><span class="cell-meta">{{ offer.supplier_sku or offer.product.sku }}</span></td><td><span class="status-badge {{ 'status-inactive' if not offer.is_active else '' }}">{{ 'Aktīvs' if offer.is_active else 'Neaktīvs' }}</span></td><td><strong>{{ '%.2f'|format(offer.unit_price) }} €</strong><span class="cell-meta">/ {{ offer.product.unit }}</span></td><td>{{ offer.stock_qty }} {{ offer.product.unit }}</td><td>{{ '%.2f'|format(offer.delivery_price) }} €</td><td><a href="{{ url_for('admin.offer_form', offer_id=offer.id) }}">Rediģēt<span class="sr-only"> {{ offer.product.name }}</span></a></td></tr>{% endfor %}
     </tbody></table></div>
-    {% else %}<div class="empty-state"><h2>Šim piegādātājam vēl nav piedāvājumu</h2><p>Piesaistiet esošu preci vai izveidojiet jaunu, lai norādītu cenu un atlikumu.</p><a class="admin-secondary-button" href="{{ url_for('admin.offer_form', supplier_id=supplier.id) }}">Piesaistīt esošu preci</a></div>{% endif %}
+    {% else %}<div class="empty-state"><h2>Šim piegādātājam vēl nav piedāvājumu</h2><a class="admin-secondary-button" href="{{ url_for('admin.offer_form', supplier_id=supplier.id) }}">Piesaistīt esošu preci</a></div>{% endif %}
 </section>
 {% if has_relations %}<p class="field-hint supplier-preservation-note">Piegādātājs ir saistīts ar piedāvājumiem vai pasūtījumiem. Tā ieraksts tiek saglabāts; vajadzības gadījumā izmantojiet deaktivizēšanu.</p>{% endif %}
 {% endblock %}

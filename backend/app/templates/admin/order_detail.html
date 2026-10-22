@@ -5,7 +5,7 @@
 <div class="admin-page-heading"><div><span class="status-badge order-status-{{ order.status }}">{{ order.status }}</span><p>Iesniegts: <time datetime="{{ order.created_at.isoformat() }}Z" data-local-time>{{ order.created_at.strftime('%d.%m.%Y. %H:%M') }} UTC</time></p></div><a class="admin-secondary-button" href="{{ url_for('admin.applications') }}">Visi pieteikumi <span aria-hidden="true">→</span></a></div>
 {% if error %}<p class="flash flash-error" role="alert">{{ error }}</p>{% endif %}
 <div class="cart-layout"><div class="supplier-groups">{% include '_order_customer.html' %}{% include '_order_items.html' %}</div>
-<aside class="shopping-summary"><p class="eyebrow">Administratora lēmums</p><h2>Pieteikuma izskatīšana</h2><div class="receipt-total"><span>Kopsumma</span><strong>{{ '%.2f'|format(order.total_amount) }} €</strong></div>
+<aside class="shopping-summary"><h2>Pieteikuma izskatīšana</h2><div class="receipt-total"><span>Kopsumma</span><strong>{{ '%.2f'|format(order.total_amount) }} €</strong></div>
 {% if order.status == 'iesniegts' %}
 {% if approval_issues %}<div class="review-issues" id="approval-check" role="status"><h3>Apstiprināšana nav pieejama</h3><ul>{% for issue in approval_issues %}<li>{{ issue }}</li>{% endfor %}</ul><p>Saglabātās summas nav mainītas. Klientam jāiesniedz jauns pieteikums ar aktuālajiem datiem.</p></div>
 {% else %}<p class="field-hint" id="approval-check">Piedāvājumi un daudzumi ir pieejami. Pirms apstiprināšanas tos pārbaudīsim vēlreiz.</p>{% endif %}

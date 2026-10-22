@@ -87,6 +87,13 @@ button:disabled, button:disabled:hover { background: #e9edf5; border-color: #bcc
 .flash { margin: 0 0 20px; padding: 15px 18px; border: 1px solid #bfcef3; border-left: 3px solid var(--accent); border-radius: var(--radius-sm); background: var(--accent-soft); color: #25479e; }
 .flash-error, .review-issues { border-color: #e7b9bf; border-left-color: var(--danger); background: var(--danger-soft); color: #8b2731; }
 .flash a { color: inherit; text-decoration: underline; font-weight: 600; }
+.toast-stack { position: fixed; z-index: 1000; left: 50%; transform: translateX(-50%); bottom: max(20px, env(safe-area-inset-bottom)); display: grid; gap: 8px; width: min(420px, calc(100% - 40px)); overflow: visible; pointer-events: none; }
+.toast { display: flex; align-items: center; gap: 12px; margin: 0; padding: 8px 12px; box-shadow: 0 8px 28px rgb(24 35 60 / 16%); pointer-events: auto; animation: toast-enter .45s cubic-bezier(.2, .8, .2, 1) backwards; transition: opacity .6s ease, transform .6s ease; }
+.toast > span { flex: 1; }
+.toast-close { flex: 0 0 28px; width: 28px; height: 28px; padding: 0; border: 0; border-radius: var(--radius-sm); background: transparent; color: inherit; font-size: 1.5rem; line-height: 1; }
+.toast-close:hover { background: rgb(24 35 60 / 8%); }
+.toast.is-leaving { opacity: 0; transform: translateY(16px); }
+@keyframes toast-enter { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: translateY(0); } }
 .account-kicker, .hero-label, .eyebrow { margin: 0 0 10px; color: var(--accent); font-size: .74rem; font-weight: 700; line-height: 1.5; letter-spacing: .1em; text-transform: uppercase; }
 .account-help, .account-switch, .field-hint, .results-count, .cell-meta, .comparison-note { color: var(--muted); }
 .field-hint { margin: 0; font-size: .82rem; line-height: 1.6; }
@@ -202,9 +209,9 @@ button:disabled, button:disabled:hover { background: #e9edf5; border-color: #bcc
 .price { margin: auto 0 7px; color: var(--ink); font-size: 1.3rem; font-weight: 700; font-variant-numeric: tabular-nums; }
 .price-label { color: var(--muted); font-size: .74rem; font-weight: 400; }
 .offer-count { margin-bottom: 12px; color: var(--muted); font-size: .75rem; }
-.availability { display: flex; align-items: center; gap: 6px; margin-bottom: 12px; color: var(--accent); font-size: .74rem; }
+.availability { display: flex; align-items: center; gap: 6px; margin-bottom: 12px; color: #18743b; font-size: .74rem; }
 .availability::before { content: ''; width: 6px; height: 6px; flex: 0 0 6px; border-radius: 50%; background: currentColor; }
-.availability-unavailable { color: var(--muted); }
+.availability-unavailable { color: var(--danger); }
 .card-button { justify-content: space-between; width: 100%; margin-top: 4px; border-color: var(--line); font-size: .78rem; }
 .product-detail { display: grid; grid-template-columns: minmax(0, .8fr) minmax(0, 1.2fr); gap: 40px; padding: 32px; border: 1px solid var(--line); border-radius: var(--radius); background: var(--surface); }
 .detail-image { display: grid; place-items: center; min-height: 280px; overflow: hidden; border: 1px solid #e4e9f5; border-radius: var(--radius); background: #f2f5fb; color: var(--violet); font-size: 6rem; font-weight: 600; }

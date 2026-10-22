@@ -2,7 +2,7 @@
 {% from '_icons.html' import icon %}
 {% block title %}Piegādātāji{% endblock %}
 {% block content %}
-<div class="admin-page-heading"><div><h2>Jūsu sadarbības partneri</h2><p>Piegādātāju kontakti, piegādes maksas un pieejamība vienuviet.</p></div><a class="admin-primary-button" href="{{ url_for('admin.supplier_form') }}"><span aria-hidden="true">+</span> Pievienot piegādātāju</a></div>
+<div class="admin-page-heading"><div><h2>Jūsu sadarbības partneri</h2></div><a class="admin-primary-button" href="{{ url_for('admin.supplier_form') }}"><span aria-hidden="true">+</span> Pievienot piegādātāju</a></div>
 <section class="panel" aria-label="Piegādātāju saraksts">
     <form class="inventory-filters" method="get" role="search">
         <div><label for="supplier-search">Meklēt piegādātāju</label><input id="supplier-search" type="search" name="q" value="{{ q }}" maxlength="255" placeholder="Nosaukums, kontaktpersona vai e-pasts"></div>
@@ -20,7 +20,7 @@
             <div class="category-row-actions"><a href="{{ url_for('admin.supplier_detail', supplier_id=supplier.id) }}">Skatīt<span class="sr-only"> {{ supplier.name }}</span></a><a href="{{ url_for('admin.supplier_form', supplier_id=supplier.id) }}">Rediģēt<span class="sr-only"> {{ supplier.name }}</span></a></div>
         </article>
     {% else %}
-        <div class="empty-state"><span class="empty-icon">{{ icon('layers', 28) }}</span><h2>{{ 'Piegādātāji nav atrasti' if q or status != 'all' else 'Vēl nav piegādātāju' }}</h2><p>{{ 'Mainiet meklēšanas kritērijus vai notīriet atlasi.' if q or status != 'all' else 'Pievienojiet pirmo piegādātāju, lai saglabātu tā informāciju.' }}</p><a class="admin-secondary-button" href="{{ url_for('admin.suppliers') if q or status != 'all' else url_for('admin.supplier_form') }}">{{ 'Notīrīt atlasi' if q or status != 'all' else 'Pievienot piegādātāju' }}</a></div>
+        <div class="empty-state"><span class="empty-icon">{{ icon('layers', 28) }}</span><h2>{{ 'Piegādātāji nav atrasti' if q or status != 'all' else 'Vēl nav piegādātāju' }}</h2><a class="admin-secondary-button" href="{{ url_for('admin.suppliers') if q or status != 'all' else url_for('admin.supplier_form') }}">{{ 'Notīrīt atlasi' if q or status != 'all' else 'Pievienot piegādātāju' }}</a></div>
     {% endfor %}
     </div>
 </section>

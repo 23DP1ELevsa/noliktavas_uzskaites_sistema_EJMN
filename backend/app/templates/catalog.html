@@ -11,6 +11,7 @@
     {% include '_market_header.html' %}
 
     <main id="main-content">
+        {% include '_messages.html' %}
         <section class="market-hero">
             <nav class="breadcrumbs" aria-label="Atrašanās vieta"><a href="{{ url_for('index') }}">Sākumlapa</a><span>/</span><span>Katalogs</span></nav>
             <div class="hero-banner">
@@ -41,8 +42,7 @@
                 </select></div>
                 <div class="filter-divider"></div>
                 <div class="filter-field"><label class="supplier-title" for="supplier-filter">Piegādātājs</label>
-                <input class="filter-input" id="supplier-filter" type="search" minlength="3" maxlength="255" placeholder="Vismaz 3 simboli" aria-describedby="supplier-filter-hint">
-                <p class="field-hint" id="supplier-filter-hint">Varat ievadīt arī nosaukuma burtu secību, piemēram, “dte”.</p></div>
+                <input class="filter-input" id="supplier-filter" type="search" minlength="3" maxlength="255" placeholder="Vismaz 3 simboli"></div>
                 <div class="filter-divider"></div>
                 <div class="filter-field"><p class="supplier-title">Cena, EUR</p>
                 <div class="price-fields">
@@ -55,7 +55,6 @@
                     <span>Tikai pieejamās</span>
                 </label>
                 <button class="apply-filters" id="apply-filters" type="button">Piemērot filtrus</button>
-                <p class="filter-caption">Cena un pieejamība atbilst izvēlētajiem filtriem.</p>
             </aside>
 
             <div class="catalog-content" aria-busy="true">

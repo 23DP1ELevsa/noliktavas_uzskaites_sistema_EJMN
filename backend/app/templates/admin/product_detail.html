@@ -11,12 +11,12 @@
         <div class="admin-form-actions"><a class="admin-primary-button" href="{{ url_for('admin.product_form', product_id=product.id) }}">Rediģēt preci</a><a class="admin-secondary-button" href="{{ url_for('admin.delete_product', product_id=product.id) }}">{{ 'Deaktivizēt preci' if product.offers else 'Dzēst preci' }}</a></div>
     </div>
 </section>
-<div class="admin-page-heading supplier-offers-heading"><div><h2>Piegādātāji un cenas</h2><p>Vienas preces piedāvājumi no dažādiem piegādātājiem.</p></div><a class="admin-primary-button" href="{{ url_for('admin.offer_form', product_id=product.id) }}"><span aria-hidden="true">+</span> Piesaistīt piegādātāju</a></div>
+<div class="admin-page-heading supplier-offers-heading"><div><h2>Piegādātāji un cenas</h2></div><a class="admin-primary-button" href="{{ url_for('admin.offer_form', product_id=product.id) }}"><span aria-hidden="true">+</span> Piesaistīt piegādātāju</a></div>
 <section class="panel" aria-label="Preces piegādātāji">
     {% if product.offers %}
     <div class="table-scroll" role="region" aria-label="Piegādātāju cenas" tabindex="0"><table class="admin-table"><thead><tr><th scope="col">Piegādātājs</th><th scope="col">Statuss</th><th scope="col">Vienības cena</th><th scope="col">Atlikums</th><th scope="col"><span class="sr-only">Darbības</span></th></tr></thead><tbody>
     {% for offer in product.offers %}<tr><td class="cell-primary">{{ offer.supplier.name if offer.supplier else offer.supplier_name }}</td><td><span class="status-badge {{ 'status-inactive' if not (offer.is_active and offer.supplier_active) else '' }}">{{ 'Aktīvs' if offer.is_active and offer.supplier_active else 'Neaktīvs' }}</span></td><td><strong>{{ '%.2f'|format(offer.unit_price) }} €</strong><span class="cell-meta">/ {{ product.unit }}</span></td><td>{{ offer.stock_qty }} {{ product.unit }}</td><td><a href="{{ url_for('admin.offer_form', offer_id=offer.id) }}">Rediģēt<span class="sr-only"> {{ offer.supplier_name }} piedāvājumu</span></a></td></tr>{% endfor %}
     </tbody></table></div>
-    {% else %}<div class="empty-state"><h2>Piegādātājs vēl nav piesaistīts</h2><p>Pievienojiet piedāvājumu, lai norādītu preces cenu un atlikumu.</p><a class="admin-secondary-button" href="{{ url_for('admin.offer_form', product_id=product.id) }}">Piesaistīt piegādātāju</a></div>{% endif %}
+    {% else %}<div class="empty-state"><h2>Piegādātājs vēl nav piesaistīts</h2><a class="admin-secondary-button" href="{{ url_for('admin.offer_form', product_id=product.id) }}">Piesaistīt piegādātāju</a></div>{% endif %}
 </section>
 {% endblock %}

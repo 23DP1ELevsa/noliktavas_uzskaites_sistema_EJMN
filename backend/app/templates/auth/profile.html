@@ -11,9 +11,7 @@
     <main id="main-content" class="admin-shell profile-shell">
         <div class="admin-toolbar">
             <div>
-                <p class="account-kicker">Jūsu darba vide</p>
                 <h1>Mans profils</h1>
-                <p class="account-help">Pārskatiet paziņojumus un pieteikumus vai atjaunojiet uzņēmuma datus.</p>
             </div>
             <a class="admin-secondary-button" href="{{ url_for('catalog.catalog_page') }}">Atvērt katalogu <span aria-hidden="true">→</span></a>
         </div>
@@ -34,7 +32,7 @@
                         </div>
                     </article>
                     {% else %}
-                    <div class="notification-empty"><p>Pagaidām nav paziņojumu.</p><p class="field-hint">Šeit saņemsiet ziņas par saviem pieteikumiem.</p></div>
+                    <div class="notification-empty"><p>Pagaidām nav paziņojumu.</p></div>
                     {% endfor %}
                 </section>
                 <section class="profile-orders" aria-labelledby="profile-orders-title">
@@ -51,7 +49,7 @@
                 </section>
             </aside>
             <section class="profile-settings" aria-labelledby="profile-settings-title">
-                <div class="section-heading"><div><h2 id="profile-settings-title">Profila dati</h2><p class="field-hint">Ar * atzīmētie lauki ir obligāti.</p></div></div>
+                <div class="section-heading"><div><h2 id="profile-settings-title">Profila dati</h2></div></div>
                 <form method="post" class="account-form">
                     {% from 'auth/_form_macros.html' import field with context %}
                     <fieldset class="form-section">
@@ -60,8 +58,7 @@
                             {{ field('full_name', 'Vārds un uzvārds', 150, true, autocomplete='name') }}
                             <div class="form-field">
                                 <label for="email">E-pasts</label>
-                                <input id="email" name="email" type="email" value="{{ current_user.email }}" disabled aria-describedby="email-hint">
-                                <p class="field-hint" id="email-hint">Konta e-pasta adresi nevar mainīt.</p>
+                                <input id="email" name="email" type="email" value="{{ current_user.email }}" disabled>
                             </div>
                         </div>
                     </fieldset>

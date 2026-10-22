@@ -2,18 +2,17 @@
 {% block title %}API piedāvājumu imports{% endblock %}
 {% block content %}
 {% include 'admin/_import_tabs.html' %}
-<div class="admin-page-heading"><div><h2>Saņemiet piedāvājumus no API</h2><p>Pieprasiet aktuālos demonstrācijas piedāvājumus un saglabājiet tos vienā reizē.</p></div><a class="admin-secondary-button" href="{{ url_for('test_api.offers') }}" target="_blank" rel="noopener">Atvērt komandas testa API <span aria-hidden="true">↗</span></a></div>
+<div class="admin-page-heading"><div><h2>Saņemiet piedāvājumus no API</h2></div><a class="admin-secondary-button" href="{{ url_for('test_api.offers') }}" target="_blank" rel="noopener">Atvērt komandas testa API <span aria-hidden="true">↗</span></a></div>
 <div class="import-layout">
     <section class="form-panel">
-        <div class="form-section-heading"><p class="eyebrow">API imports</p><h2>Savienojums ar datu avotu</h2><p>Saņemsim piedāvājumus, pārbaudīsim tos un atjaunosim katalogu.</p></div>
+        <div class="form-section-heading"><h2>Savienojums ar datu avotu</h2></div>
         {% if error %}<p class="flash flash-error" role="alert">{{ error }} Importa dati nav saglabāti.</p>{% endif %}
         <div class="form-section"><p class="field-hint">Datu avots</p><p class="admin-context">{{ api_url }}</p><p>API atgriež JSON piedāvājumus tajā pašā formātā kā failu imports.</p></div>
         <div class="admin-context"><strong>Viena darbība visiem piedāvājumiem</strong><p>Jauns piedāvājums tiek pievienots, esošs — atjaunināts. Kļūdas gadījumā viss imports tiek atcelts.</p></div>
         <form method="post" class="admin-form"><input type="hidden" name="csrf_token" value="{{ csrf_token }}"><div class="admin-form-actions"><a class="admin-secondary-button" href="{{ url_for('admin.supplier_products') }}">Atvērt piedāvājumus</a><button class="admin-primary-button" type="submit">Saņemt un importēt piedāvājumus</button></div></form>
     </section>
     <aside class="panel import-guide" aria-label="API importa informācija">
-        <p class="eyebrow">Noderīgi zināt</p><h2>Pirms datu saņemšanas</h2>
-        <ol class="import-steps"><li><strong>Sagatavojiet katalogu</strong><p>Precēm un piegādātājiem jau jābūt izveidotiem un aktīviem.</p></li><li><strong>Atlikumi saglabājas pareizi</strong><p>Avots norāda kopējo atlikumu pirms StockFlow pasūtījumiem. Jau pasūtītais daudzums tiek atņemts arī pēc atkārtota importa.</p></li><li><strong>Rezultāts uzreiz redzams</strong><p>Pēc importa saņemsiet paziņojumu par pievienoto un atjaunināto piedāvājumu skaitu.</p></li></ol>
+        <h2>Pirms datu saņemšanas</h2>
         <details><summary>Savienojuma ierobežojumi</summary><p class="field-hint">Atbildes gaidīšanas ierobežojums: {{ timeout }} sekundes savienojumam un lasīšanai. Maksimālais atbildes izmērs: 2 MiB.</p></details>
     </aside>
 </div>

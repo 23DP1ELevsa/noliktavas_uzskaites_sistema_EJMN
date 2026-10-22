@@ -2,7 +2,7 @@
 {% from '_icons.html' import icon %}
 {% block title %}Preču pārvaldība{% endblock %}
 {% block content %}
-<div class="admin-page-heading"><div><h2>Jūsu preču katalogs</h2><p>Pārvaldiet preču informāciju, kategorijas un pieejamību.</p></div><a class="admin-primary-button" href="{{ url_for('admin.product_form') }}"><span aria-hidden="true">+</span> Pievienot preci</a></div>
+<div class="admin-page-heading"><div><h2>Jūsu preču katalogs</h2></div><a class="admin-primary-button" href="{{ url_for('admin.product_form') }}"><span aria-hidden="true">+</span> Pievienot preci</a></div>
 <div class="inventory-stats" aria-label="Kataloga kopsavilkums"><div><span>Visas preces</span><strong>{{ total }}</strong><small>Kopējais katalogs</small></div><div><span>Aktīvās preces</span><strong>{{ active }}</strong><small>Redzamas klientiem</small></div><div><span>Neaktīvās preces</span><strong>{{ total - active }}</strong><small>Paslēptas katalogā</small></div></div>
 <section class="panel" aria-label="Preču saraksts">
     <form class="inventory-filters" method="get" role="search">
@@ -15,12 +15,12 @@
     {% for product in products %}
         <article class="inventory-row">
             <div class="inventory-thumbnail"><span class="image-fallback" aria-hidden="true" {% if product.image_url %}hidden{% endif %}>{{ product.name[:1]|upper }}</span>{% if product.image_url %}<img src="{{ product.image_url }}" alt="{{ product.name }}" loading="lazy" referrerpolicy="no-referrer" data-admin-image>{% endif %}</div>
-            <div class="inventory-info"><h2><a href="{{ url_for('admin.product_detail', product_id=product.id) }}">{{ product.name }}</a></h2><p>SKU: {{ product.sku }} · {{ product.category.name }}</p><small>{{ product.offers|length }} piedāvājumi · {{ product.unit }}</small></div>
+            <div class="inventory-info"><h2><a href="{{ url_for('admin.product_detail', product_id=product.id) }}">{{ product.name }}</a></h2><small>{{ product.offers|length }} piedāvājumi · {{ product.unit }}</small></div>
             <span class="status-badge {% if not product.is_active %}status-inactive{% endif %}">{{ 'Aktīva' if product.is_active else 'Neaktīva' }}</span>
             <div class="category-row-actions"><a href="{{ url_for('admin.product_detail', product_id=product.id) }}">Skatīt<span class="sr-only"> {{ product.name }}</span></a><a href="{{ url_for('admin.product_form', product_id=product.id) }}">Rediģēt<span class="sr-only"> {{ product.name }}</span></a><a href="{{ url_for('admin.delete_product', product_id=product.id) }}">{{ 'Deaktivizēt' if product.offers else 'Dzēst' }}<span class="sr-only"> {{ product.name }}</span></a></div>
         </article>
     {% else %}
-        <div class="empty-state"><span class="empty-icon">{{ icon('box', 28) }}</span><h2>Preces netika atrastas</h2><p>{% if q or status != 'all' %}Mainiet meklēšanas kritērijus vai notīriet atlasi.{% else %}Pievienojiet pirmo preci kopējam katalogam.{% endif %}</p><a class="admin-secondary-button" href="{{ url_for('admin.products') if q or status != 'all' else url_for('admin.product_form') }}">{{ 'Notīrīt atlasi' if q or status != 'all' else 'Pievienot preci' }}</a></div>
+        <div class="empty-state"><span class="empty-icon">{{ icon('box', 28) }}</span><h2>Preces netika atrastas</h2><a class="admin-secondary-button" href="{{ url_for('admin.products') if q or status != 'all' else url_for('admin.product_form') }}">{{ 'Notīrīt atlasi' if q or status != 'all' else 'Pievienot preci' }}</a></div>
     {% endfor %}
     </div>
 </section>

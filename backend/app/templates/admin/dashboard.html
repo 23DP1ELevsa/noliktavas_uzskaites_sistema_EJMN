@@ -2,20 +2,19 @@
 {% block title %}Pārskats{% endblock %}
 {% block content %}
 <div class="admin-page-heading">
-    <div><p class="eyebrow">Darba vide</p><h2>Viss pārvaldībai vienuviet</h2><p>Pārskatiet klientu pieteikumus un uzturiet aktuālu preču katalogu.</p></div>
+    <div><h2>Viss pārvaldībai vienuviet</h2></div>
     <a class="admin-secondary-button" href="{{ url_for('catalog.catalog_page') }}">Atvērt katalogu <span aria-hidden="true">↗</span></a>
 </div>
 <div class="admin-dashboard">
     {% for card in cards %}
     <section class="admin-section-card">
         <div class="admin-section-heading"><h2>{{ card.title }}</h2><span class="admin-section-count">{{ card.count }}</span></div>
-        <p>{{ card.description }}</p>
         <div class="admin-section-actions"><a class="admin-primary-button" href="{{ card.add_url }}">{{ card.action }}</a><a class="admin-secondary-button" href="{{ card.list_url }}">{{ card.secondary|default('Atvērt sadaļu') }} <span aria-hidden="true">→</span></a></div>
     </section>
     {% endfor %}
 </div>
 <section class="panel admin-page-heading">
-    <div><p class="eyebrow">Datu atjaunošana</p><h2>Vairāki piedāvājumi vienā reizē</h2><p>Ielādējiet piegādātāju cenas un atlikumus no JSON vai CSV faila, vai testa API.</p></div>
+    <div><h2>Vairāki piedāvājumi vienā reizē</h2></div>
     <a class="admin-secondary-button" href="{{ url_for('import_data.json_page') }}">Atvērt importu <span aria-hidden="true">→</span></a>
 </section>
 {% endblock %}

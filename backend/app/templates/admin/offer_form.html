@@ -3,7 +3,7 @@
 {% block content %}
 <nav class="admin-breadcrumbs" aria-label="Atrašanās vieta"><a href="{{ url_for('admin.supplier_products') }}">Piedāvājumi</a><span>/</span><span>{{ self.title() }}</span></nav>
 <section class="form-panel">
-    <div class="form-section-heading"><p class="eyebrow">Piegādātāja piedāvājums</p><h2>Cena, atlikums un piegāde</h2><p>Izvēlieties piegādātāju un preci, tad norādiet pasūtīšanas nosacījumus. Ar * atzīmētie lauki ir obligāti.</p></div>
+    <div class="form-section-heading"><h2>Cena, atlikums un piegāde</h2></div>
     {% if errors %}<p class="flash flash-error" role="alert">Piedāvājums nav saglabāts. Pārbaudiet atzīmētos laukus.</p>{% endif %}
     {% if not suppliers %}<p class="flash flash-error">Vispirms <a href="{{ url_for('admin.supplier_form') }}">pievienojiet piegādātāju</a>.</p>{% endif %}
     {% if not products %}<p class="flash flash-error">Vispirms <a href="{{ url_for('admin.product_form') }}">pievienojiet preci</a> kopējam katalogam.</p>{% endif %}
@@ -20,7 +20,7 @@
         <div class="form-field"><label for="supplier_sku">Piegādātāja preces kods</label><input id="supplier_sku" name="supplier_sku" value="{{ form_data.supplier_sku }}" maxlength="100" {% if errors.get('supplier_sku') %}aria-invalid="true" aria-describedby="supplier_sku-error"{% endif %}>{{ error('supplier_sku') }}</div>
         </section>
         <section class="form-section" aria-label="Cena un PVN">
-        <div class="form-section-heading"><h2>Cena un PVN</h2><p>Norādiet vienas preces vienības cenu un tās nodokļu nosacījumus.</p></div>
+        <div class="form-section-heading"><h2>Cena un PVN</h2></div>
         <div class="form-grid">
             {{ number('unit_price', 'Vienības cena (€)', 0, '99999999.99', '0.01') }}
             <div class="form-field"><label for="currency">Valūta *</label><select id="currency" name="currency" required {% if errors.get('currency') %}aria-invalid="true" aria-describedby="currency-error"{% endif %}><option value="EUR">EUR — eiro</option></select>{{ error('currency') }}</div>
@@ -29,15 +29,15 @@
         </div>
         </section>
         <section class="form-section" aria-label="Atlikums un piegāde">
-        <div class="form-section-heading"><h2>Atlikums un piegāde</h2><p>Šie nosacījumi palīdz klientam plānot pasūtījumu.</p></div>
+        <div class="form-section-heading"><h2>Atlikums un piegāde</h2></div>
         <div class="form-grid">
             {{ number('stock_qty', 'Brīvais atlikums', 0, 2147483647) }}
             {{ number('min_order_qty', 'Minimālais daudzums', 1, 2147483647) }}
             {{ number('delivery_days', 'Piegādes termiņš (dienas)', 0, 2147483647) }}
-            <div class="form-field"><label for="delivery_fee">Piegādes maksa</label><output id="delivery_fee">{{ '%.2f'|format(supplier.delivery_price) ~ ' €' if supplier else 'Izvēlieties piegādātāju' }}</output><p class="field-hint">Maksa tiek ņemta no piegādātāja iestatījumiem.</p></div>
+            <div class="form-field"><label for="delivery_fee">Piegādes maksa</label><output id="delivery_fee">{{ '%.2f'|format(supplier.delivery_price) ~ ' €' if supplier else 'Izvēlieties piegādātāju' }}</output></div>
         </div>
         <label class="filter-check"><input name="is_active" type="checkbox" value="1" {% if form_data.is_active %}checked{% endif %}><span>Aktīva piegādātāja prece</span></label>
-        <p class="field-hint">Katalogā tā pieejama, ja arī piegādātājs un prece ir aktīvi. Deaktivizēšana saglabā pasūtījumu vēsturi.</p>
+
         </section>
         <div class="admin-form-actions"><a class="admin-secondary-button" href="{{ url_for('admin.supplier_detail', supplier_id=supplier.id) if supplier else url_for('admin.supplier_products') }}">Atcelt</a><button class="admin-primary-button" type="submit" {% if not products or not suppliers %}disabled{% endif %}>Saglabāt</button></div>
     </form>

@@ -1,5 +1,10 @@
 {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}<div class="toast-stack" aria-label="Paziņojumi">
     {% for category, message in messages %}
-        <p class="flash flash-{{ category }}" role="{{ 'alert' if category == 'error' else 'status' }}">{{ message }}</p>
+        <div class="flash flash-{{ category }} toast" role="{{ 'alert' if category == 'error' else 'status' }}" data-toast>
+            <span>{{ message }}</span>
+            <button class="toast-close" type="button" aria-label="Aizvērt paziņojumu" hidden>×</button>
+        </div>
     {% endfor %}
+    </div>{% endif %}
 {% endwith %}

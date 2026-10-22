@@ -2,10 +2,10 @@
 {% block title %}{{ import_format }} piedāvājumu imports{% endblock %}
 {% block content %}
 {% include 'admin/_import_tabs.html' %}
-<div class="admin-page-heading"><div><h2>Atjaunojiet piedāvājumus no faila</h2><p>Ielādējiet piegādātāju cenas un atlikumus vienā reizē.</p></div><a class="admin-secondary-button" href="{{ url_for(sample_endpoint) }}"><span aria-hidden="true">↓</span> Lejupielādēt {{ import_format }} paraugu</a></div>
+<div class="admin-page-heading"><div><h2>Atjaunojiet piedāvājumus no faila</h2></div><a class="admin-secondary-button" href="{{ url_for(sample_endpoint) }}"><span aria-hidden="true">↓</span> Lejupielādēt {{ import_format }} paraugu</a></div>
 <div class="import-layout">
     <section class="form-panel">
-        <div class="form-section-heading"><p class="eyebrow">{{ import_format }} imports</p><h2>Izvēlieties sagatavoto failu</h2><p>Pirms saglabāšanas pārbaudīsim katru faila piedāvājumu.</p></div>
+        <div class="form-section-heading"><h2>Izvēlieties sagatavoto failu</h2></div>
         {% if error %}<p class="flash flash-error" role="alert">{{ error }} Importa dati nav saglabāti.</p>{% endif %}
         <form method="post" enctype="multipart/form-data" class="admin-form">
             <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
@@ -20,8 +20,7 @@
         </form>
     </section>
     <aside class="panel import-guide" aria-label="Importa sagatavošana">
-        <p class="eyebrow">Pirms importēšanas</p><h2>Trīs soļi veiksmīgam importam</h2>
-        <ol class="import-steps"><li><strong>Lejupielādējiet paraugu</strong><p>{{ 'Pirmā rinda: kolonnu nosaukumi. Atdalītājs: komats vai semikols.' if import_format == 'CSV' else 'Faila saknē jābūt piedāvājumu masīvam [...].' }}</p></li><li><strong>Pārbaudiet preces un piegādātājus</strong><p>Tiem jau jābūt izveidotiem un aktīviem. Pielāgojiet parauga kodus un nosaukumus savai datubāzei.</p></li><li><strong>Norādiet kopējo atlikumu</strong><p>Failā norādiet atlikumu pirms StockFlow pasūtījumiem. Sistēma pati atņem jau pasūtīto daudzumu; atkārtots imports to neatjauno.</p></li></ol>
+        <h2>Trīs soļi veiksmīgam importam</h2>
         <details><summary>Obligātie datu lauki</summary><p class="field-hint">Preces kods <code>product_sku</code>, piegādātāja kods <code>supplier_sku</code>, piegādātājs <code>supplier_id</code> vai <code>supplier_name</code>, valūta <code>currency</code>, cena <code>unit_price</code>, PVN nosacījums <code>vat_included</code>, minimālais daudzums <code>min_order_qty</code>, atlikums <code>stock_qty</code> un piegādes dienas <code>delivery_days</code>. Cenai bez PVN norādiet arī likmi <code>vat_rate</code>.</p></details>
     </aside>
 </div>

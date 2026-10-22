@@ -5,7 +5,7 @@
 <nav class="admin-breadcrumbs" aria-label="Atrašanās vieta"><a href="{{ url_for('admin.supplier_products') }}">Piedāvājumi</a><span aria-hidden="true">/</span><span>{{ self.title() }}</span></nav>
 <section class="form-panel confirmation-panel">
     <div class="confirmation-icon">{{ icon('shield', 28) }}</div>
-    <p class="eyebrow">Darbības apstiprinājums</p><h2>{{ self.title() }}</h2>
+    <h2>{{ self.title() }}</h2>
     <div class="admin-context"><strong>{{ offer.product.name }}</strong><p>{{ offer.supplier_name }} · {{ offer.supplier_sku or offer.product.sku }}</p><p><strong>{{ '%.2f'|format(offer.unit_price) }} {{ offer.currency }}</strong> / {{ offer.product.unit }}</p></div>
     {% if preserve %}<p>{{ 'Piedāvājums ir izmantots pasūtījumos.' if in_history else 'Piedāvājums ir pievienots grozam.' }} Tas tiks deaktivizēts, saglabājot saistītos datus.</p><p class="field-hint">Piedāvājumu varēs atkal aktivizēt rediģēšanas formā.</p>
     {% else %}<p>Vai tiešām vēlaties dzēst šo piedāvājumu? Tam nav saistītu grozu vai pasūtījumu.</p><p class="field-hint">Dzēšanu nevar atsaukt.</p>{% endif %}
