@@ -7,6 +7,7 @@ import json
 from ..config import PROJECT_ROOT
 from ..extensions import db
 from ..models import Cart, CartItem, Category, CompanyProfile, Offer, Product, Supplier, User
+from .passwords import password_errors
 
 
 ADMIN_EMAIL = "admin.demo@stockflow.test"
@@ -23,8 +24,9 @@ class DemoDataError(ValueError):
 def seed_demo_data(admin_password, user_password):
     """Stage missing records in the current transaction; the caller commits it."""
     for role, password in (("admin", admin_password), ("user", user_password)):
-        if len(password) < 8:
-            raise DemoDataError(f"The {role} password must contain at least 8 characters.")
+        errors = password_errors(password)
+        if errors:
+            raise DemoDataError(f"{role}: {' '.join(errors)}")
 
     data = json.loads(DEMO_CATALOG.read_text(encoding="utf-8"))
     created = Counter({name: 0 for name in (
@@ -38,6 +40,7 @@ def seed_demo_data(admin_password, user_password):
         return record
 
     def account(email, name, role, password):
+        # Atkārtota demonstrācijas datu ielāde saglabā jau esošā konta paroli un datus.
         existing = db.session.scalar(db.select(User).where(User.email == email))
         if existing is not None:
             if existing.role != role:
@@ -78,7 +81,7 @@ def seed_demo_data(admin_password, user_password):
             name=normalized, name_key=normalized.casefold(), delivery_price=delivery_price))
     for fields in data["offers"]:
         product = products[fields["product_sku"]]
-        # A reserved supplier SKU identifies a demo offer even after price or name edits.
+        # Rezervētais piegādātāja kods atpazīst demo piedāvājumu arī pēc cenas vai nosaukuma maiņas.
         matches = db.session.scalars(db.select(Offer).where(
             Offer.product_id == product.id, Offer.supplier_sku == fields["supplier_sku"],
         )).all()

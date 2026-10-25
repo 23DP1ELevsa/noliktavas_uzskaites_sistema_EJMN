@@ -3,6 +3,7 @@ from ..models import Notification, User
 
 
 def customer_details(order):
+    # Saglabātais momentuzņēmums nemainās, kad klients vēlāk rediģē savu profilu.
     if order.customer_snapshot:
         return order.customer_snapshot
     profile, user = order.company_profile, order.user

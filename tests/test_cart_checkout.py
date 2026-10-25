@@ -104,11 +104,11 @@ def test_checkout_uses_profile_and_creates_snapshot_then_clears_cart(comparison_
     client.post("/orders/checkout", data=data)
     assert db.session.scalar(db.select(db.func.count(Order.id))) == 1
     other = User(email="other-order@example.test", full_name="Other", role="user")
-    other.set_password("password123")
+    other.set_password("Password123!")
     db.session.add(other)
     db.session.commit()
     client.get("/auth/logout")
-    client.post("/auth/login", data={"email": other.email, "password": "password123"})
+    client.post("/auth/login", data={"email": other.email, "password": "Password123!"})
     assert client.get(f"/orders/{order.id}").status_code == 404
 
 

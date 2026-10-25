@@ -26,7 +26,7 @@ def submit(comparison_data, **overrides):
 
 def sign_in_admin(client, order_id):
     client.get('/auth/logout')
-    client.post('/auth/login', data={'email': 'supplier@example.test', 'password': 'password123'})
+    client.post('/auth/login', data={'email': 'supplier@example.test', 'password': 'Password123!'})
     assert client.get(f'/admin/orders/{order_id}').status_code == 200
     with client.session_transaction() as session:
         return session['product_csrf_token']

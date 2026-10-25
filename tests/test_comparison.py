@@ -12,9 +12,9 @@ from backend.app.services.comparison import comparison_rows, parse_quantity
 @pytest.fixture
 def comparison_data(database_app):
     admin = User(email="supplier@example.test", full_name="Admin", role="admin")
-    admin.set_password("password123")
+    admin.set_password("Password123!")
     buyer = User(email="buyer@example.test", full_name="Buyer", role="user")
-    buyer.set_password("password123")
+    buyer.set_password("Password123!")
     product = Product(name="Salīdzināma prece", sku="COMPARE", description="Preces apraksts",
                       image_url="https://example.test/product.png", category=Category(name="Testa preces"))
     offers = [
@@ -38,7 +38,7 @@ def comparison_data(database_app):
 
 
 def sign_in(client):
-    client.post("/auth/login", data={"email": "buyer@example.test", "password": "password123"})
+    client.post("/auth/login", data={"email": "buyer@example.test", "password": "Password123!"})
     client.get("/cart")
     with client.session_transaction() as session:
         return session["cart_csrf_token"]
@@ -229,11 +229,11 @@ def test_cart_rechecks_stock_and_activity_and_enforces_ownership(comparison_data
     assert client.post("/cart/items", data=data).status_code == 404
     assert "vairs nav aktīvs" in client.get("/cart").get_data(as_text=True)
     other = User(email="other@example.test", full_name="Other", role="user")
-    other.set_password("password123")
+    other.set_password("Password123!")
     db.session.add(other)
     db.session.commit()
     client.get("/auth/logout")
-    client.post("/auth/login", data={"email": other.email, "password": "password123"})
+    client.post("/auth/login", data={"email": other.email, "password": "Password123!"})
     assert product.name not in client.get("/cart").get_data(as_text=True)
     for action in ("update", "remove"):
         assert client.post(f"/cart/items/{item.id}/{action}", data={"csrf_token": token, "quantity": "2"}).status_code == 404

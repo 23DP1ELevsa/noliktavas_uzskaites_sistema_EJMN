@@ -9,6 +9,7 @@ from .commands import register_commands
 
 
 def create_app(config_class=Config):
+    # Katram lietotnes eksemplāram ielādējam vidi; testi var norādīt atsevišķu konfigurāciju.
     app = Flask(__name__)
     app.config.from_object(Config)
     app.config.from_mapping(environment_config())
@@ -21,6 +22,7 @@ def create_app(config_class=Config):
         app.config["SQLALCHEMY_DATABASE_URI"]
     )
     db.init_app(app)
+    # Dzinēja iestatījumus piemērojam tikai pēc piesaistes konkrētajai lietotnei.
     with app.app_context():
         configure_engine(db.engine)
     from . import models  # noqa: F401 -- register all tables before migrations
@@ -31,7 +33,7 @@ def create_app(config_class=Config):
     register_commands(app)
 
     def browser_error(error):
-        # Keep the existing API error contract; localize browser-facing pages.
+        # API saglabā savu atbildes formātu, bet pārlūka kļūdu lapas attēlojam latviski.
         if request.path.startswith("/api/") or request.path == "/catalog" or request.blueprint == "offers":
             return error
         messages = {
@@ -56,6 +58,7 @@ def create_app(config_class=Config):
 
     @app.context_processor
     def navigation_notifications():
+        # Galvenē skaitām tikai pašreizējā lietotāja nelasītos paziņojumus.
         if not current_user.is_authenticated:
             return {"nav_unread": 0}
         from .models import Notification

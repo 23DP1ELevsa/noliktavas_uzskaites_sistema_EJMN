@@ -1,0 +1,7 @@
+{% macro section_toggle(target, label, count=0) %}
+<button class="mobile-section-toggle" type="button" aria-controls="{{ target }}" aria-expanded="false" data-mobile-toggle>
+    <span class="burger-icon" aria-hidden="true"><span></span><span></span><span></span></span>
+    <span>{{ label }}</span>
+    {% if count %}<span class="notification-count" aria-label="{{ count }} nelasīti paziņojumi">{{ count }}</span>{% endif %}
+</button>
+{% endmacro %}

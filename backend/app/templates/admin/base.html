@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
 <body class="admin-page">
+    {% from '_mobile_section.html' import section_toggle %}
     {% include '_market_header.html' %}
     <main class="admin-shell" id="main-content">
         <header class="admin-header">
@@ -17,15 +18,18 @@
             </div>
 
         </header>
-        <nav class="admin-section-nav" aria-label="Paneļa sadaļas">
-            <a href="{{ url_for('admin.dashboard') }}" {% if request.endpoint == 'admin.dashboard' %}aria-current="page"{% endif %}>Pārskats</a>
-            <a href="{{ url_for('admin.applications') }}" {% if request.endpoint in ['admin.applications', 'admin.application_detail'] %}aria-current="page"{% endif %}>Pieteikumi</a>
-            <a href="{{ url_for('admin.suppliers') }}" {% if request.endpoint in ['admin.suppliers', 'admin.supplier_detail', 'admin.supplier_form', 'admin.delete_supplier'] %}aria-current="page"{% endif %}>Piegādātāji</a>
-            <a href="{{ url_for('admin.products') }}" {% if request.endpoint in ['admin.products', 'admin.product_detail', 'admin.product_form', 'admin.delete_product'] %}aria-current="page"{% endif %}>Preces</a>
-            <a href="{{ url_for('admin.supplier_products') }}" {% if request.endpoint in ['admin.supplier_products', 'admin.offer_form', 'admin.delete_offer'] %}aria-current="page"{% endif %}>Piedāvājumi</a>
-            <a href="{{ url_for('admin.categories') }}" {% if request.endpoint in ['admin.categories', 'admin.create_category', 'admin.edit_category'] %}aria-current="page"{% endif %}>Kategorijas</a>
-            <a href="{{ url_for('import_data.json_page') }}" {% if request.blueprint == 'import_data' %}aria-current="page"{% endif %}>Imports</a>
-        </nav>
+        <div class="admin-section-menu" data-mobile-section>
+            {{ section_toggle('admin-section-links', 'Paneļa sadaļas') }}
+            <nav class="admin-section-nav" id="admin-section-links" aria-label="Paneļa sadaļas" data-mobile-content>
+                <a href="{{ url_for('admin.dashboard') }}" {% if request.endpoint == 'admin.dashboard' %}aria-current="page"{% endif %}>Pārskats</a>
+                <a href="{{ url_for('admin.applications') }}" {% if request.endpoint in ['admin.applications', 'admin.application_detail'] %}aria-current="page"{% endif %}>Pieteikumi</a>
+                <a href="{{ url_for('admin.suppliers') }}" {% if request.endpoint in ['admin.suppliers', 'admin.supplier_detail', 'admin.supplier_form', 'admin.delete_supplier'] %}aria-current="page"{% endif %}>Piegādātāji</a>
+                <a href="{{ url_for('admin.products') }}" {% if request.endpoint in ['admin.products', 'admin.product_detail', 'admin.product_form', 'admin.delete_product'] %}aria-current="page"{% endif %}>Preces</a>
+                <a href="{{ url_for('admin.supplier_products') }}" {% if request.endpoint in ['admin.supplier_products', 'admin.offer_form', 'admin.delete_offer'] %}aria-current="page"{% endif %}>Piedāvājumi</a>
+                <a href="{{ url_for('admin.categories') }}" {% if request.endpoint in ['admin.categories', 'admin.create_category', 'admin.edit_category'] %}aria-current="page"{% endif %}>Kategorijas</a>
+                <a href="{{ url_for('import_data.json_page') }}" {% if request.blueprint == 'import_data' %}aria-current="page"{% endif %}>Imports</a>
+            </nav>
+        </div>
         {% include '_messages.html' %}
         {% block content %}{% endblock %}
     </main>

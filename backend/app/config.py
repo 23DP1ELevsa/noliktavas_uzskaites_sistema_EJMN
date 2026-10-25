@@ -24,7 +24,7 @@ def environment_config():
     """Read settings at app creation, without overriding deployment variables."""
     load_dotenv(PROJECT_ROOT / ".env", override=False)
     raw_url = os.getenv("DATABASE_URL") or os.getenv("MYSQL_URL")
-    # An explicitly configured database must never silently fall back to another one.
+    # Skaidri norādītu datubāzi kļūdas gadījumā nedrīkst nemanāmi aizstāt ar citu.
     database_url = raw_url or "sqlite:///stockflow.db"
 
     return {

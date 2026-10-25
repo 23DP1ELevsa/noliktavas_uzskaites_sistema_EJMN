@@ -2,6 +2,7 @@ from flask_login import UserMixin
 from werkzeug.security import check_password_hash, generate_password_hash
 
 from ..extensions import db
+from ..services.passwords import password_errors
 from .common import CreatedMixin, IdentityMixin, ID_TYPE, TABLE_OPTIONS, active_column
 
 
@@ -31,8 +32,11 @@ class User(IdentityMixin, CreatedMixin, UserMixin, db.Model):
                                        passive_deletes="all")
 
     def set_password(self, password):
-        if len(password) < 8:
-            raise ValueError("Password must contain at least 8 characters.")
+        # Pārbaude modelī aizsargā arī kontus, kas izveidoti ārpus reģistrācijas formas.
+        errors = password_errors(password)
+        if errors:
+            raise ValueError(" ".join(errors))
+        # Glabājam tikai paroles jaucējkodu; sākotnējā parole datubāzē nenonāk.
         self.password_hash = generate_password_hash(password)
 
     def check_password(self, password):
@@ -57,4 +61,5 @@ class CompanyProfile(IdentityMixin, db.Model):
 
     @property
     def effective_delivery_address(self):
+        # Ja atsevišķa piegādes adrese nav norādīta, izmantojam uzņēmuma adresi.
         return self.delivery_address or self.address

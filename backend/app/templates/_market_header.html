@@ -3,7 +3,7 @@
 <header class="market-header">
     <div class="header-top">
         <a class="brand" href="{{ url_for('index') }}" aria-label="StockFlow sākumlapa"><span class="brand-symbol">{{ icon('box', 25) }}</span><span>Stock<span class="brand-accent">Flow</span></span></a>
-        <button class="nav-toggle" type="button" aria-controls="site-navigation" aria-expanded="false">{{ icon('menu') }}<span>Izvēlne</span></button>
+        <button class="nav-toggle" type="button" aria-controls="site-navigation" aria-expanded="false" aria-label="Atvērt izvēlni"><span class="burger-icon" aria-hidden="true"><span></span><span></span><span></span></span><span>Izvēlne</span></button>
         <nav class="header-actions user-navigation" id="site-navigation" aria-label="Galvenā navigācija">
             <a href="{{ url_for('catalog.catalog_page') }}" {% if request.blueprint == 'catalog' %}aria-current="page"{% endif %}>Katalogs</a>
             <a href="{{ url_for('cart.cart_page') }}" {% if request.blueprint == 'cart' or request.endpoint == 'orders.checkout' %}aria-current="page"{% endif %}>{{ icon('cart', 18) }}Grozs</a>

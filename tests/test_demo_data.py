@@ -70,20 +70,20 @@ def test_seed_preserves_edits_passwords_and_emptied_cart(database_app):
     offer.is_active = False
     offer.product.name = "Edited demo product"
     buyer = db.session.scalar(db.select(User).where(User.email == demo_data.USER_EMAIL))
-    buyer.set_password("changed-password")
+    buyer.set_password("Changed-password!")
     buyer.is_active = False
     buyer.company_profile.address = "Changed address"
     db.session.execute(delete(CartItem))
     db.session.commit()
     offer_id, buyer_id = offer.id, buyer.id
-    seed(database_app, "--user-password", "different-password")
+    seed(database_app, "--user-password", "Different-password!")
     db.session.remove()
     offer = db.session.get(Offer, offer_id)
     buyer = db.session.get(User, buyer_id)
     assert offer.unit_price == Decimal("11.23")
     assert offer.supplier_name == "Renamed demo supplier" and not offer.is_active
     assert offer.product.name == "Edited demo product"
-    assert buyer.check_password("changed-password") and not buyer.is_active
+    assert buyer.check_password("Changed-password!") and not buyer.is_active
     assert buyer.company_profile.address == "Changed address"
     assert counts()["cart_items"] == 0 and counts()["offers"] == 18
 
@@ -176,18 +176,18 @@ def test_demo_accounts_can_log_in_with_hashed_passwords(database_app):
 
 def test_demo_passwords_can_be_supplied_via_environment(database_app):
     result = seed(database_app, env={
-        "DEMO_ADMIN_PASSWORD": "custom-admin-password", "DEMO_USER_PASSWORD": "custom-user-password",
+        "DEMO_ADMIN_PASSWORD": "Custom-admin-password!", "DEMO_USER_PASSWORD": "Custom-user-password!",
     })
     admin = db.session.scalar(db.select(User).where(User.email == demo_data.ADMIN_EMAIL))
     buyer = db.session.scalar(db.select(User).where(User.email == demo_data.USER_EMAIL))
-    assert admin.check_password("custom-admin-password")
-    assert buyer.check_password("custom-user-password")
-    assert "custom-admin-password" not in result.output
+    assert admin.check_password("Custom-admin-password!")
+    assert buyer.check_password("Custom-user-password!")
+    assert "Custom-admin-password!" not in result.output
 
 
 def test_seed_rejects_short_password_before_writing(database_app):
     result = database_app.test_cli_runner().invoke(args=["seed-demo", "--admin-password", "short"])
-    assert result.exit_code != 0 and "8 characters" in result.output
+    assert result.exit_code != 0 and "8 rakstzīmes" in result.output
     assert all(value == 0 for value in counts().values())
 
 

@@ -61,11 +61,11 @@ def test_last_units_can_be_approved_and_second_buyer_cannot_purchase_them(compar
     order = db.session.scalar(db.select(Order))
     assert decide(client, order, "approve").status_code == 302
     other = User(email="second-stock@test.lv", full_name="Other", role="user")
-    other.set_password("password123")
+    other.set_password("Password123!")
     db.session.add(other)
     db.session.commit()
     client.get("/auth/logout")
-    client.post("/auth/login", data={"email": other.email, "password": "password123"})
+    client.post("/auth/login", data={"email": other.email, "password": "Password123!"})
     client.get("/cart")
     with client.session_transaction() as session:
         token = session["cart_csrf_token"]
@@ -168,7 +168,7 @@ def test_two_buyers_cannot_checkout_the_same_last_units(comparison_data, databas
     offer = offers[0]
     offer.stock_qty = 2
     other = User(email="racing-buyer@test.lv", full_name="Other", role="user")
-    other.set_password("password123")
+    other.set_password("Password123!")
     db.session.add(other)
     db.session.commit()
     token = sign_in(client)
@@ -180,7 +180,7 @@ def test_two_buyers_cannot_checkout_the_same_last_units(comparison_data, databas
     second = database_app.test_client()
     # Each client needs its own Flask-Login cache during setup too.
     with database_app.app_context():
-        second.post("/auth/login", data={"email": other_email, "password": "password123"})
+        second.post("/auth/login", data={"email": other_email, "password": "Password123!"})
         second.get("/cart")
         with second.session_transaction() as session:
             token2 = session["cart_csrf_token"]

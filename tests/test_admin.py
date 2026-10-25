@@ -6,8 +6,8 @@ def admin_data():
     return {
         "full_name": "Admin Demo",
         "email": "admin@example.test",
-        "password": "admin-password",
-        "password_confirmation": "admin-password",
+        "password": "Admin-password!",
+        "password_confirmation": "Admin-password!",
         "company_name": "Admin SIA",
         "registration_no": "40000000000",
         "address": "Rīga, Testa iela 1",
@@ -22,7 +22,7 @@ def login_admin(client):
     client.post("/auth/logout")
     return client.post("/auth/login", data={
         "email": "admin@example.test",
-        "password": "admin-password",
+        "password": "Admin-password!",
     })
 
 

@@ -15,6 +15,7 @@ MAX_ORDER_TOTAL = Decimal("9999999999.99")
 
 
 def load_cart_summary(user_id, *, lock=False):
+    # Lietotāja filtrs nepieļauj cita pircēja groza nolasīšanu.
     cart_query = db.select(Cart).where(Cart.user_id == user_id)
     if lock:
         cart_query = cart_query.with_for_update().execution_options(populate_existing=True)
@@ -28,7 +29,7 @@ def load_cart_summary(user_id, *, lock=False):
             query = query.options(joinedload(CartItem.offer).joinedload(Offer.product))
         items = db.session.scalars(query).all()
     if lock and items:
-        # Refresh under locks before checking availability and allocating stock.
+        # Pirms rezervācijas bloķējam un pārlasām piedāvājumus, lai izmantotu aktuālo atlikumu.
         offers = db.session.scalars(db.select(Offer).where(Offer.id.in_([item.offer_id for item in items]))
                                     .order_by(Offer.id).with_for_update()
                                     .execution_options(populate_existing=True)).all()
@@ -49,6 +50,7 @@ def load_cart_summary(user_id, *, lock=False):
         group["subtotal"] += row["subtotal"]
         group["delivery"] += item.offer.delivery_price
     groups = sorted(suppliers.values(), key=lambda group: group["supplier"].casefold())
+    # Piegādātāju grupas un visa groza summas aprēķinām ar Decimal, saglabājot precīzus centus.
     for group in groups:
         group["total"] = group["subtotal"] + group["delivery"]
     subtotal = sum((row["subtotal"] for row in rows), Decimal("0.00"))
@@ -64,6 +66,7 @@ def load_cart_summary(user_id, *, lock=False):
 
 
 def checkout_fingerprint(summary, profile):
+    # Kontrolsumma ļauj pamanīt cenu, daudzuma vai uzņēmuma datu maiņu pirms iesniegšanas.
     values = [(row["item"].id, row["offer"].id, row["item"].quantity,
                str(row["offer"].unit_price), str(row["offer"].delivery_price),
                row["offer"].vat_included, row["offer"].supplier_name, row["offer"].product.name,

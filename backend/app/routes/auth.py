@@ -8,6 +8,7 @@ from sqlalchemy.exc import IntegrityError
 from ..extensions import db
 from ..models import CompanyProfile, Notification, Order, User
 from ..services.comparison import cart_csrf_token, require_cart_csrf
+from ..services.passwords import password_errors
 
 
 auth_bp = Blueprint("auth", __name__, url_prefix="/auth")
@@ -19,6 +20,7 @@ COMPANY_FIELDS = ("company_name", "registration_no", "vat_no", "phone", "address
 
 
 def _company_form_data():
+    # Apstrādājam tikai atļautos uzņēmuma laukus un noņemam liekās atstarpes malās.
     return {field: request.form.get(field, "").strip() for field in COMPANY_FIELDS}
 
 
@@ -52,6 +54,7 @@ def _validate_profile_data(data):
 
     phone = data["phone"]
     if phone and "phone" not in errors:
+        # Garumu vērtējam pēc cipariem, lai atstarpes un iekavas to neietekmētu.
         digits = re.sub(r"[^0-9]", "", phone)
         if not PHONE_PATTERN.fullmatch(phone) or not 7 <= len(digits) <= 15:
             errors["phone"] = "Ievadiet tālruni ar 7–15 cipariem, piemēram, +371 20000000."
@@ -63,6 +66,7 @@ def _company_values(data):
 
 
 def _safe_next_url(value):
+    # Pēc pieslēgšanās atļaujam pāradresāciju tikai uz šīs pašas vietnes lapām.
     if not value:
         return None
     target = urljoin(request.host_url, value)
@@ -79,6 +83,7 @@ def login():
 
     if request.method == "POST":
         email = request.form.get("email", "").strip().casefold()
+        # E-pastu normalizējam, bet paroli salīdzinām tieši tā, kā tā ievadīta.
         password = request.form.get("password", "")
         user = db.session.scalar(db.select(User).where(User.email == email))
 
@@ -111,9 +116,10 @@ def register():
         errors = list(field_errors.values())
         if len(email) > 255 or not EMAIL_PATTERN.fullmatch(email):
             errors.append("Ievadiet derīgu e-pasta adresi.")
-        if len(password) < 8:
-            errors.append("Parolei jābūt vismaz 8 rakstzīmes garai.")
+        # Serveris pārbauda prasības arī tad, ja pārlūka JavaScript ir izslēgts.
+        errors.extend(password_errors(password))
         if password != password_confirmation:
+            # Atkārtota ievade palīdz pamanīt nejaušu kļūdu jaunajā parolē.
             errors.append("Paroles nesakrīt.")
 
         if not errors and db.session.scalar(db.select(User).where(User.email == email)):
@@ -124,12 +130,14 @@ def register():
                 flash(error, "error")
         else:
             user = User(email=email, full_name=form_data["full_name"])
+            # Jaunam kontam lomu nosaka modelis; reģistrācijas forma nevar piešķirt administratora tiesības.
             user.set_password(password)
             user.company_profile = CompanyProfile(**_company_values(form_data))
             db.session.add(user)
             try:
                 db.session.commit()
             except IntegrityError:
+                # Unikālais e-pasts datubāzē novērš dublikātu arī vienlaicīgos pieprasījumos.
                 db.session.rollback()
                 flash("Konts ar šo e-pasta adresi jau pastāv.", "error")
             else:

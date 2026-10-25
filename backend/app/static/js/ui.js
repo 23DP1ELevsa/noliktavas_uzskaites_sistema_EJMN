@@ -1,4 +1,4 @@
-// Navigation remains available without JavaScript.
+// Bez JavaScript izvēlne paliek redzama, lai visas lapas būtu sasniedzamas.
 document.documentElement.classList.add('js');
 document.querySelectorAll('[data-toast]').forEach((toast) => {
     const closeButton = toast.querySelector('.toast-close');
@@ -34,10 +34,21 @@ const navigationToggle = document.querySelector('.nav-toggle');
 const navigation = document.querySelector('#site-navigation');
 const setNavigationOpen = (open) => {
     navigationToggle?.setAttribute('aria-expanded', String(open));
+    navigationToggle?.setAttribute('aria-label', open ? 'Aizvērt izvēlni' : 'Atvērt izvēlni');
     navigation?.classList.toggle('is-open', open);
 };
 navigationToggle?.addEventListener('click', () => {
     setNavigationOpen(navigationToggle.getAttribute('aria-expanded') !== 'true');
+});
+// Klikšķis ārpus galvenes aizver paneli; saites saglabā parasto pārlūka darbību.
+document.addEventListener('click', (event) => {
+    if (!event.target.closest('.market-header')) setNavigationOpen(false);
+});
+navigation?.addEventListener('click', (event) => {
+    if (event.target.closest('a')) setNavigationOpen(false);
+});
+document.addEventListener('focusin', (event) => {
+    if (!event.target.closest('.market-header')) setNavigationOpen(false);
 });
 document.addEventListener('keydown', (event) => {
     if (event.key === 'Escape' && navigationToggle?.getAttribute('aria-expanded') === 'true') {
@@ -47,7 +58,33 @@ document.addEventListener('keydown', (event) => {
 });
 window.matchMedia('(min-width: 901px)').addEventListener('change', () => setNavigationOpen(false));
 
-// Keep native constraint validation and present its messages in Latvian.
+// Sadaļas aizveram tikai mobilajā skatā; saturs un ievadītie dati paliek dokumentā.
+const mobileSections = window.matchMedia('(max-width: 760px)');
+document.querySelectorAll('[data-mobile-section]').forEach((section) => {
+    const toggle = section.querySelector('[data-mobile-toggle]');
+    const content = document.getElementById(toggle.getAttribute('aria-controls'));
+    const setOpen = (open) => {
+        toggle.setAttribute('aria-expanded', String(open));
+        section.classList.toggle('is-open', open);
+    };
+    toggle.addEventListener('click', () => setOpen(toggle.getAttribute('aria-expanded') !== 'true'));
+    section.addEventListener('keydown', (event) => {
+        if (event.key === 'Escape' && mobileSections.matches && toggle.getAttribute('aria-expanded') === 'true') {
+            setOpen(false);
+            toggle.focus();
+        }
+    });
+    mobileSections.addEventListener('change', () => {
+        const focusInside = content.contains(document.activeElement);
+        setOpen(false);
+        if (mobileSections.matches && focusInside) toggle.focus();
+        else if (!mobileSections.matches && document.activeElement === toggle) {
+            content.querySelector('a, button, input, select')?.focus();
+        }
+    });
+});
+
+// Saglabājam pārlūka ievades pārbaudi, bet kļūdas paskaidrojam latviski.
 document.addEventListener('invalid', (event) => {
     const control = event.target;
     if (!control.setCustomValidity) return;
@@ -62,11 +99,38 @@ document.addEventListener('invalid', (event) => {
     else if (state.tooLong) message = `Ievadiet ne vairāk kā ${control.maxLength} rakstzīmes.`;
     else if (state.stepMismatch) message = control.step === '1' ? 'Ievadiet veselu skaitli.' : 'Ievadiet vērtību ar norādīto soli.';
     else if (state.badInput) message = 'Ievadiet derīgu skaitli.';
-    else if (state.patternMismatch) message = 'Ievadiet datus norādītajā formātā.';
+    else if (state.patternMismatch) message = control.matches('[data-password-input]')
+        ? 'Parolei vajag vismaz 8 rakstzīmes, 1 lielo burtu un 1 speciālo simbolu.'
+        : 'Ievadiet datus norādītajā formātā.';
     control.setCustomValidity(message);
 }, true);
 for (const eventName of ['input', 'change']) {
     document.addEventListener(eventName, (event) => event.target.setCustomValidity?.(''));
+}
+
+// Prasības atjaunojam rakstīšanas un ielīmēšanas laikā, arī dzēšot jau ievadīto.
+const passwordInput = document.querySelector('[data-password-input]');
+if (passwordInput) {
+    const updatePasswordRequirements = () => {
+        const value = passwordInput.value;
+        const rules = {
+            length: [...value].length >= 8,
+            uppercase: /\p{Lu}/u.test(value),
+            special: /[\p{P}\p{S}]/u.test(value),
+        };
+        document.querySelectorAll('[data-password-rule]').forEach((item) => {
+            const passed = rules[item.dataset.passwordRule];
+            const icon = passed ? '✓' : '×';
+            if (item.querySelector('[data-rule-icon]').textContent === icon) return;
+            item.classList.toggle('is-met', passed);
+            item.querySelector('[data-rule-icon]').textContent = icon;
+            item.querySelector('[data-rule-status]').textContent = passed ? 'Izpildīts: ' : 'Nav izpildīts: ';
+        });
+    };
+    passwordInput.addEventListener('input', updatePasswordRequirements);
+    passwordInput.addEventListener('change', updatePasswordRequirements);
+    window.addEventListener('pageshow', updatePasswordRequirements);
+    updatePasswordRequirements();
 }
 document.querySelectorAll('[data-file-picker]').forEach((input) => {
     input.addEventListener('change', () => {

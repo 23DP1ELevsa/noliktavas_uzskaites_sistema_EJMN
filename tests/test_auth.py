@@ -9,8 +9,8 @@ def registration_data(**overrides):
     data = {
         "full_name": "Anna Kalniņa",
         "email": "anna@example.test",
-        "password": "droša-parole",
-        "password_confirmation": "droša-parole",
+        "password": "Droša-parole!",
+        "password_confirmation": "Droša-parole!",
         "company_name": "Anna SIA",
         "registration_no": "40100000001",
         "address": "Rīga, Brīvības iela 1",
@@ -27,13 +27,13 @@ def test_register_login_and_logout(database_app):
     assert response.status_code == 302
     user = db.session.scalar(db.select(User).where(User.email == "anna@example.test"))
     assert user is not None
-    assert user.check_password("droša-parole")
+    assert user.check_password("Droša-parole!")
     assert db.session.scalar(db.select(CompanyProfile).where(CompanyProfile.user_id == user.id))
 
     client.get("/auth/logout")
     response = client.post("/auth/login", data={
         "email": "anna@example.test",
-        "password": "droša-parole",
+        "password": "Droša-parole!",
     })
     assert response.status_code == 302
     assert response.headers["Location"].endswith("/")
@@ -52,8 +52,8 @@ def test_register_rejects_invalid_password_and_duplicate_email(database_app):
     assert "vismaz 8 rakstzīmes" in response.get_data(as_text=True)
 
     response = client.post("/auth/register", data=registration_data(
-        password="jauna-parole",
-        password_confirmation="jauna-parole",
+        password="Jauna-parole!",
+        password_confirmation="Jauna-parole!",
     ))
     assert response.status_code == 200
     assert "jau pastāv" in response.get_data(as_text=True)
@@ -67,6 +67,28 @@ def test_login_rejects_unknown_credentials(database_app):
 
     assert response.status_code == 200
     assert "Nepareizs e-pasts vai parole." in response.get_data(as_text=True)
+
+
+@pytest.mark.parametrize("password", ["", "Ab!1234", "abcdefgh!", "ABCDEFGH", "Abcdefg "])
+def test_weak_password_cannot_create_account_even_without_javascript(database_app, password):
+    response = database_app.test_client().post("/auth/register", data=registration_data(
+        password=password, password_confirmation=password,
+    ))
+    assert response.status_code == 200
+    assert db.session.scalar(db.select(User.id)) is None
+    user = User(email="weak@example.test", full_name="Test")
+    with pytest.raises(ValueError):
+        user.set_password(password)
+
+
+@pytest.mark.parametrize("password", ["Abcdefg!", "Ābcdefg!", "Abcdefg_", "Abcdefg€", "Abcdefg😀"])
+def test_password_accepts_minimum_length_and_unicode(database_app, password):
+    response = database_app.test_client().post("/auth/register", data=registration_data(
+        password=password, password_confirmation=password,
+    ))
+    assert response.status_code == 302
+    user = db.session.scalar(db.select(User))
+    assert user.check_password(password)
 
 
 def test_profile_can_be_updated_and_requires_login(database_app):
@@ -94,12 +116,12 @@ def test_profile_can_be_updated_and_requires_login(database_app):
 
 def test_profile_creates_missing_company_and_reloads_saved_data(database_app):
     user = User(email="admin@example.test", full_name="Administrators", role="admin")
-    user.set_password("test-password")
+    user.set_password("Test-password!")
     db.session.add(user)
     db.session.commit()
     user_id = user.id
     client = database_app.test_client()
-    client.post("/auth/login", data={"email": user.email, "password": "test-password"})
+    client.post("/auth/login", data={"email": user.email, "password": "Test-password!"})
 
     response = client.get("/auth/profile")
     assert response.status_code == 200

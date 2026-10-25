@@ -24,6 +24,7 @@ orders_bp.register_error_handler(SQLAlchemyError, shopping_database_error)
 def checkout():
     if request.method == "POST":
         require_cart_csrf()
+        # Lietotāja bloķēšana secīgi apstrādā viena konta vienlaicīgos pieteikumus.
         db.session.scalar(db.select(User).where(User.id == current_user.id).with_for_update())
     summary = load_cart_summary(current_user.id, lock=request.method == "POST")
     if not summary["rows"]:
@@ -45,6 +46,7 @@ def checkout():
     }
     errors = {}
     fingerprint = checkout_fingerprint(summary, profile)
+    # Iesniegšanai jāatbilst pēdējam pārskatītajam grozam un uzņēmuma datiem.
     if request.method == "POST":
         review = session.get("checkout_review", {})
         if not profile_complete:
@@ -62,6 +64,7 @@ def checkout():
         if len(form_data["note"]) > 1000 or any(ord(c) < 32 and c not in "\n\r\t" for c in form_data["note"]):
             errors["note"] = "Piezīme nedrīkst pārsniegt 1000 rakstzīmes vai saturēt vadības rakstzīmes."
         if not errors:
+            # Pieteikumā saglabājam klienta datu kopiju, kas vēlāk nemainās kopā ar profilu.
             snapshot = dict(company_name=profile.company_name, registration_no=profile.registration_no,
                             vat_no=profile.vat_no or "", address=profile.address,
                             full_name=current_user.full_name, email=current_user.email, **form_data)
@@ -70,6 +73,7 @@ def checkout():
             db.session.add(order)
             for row in summary["rows"]:
                 offer, item = row["offer"], row["item"]
+                # Atlikuma rezervācija un groza iztukšošana notiek vienā datubāzes transakcijā.
                 allocate(offer, item.quantity)
                 db.session.add(OrderItem(order=order, offer=offer, supplier_id=offer.supplier_id, product_name=offer.product.name,
                                         supplier_name=offer.supplier_name, unit_price=offer.unit_price,

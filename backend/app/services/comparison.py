@@ -12,6 +12,7 @@ SORT_OPTIONS = {"total-asc", "total-desc", "delivery", "supplier"}
 
 
 def parse_quantity(value):
+    # Daudzumam atļaujam tikai pozitīvu veselu skaitli datubāzes lauka robežās.
     if not isinstance(value, str) or not re.fullmatch(r"[0-9]{1,10}", value):
         raise ValueError("Norādiet daudzumu kā pozitīvu veselu skaitli.")
     quantity = int(value)
@@ -35,20 +36,21 @@ def comparison_rows(offers, quantity, sort):
                 vat_amount = None
                 vat_error = "Nav norādīta PVN likme; kopsummu ar PVN nevar aprēķināt."
             else:
-                # Round VAT on the whole goods amount, not on each unit separately.
+                # PVN noapaļojam visai preču summai, lai nerastos atšķirības par katru vienību.
                 vat_amount = (subtotal * offer.vat_rate / Decimal("100")).quantize(
                     Decimal("0.01"), rounding=ROUND_HALF_UP)
         subtotal_with_vat = subtotal + vat_amount if vat_amount is not None else None
         total_with_vat = (subtotal_with_vat + offer.delivery_price
                           if subtotal_with_vat is not None else None)
         rows.append({"offer": offer, "subtotal": subtotal,
-                     # Preserve supplier-declared amounts used by cart/checkout.
+                     # Saglabājam arī piegādātāja summas, ko izmanto grozs un noformēšana.
                      "total": subtotal + offer.delivery_price,
                      "subtotal_with_vat": subtotal_with_vat, "vat_amount": vat_amount,
                      "total_with_vat": total_with_vat, "vat_error": vat_error,
                      "error": " ".join(errors) or None})
 
     def total_key(row):
+        # Piedāvājumi bez aprēķināmas PVN kopsummas vienmēr paliek saraksta beigās.
         value = row["total_with_vat"]
         return (value is None, (value if value is not None else Decimal("0.00"))
                 * (-1 if sort == "total-desc" else 1), row["offer"].id)
@@ -63,12 +65,14 @@ def comparison_rows(offers, quantity, sort):
 
 
 def cart_csrf_token():
+    # Nejaušo formas drošības kodu piesaistām lietotāja sesijai.
     if "cart_csrf_token" not in session:
         session["cart_csrf_token"] = secrets.token_hex(32)
     return session["cart_csrf_token"]
 
 
 def require_cart_csrf():
+    # Drošības kodus salīdzinām ar compare_digest, lai salīdzinājuma laiks neatklātu to saturu.
     expected = session.get("cart_csrf_token", "")
     supplied = request.form.get("csrf_token", "")
     if not expected or not secrets.compare_digest(expected.encode(), supplied.encode()):

@@ -376,6 +376,15 @@ def interactions(cdp, base, ids, app, output):
         cdp.navigate(base+"/")
         cdp.evaluate("document.querySelector('.nav-toggle').click()")
         record("mobile-menu",cdp.evaluate("document.querySelector('.nav-toggle').getAttribute('aria-expanded')==='true' && getComputedStyle(document.querySelector('#site-navigation')).display!=='none' && document.documentElement.scrollWidth<=innerWidth+1"))
+        cdp.evaluate("Promise.all(document.querySelector('.market-header').getAnimations({subtree:true}).map(animation=>animation.finished.catch(()=>{})))")
+        cdp.screenshot(output/"screenshots"/"mobile-menu-open.png")
+        record("mobile-menu-vertical",cdp.evaluate("""(() => {
+            const links=[...document.querySelectorAll('#site-navigation > a')];
+            return links.every((link,index)=>!index || link.getBoundingClientRect().top >= links[index-1].getBoundingClientRect().bottom);
+        })()"""))
+        cdp.evaluate("document.querySelector('main').click()")
+        record("mobile-menu-outside",cdp.evaluate("document.querySelector('.nav-toggle').getAttribute('aria-expanded')==='false' && getComputedStyle(document.querySelector('#site-navigation')).display==='none'"))
+        cdp.evaluate("document.querySelector('.nav-toggle').click()")
         cdp.call("Input.dispatchKeyEvent",type="keyDown",key="Escape",code="Escape",windowsVirtualKeyCode=27)
         cdp.call("Input.dispatchKeyEvent",type="keyUp",key="Escape",code="Escape",windowsVirtualKeyCode=27)
         record("mobile-menu-escape",cdp.evaluate("document.querySelector('.nav-toggle').getAttribute('aria-expanded')==='false' && document.activeElement===document.querySelector('.nav-toggle')"))
@@ -384,6 +393,18 @@ def interactions(cdp, base, ids, app, output):
         cdp.call("Input.dispatchKeyEvent",type="keyUp",key="Tab",code="Tab",windowsVirtualKeyCode=9)
         record("keyboard-focus",cdp.evaluate("document.activeElement.tagName==='A' && getComputedStyle(document.activeElement).outlineStyle!=='none'"))
         cdp.navigate(base+"/catalog/page")
+        record("mobile-filters-collapsed", cdp.evaluate("document.querySelector('#filters-toggle').getAttribute('aria-expanded')==='false' && getComputedStyle(document.querySelector('#catalog-filters')).display==='none'"))
+        cdp.evaluate("document.querySelector('#filters-toggle').click()")
+        record("mobile-filters-open", cdp.evaluate("document.querySelector('#filters-toggle').getAttribute('aria-expanded')==='true' && getComputedStyle(document.querySelector('#catalog-filters')).display!=='none' && document.documentElement.scrollWidth<=innerWidth+1"))
+        cdp.evaluate("Promise.all(document.querySelector('.catalog-filter-panel').getAnimations({subtree:true}).map(animation=>animation.finished.catch(()=>{})))")
+        cdp.screenshot(output/"screenshots"/"mobile-filters-open.png")
+        cdp.evaluate("document.querySelector('#min-price').value='10';document.querySelector('#filters-toggle').click();document.querySelector('#filters-toggle').click()")
+        record("mobile-filters-preserve-values", cdp.evaluate("document.querySelector('#min-price').value==='10'"))
+        cdp.evaluate("document.querySelector('#min-price').value='';document.querySelector('#min-price').focus()")
+        cdp.call("Input.dispatchKeyEvent",type="keyDown",key="Escape",code="Escape",windowsVirtualKeyCode=27)
+        cdp.call("Input.dispatchKeyEvent",type="keyUp",key="Escape",code="Escape",windowsVirtualKeyCode=27)
+        record("mobile-filters-escape", cdp.evaluate("document.querySelector('#filters-toggle').getAttribute('aria-expanded')==='false' && document.activeElement===document.querySelector('#filters-toggle')"))
+        cdp.evaluate("document.querySelector('#filters-toggle').click()")
         submit("#catalog-search-form",{"q":"neeksistējoša-pārbaudes-prece"})
         record("catalog-search-empty",wait_for("document.querySelector('#catalog-count').textContent==='0 preces' && new URLSearchParams(location.search).get('q')==='neeksistējoša-pārbaudes-prece'"))
         cdp.evaluate("document.querySelector('#clear-filters').click()")
@@ -394,6 +415,11 @@ def interactions(cdp, base, ids, app, output):
         record("category-filter",wait_for("!!new URLSearchParams(location.search).get('category_id') && !document.querySelector('#catalog-count').textContent.includes('Ielādē')"))
         cdp.evaluate("document.querySelector('#category-filter').value='';document.querySelector('#supplier-filter').value='dte';document.querySelector('#apply-filters').click()")
         record("supplier-filter",wait_for("Number.parseInt(document.querySelector('#catalog-count').textContent)>0 && new URLSearchParams(location.search).get('supplier')==='dte'"))
+        record("mobile-filters-apply-closes", wait_for("document.querySelector('#filters-toggle').getAttribute('aria-expanded')==='false' && document.activeElement===document.querySelector('#filters-toggle')"))
+        cdp.call("Emulation.setDeviceMetricsOverride",width=1024,height=900,deviceScaleFactor=1,mobile=False)
+        record("desktop-filters-visible", wait_for("getComputedStyle(document.querySelector('#catalog-filters')).display!=='none' && getComputedStyle(document.querySelector('#filters-toggle')).display==='none'"))
+        cdp.call("Emulation.setDeviceMetricsOverride",width=375,height=900,deviceScaleFactor=1,mobile=False)
+        record("mobile-filters-resize", wait_for("getComputedStyle(document.querySelector('#catalog-filters')).display==='none' && document.querySelector('#supplier-filter').value==='dte'"))
         cdp.navigate(base+"/auth/login")
         cdp.evaluate("document.querySelector('.account-form').requestSubmit()")
         record("latvian-native-validation",cdp.evaluate("document.querySelector('#email').validationMessage==='Lūdzu, aizpildiet šo lauku.'"))
@@ -418,10 +444,37 @@ def interactions(cdp, base, ids, app, output):
         record("order-summary-sticky",cdp.evaluate("Math.abs(document.querySelector('.order-receipt .shopping-summary').getBoundingClientRect().top-24)<2"))
         cdp.call("Emulation.setDeviceMetricsOverride",width=375,height=900,deviceScaleFactor=1,mobile=False)
         cdp.navigate(base+"/auth/profile")
+        for target in ("profile-notifications-content", "profile-orders-content"):
+            toggle = '[aria-controls="'+target+'"]'
+            record(target+"-collapsed", cdp.evaluate("document.querySelector("+json.dumps(toggle)+").getAttribute('aria-expanded')==='false' && getComputedStyle(document.getElementById("+json.dumps(target)+")).display==='none'"))
+            cdp.evaluate("document.querySelector("+json.dumps(toggle)+").click()")
+            record(target+"-open", cdp.evaluate("document.querySelector("+json.dumps(toggle)+").getAttribute('aria-expanded')==='true' && getComputedStyle(document.getElementById("+json.dumps(target)+")).display!=='none' && document.documentElement.scrollWidth<=innerWidth+1"))
+            cdp.evaluate("document.querySelector("+json.dumps(toggle)+").focus()")
+            cdp.call("Input.dispatchKeyEvent",type="keyDown",key="Escape",code="Escape",windowsVirtualKeyCode=27)
+            cdp.call("Input.dispatchKeyEvent",type="keyUp",key="Escape",code="Escape",windowsVirtualKeyCode=27)
+            record(target+"-escape", cdp.evaluate("document.querySelector("+json.dumps(toggle)+").getAttribute('aria-expanded')==='false' && document.activeElement===document.querySelector("+json.dumps(toggle)+")"))
+            cdp.evaluate("document.querySelector("+json.dumps(toggle)+").click()")
+        cdp.screenshot(output/"screenshots"/"mobile-profile-sections-open.png")
         record("profile-notification",cdp.evaluate("document.body.innerText.includes('Pieteikums #'+"+json.dumps(order)+"+' iesniegts')"))
         cdp.evaluate("[...document.querySelectorAll('.notification-row a')].find(link=>link.textContent.includes('Pieteikums #'+"+json.dumps(order)+")).click()")
-        record("notification-auto-read",wait_for("location.pathname==='/orders/'+"+json.dumps(order)+" && document.querySelector('.nav-notification-count')===null"))
+        opened = wait_for("location.pathname==='/orders/'+"+json.dumps(order)+" && document.readyState==='complete'")
+        cdp.navigate(base+"/auth/profile")
+        # Citiem pieteikumiem drīkst palikt nelasīti paziņojumi; pārbaudām tieši atvērto.
+        read = cdp.evaluate("""(() => {
+            const link = [...document.querySelectorAll('.notification-row a')]
+                .find(link => new URL(link.href).pathname === '/orders/' + """ + json.dumps(order) + """);
+            return !!link && !link.closest('.notification-row').classList.contains('notification-unread');
+        })()""")
+        record("notification-auto-read", opened and read)
         record("admin-login",login("admin.demo@stockflow.test","DemoAdmin123!","/admin"))
+        record("admin-sections-collapsed",cdp.evaluate("getComputedStyle(document.querySelector('#admin-section-links')).display==='none'"))
+        cdp.evaluate("document.querySelector('[aria-controls=admin-section-links]').click()")
+        record("admin-sections-open",cdp.evaluate("document.querySelector('[aria-controls=admin-section-links]').getAttribute('aria-expanded')==='true' && getComputedStyle(document.querySelector('#admin-section-links')).display!=='none' && document.querySelector('#admin-section-links [aria-current=page]').textContent==='Pārskats' && document.documentElement.scrollWidth<=innerWidth+1"))
+        cdp.screenshot(output/"screenshots"/"mobile-admin-sections-open.png")
+        cdp.call("Emulation.setDeviceMetricsOverride",width=1024,height=900,deviceScaleFactor=1,mobile=False)
+        record("admin-sections-desktop",wait_for("getComputedStyle(document.querySelector('#admin-section-links')).display!=='none' && getComputedStyle(document.querySelector('[aria-controls=admin-section-links]')).display==='none'"))
+        cdp.call("Emulation.setDeviceMetricsOverride",width=375,height=900,deviceScaleFactor=1,mobile=False)
+        record("admin-sections-resize",wait_for("document.querySelector('[aria-controls=admin-section-links]').getAttribute('aria-expanded')==='false' && getComputedStyle(document.querySelector('#admin-section-links')).display==='none'"))
         cdp.navigate(base+"/admin/orders/"+order)
         submit("form.admin-form",button="button[value=approve]")
         record("admin-approve",wait_for("document.body.innerText.includes('Lēmums saglabāts.') && document.body.innerText.includes('apstiprināts') && document.readyState==='complete'"))
@@ -480,6 +533,19 @@ def interactions(cdp, base, ids, app, output):
         record("import-api-failure",result["status"]==422 and "Importa dati nav saglabāti." in result["text"])
         cdp.navigate(base+"/auth/logout")
         cdp.navigate(base+"/auth/register")
+        # Pārbaudām katras prasības maiņu, ielīmēšanu un atkārtotu dzēšanu pārlūkā.
+        for value, expected in [("", [False, False, False]), ("abcdefgh", [True, False, False]),
+                                ("Abcdefgh", [True, True, False]), ("Ābcdefg!", [True, True, True]),
+                                ("Abcdefg ", [True, True, False]), ("A!", [False, True, True]),
+                                ("", [False, False, False])]:
+            state = cdp.evaluate("""(() => {
+                const input = document.querySelector('[data-password-input]');
+                input.value = """ + json.dumps(value) + """;
+                input.dispatchEvent(new Event('input', {bubbles:true}));
+                return {met:[...document.querySelectorAll('[data-password-rule]')].map(item=>item.classList.contains('is-met')),
+                        valid:input.checkValidity()};
+            })()""")
+            record("password-requirements-"+str(len(checks)), state['met']==expected and state['valid']==all(expected), state)
         submit(".account-form",{"full_name":"Pārlūka Pārbaude","email":"browser.ui@stockflow.test",
             "password":"BrowserUi123!","password_confirmation":"BrowserUi123!",
             "company_name":"Pārlūka Pārbaude SIA","registration_no":"40000000002",

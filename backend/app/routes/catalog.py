@@ -11,6 +11,7 @@ catalog_bp = Blueprint("catalog", __name__, url_prefix="/catalog")
 
 @catalog_bp.get("/products/<int:product_id>")
 def product_page(product_id):
+    # Publiski rādām tikai aktīvu preci un aktīvu piegādātāju piedāvājumus.
     product = db.first_or_404(db.select(Product).where(
         Product.id == product_id, Product.is_active.is_(True)))
     offers = [offer for offer in product.offers if offer.is_active and offer.supplier_active]
@@ -40,6 +41,7 @@ def catalog_page():
 def get_catalog():
     """Atgriež aktīvās preces no datubāzes, izmantojot izvēlētos filtrus."""
     try:
+        # Visus meklēšanas parametrus pārbaudām pirms datubāzes vaicājuma izveides.
         filters = CatalogFilters.from_args(request.args)
     except CatalogFilterError as error:
         return jsonify({"error": "invalid_filters", "field": error.field,

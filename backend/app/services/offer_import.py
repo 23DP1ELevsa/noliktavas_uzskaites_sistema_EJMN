@@ -49,6 +49,7 @@ def _integer(value, field, row, minimum=0, maximum=2147483647):
 
 
 def _decimal(value, field, row, *, rate=False):
+    # Importā pieņemam gan komatu, gan punktu; naudu apstrādājam ar Decimal.
     if isinstance(value, bool) or not isinstance(value, (str, int, float, Decimal)):
         raise OfferImportError(f"Laukā {field} jānorāda skaitliska vērtība.", row=row, field=field)
     text = str(value).strip().replace(",", ".")
@@ -79,6 +80,7 @@ def validate_import_record(record, row):
     if not isinstance(record, Mapping):
         raise OfferImportError("Ierakstam jābūt lauku un vērtību kopai.", row=row)
     if set(record) - FIELDS:
+        # Nezināmus laukus noraidām, lai kļūdains kolonnu nosaukums nepaliktu nepamanīts.
         raise OfferImportError("Ierakstā ir neatbalstīti lauki.", row=row)
     data = {field: _text(record.get(field), field, row, 100)
             for field in ("product_sku", "supplier_sku")}
@@ -129,6 +131,7 @@ def save_imported_offers(records, *, source, admin_id):
         if isinstance(records, (str, bytes, Mapping)):
             raise OfferImportError("Importam jānodod ierakstu saraksts, nevis fails vai JSON teksts.")
         prepared = []
+        # Vispirms pārbaudām visu ievadi; tikai pēc tam sākam mainīt piedāvājumus.
         identities = set()
         for row, record in enumerate(records, 1):
             data = validate_import_record(record, row)
@@ -149,7 +152,7 @@ def save_imported_offers(records, *, source, admin_id):
             identities.add(identity)
             prepared.append((row, data, supplier.id, product.id))
 
-        # Serialize concurrent imports for the same suppliers, in a fixed lock order.
+        # Piegādātājus bloķējam vienādā secībā, samazinot savstarpējas bloķēšanās risku.
         suppliers = {supplier.id: supplier for supplier in session.scalars(
             db.select(Supplier).where(Supplier.id.in_(sorted({item[2] for item in prepared})))
             .order_by(Supplier.id).with_for_update().execution_options(populate_existing=True))}
@@ -181,6 +184,7 @@ def save_imported_offers(records, *, source, admin_id):
                           "min_order_qty", "delivery_days"):
                 setattr(offer, field, data[field])
             offer.imported_stock_qty = data["stock_qty"]
+            # Jaunais piegādātāja atlikums nedrīkst atjaunot jau rezervētās vienības.
             offer.stock_qty = max(0, data["stock_qty"] - (offer.allocated_qty or 0))
             offer.delivery_price = data.get("delivery_price", supplier.delivery_price)
             if "is_active" in data:
@@ -189,6 +193,7 @@ def save_imported_offers(records, *, source, admin_id):
         session.commit()
         return {"added": added, "updated": updated}
     except OfferImportError:
+        # Jebkura importa kļūda atceļ visu partiju, neatstājot daļēji saglabātus datus.
         session.rollback()
         raise
     except SQLAlchemyError as error:

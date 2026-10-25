@@ -8,6 +8,7 @@ from ..models import Offer
 
 def allocate(offer, quantity):
     """Caller holds the offer lock and has checked the requested quantity."""
+    # Brīvo atlikumu samazinām un rezervēto palielinām par to pašu daudzumu.
     offer.stock_qty -= quantity
     offer.allocated_qty += quantity
 
@@ -15,6 +16,7 @@ def allocate(offer, quantity):
 def release_order_stock(order):
     """Caller holds the order lock; a declined legacy order has nothing to return."""
     if not order.stock_deducted:
+        # Veciem vai jau atbrīvotiem pieteikumiem atlikumu otrreiz neatgriežam.
         return
     quantities = Counter()
     for item in order.items:
@@ -24,6 +26,7 @@ def release_order_stock(order):
                                .order_by(Offer.id).with_for_update()
                                .execution_options(populate_existing=True)).all()
     for offer in offers:
+        # Pēc importa atgriežam tikai brīvo atlikumu, atskaitot citu pasūtījumu rezervācijas.
         quantity = quantities[offer.id]
         offer.allocated_qty -= quantity
         if offer.imported_stock_qty is None:

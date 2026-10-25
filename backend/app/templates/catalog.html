@@ -29,33 +29,39 @@
         </section>
 
         <section class="market-layout" aria-label="Preču katalogs">
-            <aside class="filters">
-                <div class="filter-heading">
-                    <h2>{{ icon('filter', 18) }} Filtri</h2>
-                    <button id="clear-filters" type="button">Notīrīt</button>
-                </div>
-                <div class="filter-divider"></div>
-                <div class="filter-field"><label class="supplier-title" for="category-filter">Kategorija</label>
-                <select id="category-filter" name="category_id">
-                    <option value="">Visas preces</option>
-                    {% for category in categories %}<option value="{{ category.id }}">{{ category.name }}</option>{% endfor %}
-                </select></div>
-                <div class="filter-divider"></div>
-                <div class="filter-field"><label class="supplier-title" for="supplier-filter">Piegādātājs</label>
-                <input class="filter-input" id="supplier-filter" type="search" minlength="3" maxlength="255" placeholder="Vismaz 3 simboli"></div>
-                <div class="filter-divider"></div>
-                <div class="filter-field"><p class="supplier-title">Cena, EUR</p>
-                <div class="price-fields">
-                    <label><span class="sr-only">Minimālā cena</span><input id="min-price" type="number" min="0" step="0.01" placeholder="No"></label>
-                    <span aria-hidden="true">—</span>
-                    <label><span class="sr-only">Maksimālā cena</span><input id="max-price" type="number" min="0" step="0.01" placeholder="Līdz"></label>
-                </div></div>
-                <label class="filter-check">
-                    <input id="stock-filter" type="checkbox">
-                    <span>Tikai pieejamās</span>
-                </label>
-                <button class="apply-filters" id="apply-filters" type="button">Piemērot filtrus</button>
-            </aside>
+            <div class="catalog-filter-panel">
+                <button class="filters-toggle" id="filters-toggle" type="button" aria-controls="catalog-filters" aria-expanded="false" aria-label="Atvērt filtrus">
+                    <span class="burger-icon" aria-hidden="true"><span></span><span></span><span></span></span>
+                    <span>Filtri</span>{{ icon('filter', 18) }}
+                </button>
+                <aside class="filters" id="catalog-filters" aria-label="Kataloga filtri">
+                    <div class="filter-heading">
+                        <h2>{{ icon('filter', 18) }} Filtri</h2>
+                        <button id="clear-filters" type="button">Notīrīt</button>
+                    </div>
+                    <div class="filter-divider"></div>
+                    <div class="filter-field"><label class="supplier-title" for="category-filter">Kategorija</label>
+                    <select id="category-filter" name="category_id">
+                        <option value="">Visas preces</option>
+                        {% for category in categories %}<option value="{{ category.id }}">{{ category.name }}</option>{% endfor %}
+                    </select></div>
+                    <div class="filter-divider"></div>
+                    <div class="filter-field"><label class="supplier-title" for="supplier-filter">Piegādātājs</label>
+                    <input class="filter-input" id="supplier-filter" type="search" minlength="3" maxlength="255" placeholder="Vismaz 3 simboli"></div>
+                    <div class="filter-divider"></div>
+                    <div class="filter-field"><p class="supplier-title">Cena, EUR</p>
+                    <div class="price-fields">
+                        <label><span class="sr-only">Minimālā cena</span><input id="min-price" type="number" min="0" step="0.01" placeholder="No"></label>
+                        <span aria-hidden="true">—</span>
+                        <label><span class="sr-only">Maksimālā cena</span><input id="max-price" type="number" min="0" step="0.01" placeholder="Līdz"></label>
+                    </div></div>
+                    <label class="filter-check">
+                        <input id="stock-filter" type="checkbox">
+                        <span>Tikai pieejamās</span>
+                    </label>
+                    <button class="apply-filters" id="apply-filters" type="button">Piemērot filtrus</button>
+                </aside>
+            </div>
 
             <div class="catalog-content" aria-busy="true">
                 <div class="catalog-toolbar">

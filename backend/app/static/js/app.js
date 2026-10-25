@@ -13,6 +13,33 @@ const catalogCount = document.querySelector("#catalog-count");
 const catalogMessage = document.querySelector("#catalog-message");
 const clearFiltersButton = document.querySelector("#clear-filters");
 const applyFiltersButton = document.querySelector("#apply-filters");
+const filtersToggle = document.querySelector("#filters-toggle");
+const filtersPanel = document.querySelector(".catalog-filter-panel");
+const mobileFilters = window.matchMedia("(max-width: 760px)");
+
+// Paslēpjam tikai paneļa attēlojumu, lai izvēlētie filtri nepazustu pēc aizvēršanas.
+function setFiltersOpen(open) {
+    filtersToggle.setAttribute("aria-expanded", String(open));
+    filtersToggle.setAttribute("aria-label", open ? "Aizvērt filtrus" : "Atvērt filtrus");
+    filtersPanel.classList.toggle("is-open", open);
+}
+
+filtersToggle.addEventListener("click", () => {
+    setFiltersOpen(filtersToggle.getAttribute("aria-expanded") !== "true");
+});
+filtersPanel.addEventListener("keydown", (event) => {
+    if (event.key === "Escape" && mobileFilters.matches && filtersToggle.getAttribute("aria-expanded") === "true") {
+        setFiltersOpen(false);
+        filtersToggle.focus();
+    }
+});
+mobileFilters.addEventListener("change", () => {
+    // Mainot orientāciju, fokusu neatstājam tikko paslēptā ievades laukā.
+    const focusInside = filtersPanel.contains(document.activeElement);
+    setFiltersOpen(false);
+    if (focusInside && mobileFilters.matches) filtersToggle.focus();
+    else if (document.activeElement === filtersToggle) categorySelect.focus();
+});
 
 let products = [];
 let latestRequest = 0;
@@ -134,6 +161,7 @@ async function loadCatalog() {
         }
         products = data.items;
         renderProducts();
+        return true;
     } catch (error) {
         if (requestNumber !== latestRequest) return;
         catalogCount.textContent = "Kļūda";
@@ -159,7 +187,13 @@ searchForm.addEventListener("submit", (event) => {
     loadCatalog();
 });
 
-applyFiltersButton.addEventListener("click", loadCatalog);
+applyFiltersButton.addEventListener("click", async () => {
+    // Pēc veiksmīgas atlases telefonā atbrīvojam vietu rezultātiem; kļūdas gadījumā filtrus atstājam vaļā.
+    if (await loadCatalog() && mobileFilters.matches) {
+        setFiltersOpen(false);
+        filtersToggle.focus();
+    }
+});
 categorySelect.addEventListener("change", loadCatalog);
 sortSelect.addEventListener("change", renderProducts);
 clearFiltersButton.addEventListener("click", () => {

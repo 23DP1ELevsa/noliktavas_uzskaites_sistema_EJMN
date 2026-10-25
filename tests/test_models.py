@@ -26,9 +26,9 @@ def constraint_violation():
 @pytest.fixture
 def records(database_app):
     admin = User(email="admin@example.test", full_name="Administrators", role="admin")
-    admin.set_password("test-password")
+    admin.set_password("Test-password!")
     user = User(email="user@example.test", full_name="Jānis Bērziņš")
-    user.set_password("another-password")
+    user.set_password("Another-password!")
     profile = CompanyProfile(user=user, company_name="SIA Pircējs", registration_no="40000000000",
                              address="Rīga, Testa iela 1")
     category = Category(name="Elektronika")
@@ -182,8 +182,8 @@ def test_failed_order_transaction_leaves_no_partial_order(database_app, records)
 
 def test_passwords_and_login_loader(database_app, records):
     user = records["user"]
-    assert user.password_hash != "another-password"
-    assert user.check_password("another-password")
+    assert user.password_hash != "Another-password!"
+    assert user.check_password("Another-password!")
     assert not user.check_password("wrong-password")
     assert load_user(str(user.id)) == user
     for identifier in [None, "invalid", "0", "-1", "99999999999999999999999"]:
@@ -224,7 +224,7 @@ def test_initial_migration_can_be_reversed_and_reapplied(database_app):
 def test_delivery_address_migration_preserves_existing_company_data(database_app):
     downgrade(directory=MIGRATIONS, revision="0002_product_image")
     user = User(email="existing@example.test", full_name="Esošs lietotājs")
-    user.set_password("test-password")
+    user.set_password("Test-password!")
     db.session.add(user)
     db.session.commit()
     user_id = user.id
