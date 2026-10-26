@@ -88,7 +88,8 @@
 .admin-product-detail .detail-image img { width: 100%; height: 100%; object-fit: contain; }
 
 /* Forms, validation and review */
-.admin-workspace .form-panel { width: 100%; max-width: 950px; }
+.admin-workspace .form-panel { width: 100%; max-width: 950px; margin-inline: auto; }
+.admin-workspace > .admin-breadcrumbs { width: 100%; max-width: 950px; margin-inline: auto; }
 .admin-workspace .form-section-heading { display: flex; align-items: start; gap: 12px; margin-bottom: 22px; }
 .admin-workspace .form-section-heading h2 { margin: 0 0 6px; font-size: 1rem; }
 .admin-workspace .form-section-heading p { margin: 0; color: var(--muted); font-size: .79rem; }
@@ -126,6 +127,13 @@
 .admin-workspace .file-upload-field { justify-items: start; border-radius: var(--radius-sm); }
 .admin-upload-icon { display: grid; place-items: center; width: 46px; height: 46px; border-radius: 8px; background: var(--accent-soft); color: var(--accent); }
 .admin-upload-icon .icon { transform: rotate(-90deg); }
+
+.admin-pagination { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; margin-top: 20px; }
+.admin-pagination p { margin: 0; }
+.admin-pagination-actions { display: flex; flex-wrap: wrap; gap: 10px; }
+.admin-pagination-actions > * { min-height: 44px; }
+.admin-pagination [aria-disabled="true"] { color: var(--muted); background: var(--surface); cursor: default; }
+@media (max-width: 360px) { .admin-pagination-actions > * { padding-inline: 12px; } }
 
 @media (max-width: 1320px) {
     .admin-dashboard { grid-template-columns: repeat(2, minmax(0, 1fr)); }

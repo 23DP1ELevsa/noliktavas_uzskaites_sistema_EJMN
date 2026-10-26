@@ -4,7 +4,7 @@
 <div class="admin-page-heading"><div><h2>Cenas un pieejamība</h2><p>Vienots pārskats par piegādātāju cenām, atlikumiem un pasūtīšanas nosacījumiem.</p></div><div class="admin-section-actions"><a class="admin-secondary-button" href="{{ url_for('import_data.json_page') }}">Importēt datus</a><a class="admin-primary-button" href="{{ url_for('admin.offer_form') }}"><span aria-hidden="true">+</span> Pievienot piedāvājumu</a></div></div>
 <section class="panel" aria-label="Piegādātāju preces">
     <form class="inventory-filters" method="get" role="search"><div class="form-field"><label for="q">Meklēt preci vai piegādātāju</label><input id="q" name="q" type="search" value="{{ q }}" placeholder="Nosaukums vai preces kods" maxlength="255"></div><div class="form-field"><label for="status">Piedāvājuma statuss</label><select id="status" name="status">{% for value,label in [('all','Visi'), ('active','Aktīvi'), ('inactive','Neaktīvi')] %}<option value="{{ value }}" {% if status == value %}selected{% endif %}>{{ label }}</option>{% endfor %}</select></div><button class="admin-primary-button" type="submit">Meklēt</button><a class="admin-secondary-button" href="{{ url_for('admin.supplier_products') }}">Notīrīt</a></form>
-    <div class="panel-heading"><h2>Piedāvājumi</h2><p class="results-count" role="status">{{ offers|length }} piedāvājumi</p></div>
+    <div class="panel-heading"><h2>Piedāvājumi</h2><p class="results-count" role="status">{{ pagination.total }} piedāvājumi</p></div>
     {% if offers %}
     <div class="table-scroll" role="region" aria-label="Piedāvājumu saraksts" tabindex="0"><table class="admin-table"><thead><tr><th scope="col">Prece un piegādātājs</th><th scope="col">Cena un PVN</th><th scope="col">Atlikums</th><th scope="col">Piegāde</th><th scope="col">Statuss</th><th scope="col"><span class="sr-only">Darbības</span></th></tr></thead><tbody>
     {% for offer in offers %}
@@ -20,5 +20,6 @@
     </tbody></table></div>
     {% else %}<div class="empty-state"><h2>{{ 'Piedāvājumi nav atrasti' if q or status != 'all' else 'Vēl nav piedāvājumu' }}</h2><a class="admin-secondary-button" href="{{ url_for('admin.supplier_products') if q or status != 'all' else url_for('admin.offer_form') }}">{{ 'Notīrīt atlasi' if q or status != 'all' else 'Pievienot piedāvājumu' }}</a></div>{% endif %}
 </section>
+{% include 'admin/_pagination.html' %}
 <script src="{{ url_for('static', filename='js/comparison.js') }}" defer></script>
 {% endblock %}

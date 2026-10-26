@@ -9,6 +9,7 @@ from sqlalchemy.orm import joinedload, selectinload
 
 from ..extensions import db
 from ..models import Category, Offer, Product, Supplier
+from ..services.admin_pagination import paginate_admin
 
 admin_bp = Blueprint("admin", __name__, url_prefix="/admin")
 
@@ -42,8 +43,8 @@ def _validate_category(data):
 @admin_bp.get("/categories")
 @admin_required
 def categories():
-    items = db.session.scalars(db.select(Category).order_by(Category.name)).all()
-    return render_template("admin/categories.html", categories=items)
+    pagination = paginate_admin(db.select(Category).order_by(Category.name, Category.id))
+    return render_template("admin/categories.html", categories=pagination.items, pagination=pagination)
 
 
 @admin_bp.route("/categories/new", methods=["GET", "POST"])
@@ -178,10 +179,10 @@ def products():
                                   Product.sku.icontains(q, autoescape=True)))
     if status in {"active", "inactive"}:
         query = query.where(Product.is_active.is_(status == "active"))
-    items = db.session.scalars(query.order_by(Product.name, Product.id)).all()
+    pagination = paginate_admin(query.order_by(Product.name, Product.id), q=q, status=status)
     total = db.session.scalar(db.select(db.func.count(Product.id)))
     active = db.session.scalar(db.select(db.func.count(Product.id)).where(Product.is_active.is_(True)))
-    return render_template("admin/products.html", products=items, q=q, status=status,
+    return render_template("admin/products.html", products=pagination.items, pagination=pagination, q=q, status=status,
                            total=total, active=active)
 
 

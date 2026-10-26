@@ -1,6 +1,5 @@
 from datetime import datetime, timezone
 from collections import Counter
-import re
 
 from flask import abort, flash, redirect, render_template, request, url_for
 from flask_login import current_user
@@ -9,6 +8,7 @@ from sqlalchemy.orm import joinedload
 
 from ..extensions import db
 from ..models import Offer, Order
+from ..services.admin_pagination import paginate_admin
 from ..services.stock import allocate, release_order_stock
 from ..services.orders import customer_details, mark_order_notifications_read, notify_decision
 from ..services.order_review import approval_issues
@@ -22,19 +22,14 @@ def applications():
     sort = request.args.get("sort", "date-desc")
     if status not in {"all", "iesniegts", "apstiprināts", "noraidīts"} or sort not in {"date-desc", "date-asc"}:
         abort(400, description="Nederīga pieteikumu atlase.")
-    page = request.args.get("page", "1")
-    if not re.fullmatch(r"[0-9]{1,7}", page) or not 1 <= int(page) <= 1000000:
-        abort(400, description="Nederīgs lapas numurs.")
     conditions = [Order.status == status] if status != "all" else []
-    total = db.session.scalar(db.select(db.func.count(Order.id)).where(*conditions))
-    pages = max(1, (total + 11) // 12)
-    page = min(int(page), pages)
     ordering = (Order.created_at.desc(), Order.id.desc()) if sort == "date-desc" else (Order.created_at.asc(), Order.id.asc())
     query = db.select(Order).where(*conditions).options(joinedload(Order.user), joinedload(Order.company_profile))
-    orders = db.session.scalars(query.order_by(*ordering).limit(12).offset((page - 1) * 12)).all()
+    pagination = paginate_admin(query.order_by(*ordering), status=status, sort=sort)
     pending = db.session.scalar(db.select(db.func.count(Order.id)).where(Order.status == "iesniegts"))
-    return render_template("admin/orders.html", orders=orders, status=status, sort=sort, pending=pending,
-                           total=total, page=page, pages=pages, customer_details=customer_details)
+    return render_template("admin/orders.html", orders=pagination.items, status=status, sort=sort, pending=pending,
+                           total=pagination.total, page=pagination.page, pages=pagination.pages,
+                           pagination=pagination, customer_details=customer_details)
 
 
 @admin_bp.route("/orders/<int:order_id>", methods=["GET", "POST"])

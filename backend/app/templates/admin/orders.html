@@ -17,6 +17,6 @@
     </tbody></table></div>
     {% else %}<div class="empty-state"><h2>{{ 'Pieteikumu vēl nav.' if status == 'all' else 'Šajā statusā pieteikumu nav.' }}</h2>{% if status != 'all' %}<a class="admin-secondary-button" href="{{ url_for('admin.applications', status='all') }}">Rādīt visus pieteikumus</a>{% endif %}</div>{% endif %}
 </section>
-{% if pages > 1 %}<nav class="history-pagination" aria-label="Pieteikumu saraksta lapas">{% if page > 1 %}<a class="admin-secondary-button" href="{{ url_for('admin.applications', status=status, sort=sort, page=page-1) }}">← Iepriekšējā</a>{% endif %}<span class="field-hint">{{ page }}. lapa no {{ pages }}</span>{% if page < pages %}<a class="admin-secondary-button" href="{{ url_for('admin.applications', status=status, sort=sort, page=page+1) }}">Nākamā →</a>{% endif %}</nav>{% endif %}
+{% include 'admin/_pagination.html' %}
 <script src="{{ url_for('static', filename='js/comparison.js') }}" defer></script>
 {% endblock %}

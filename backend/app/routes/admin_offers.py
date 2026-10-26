@@ -9,6 +9,7 @@ from sqlalchemy.orm import joinedload
 
 from ..extensions import db
 from ..models import CartItem, Category, Offer, Order, OrderItem, Product, Supplier
+from ..services.admin_pagination import paginate_admin
 from .admin import admin_bp, admin_required, _check_product_csrf, _product_csrf_token
 
 
@@ -46,8 +47,8 @@ def supplier_products():
                                   Offer.supplier_sku.icontains(q, autoescape=True)))
     if status in {"active", "inactive"}:
         query = query.where(Offer.is_active.is_(status == "active"))
-    items = db.session.scalars(query.order_by(Offer.supplier_name, Product.name, Offer.id)).all()
-    return render_template("admin/supplier_products.html", offers=items, q=q, status=status)
+    pagination = paginate_admin(query.order_by(Offer.supplier_name, Product.name, Offer.id), q=q, status=status)
+    return render_template("admin/supplier_products.html", offers=pagination.items, pagination=pagination, q=q, status=status)
 
 
 def _selected_id(value, model):

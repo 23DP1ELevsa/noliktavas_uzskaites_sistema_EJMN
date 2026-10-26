@@ -1,0 +1,9 @@
+{% if pagination.pages > 1 %}
+<nav class="admin-pagination" aria-label="Saraksta lapas" data-admin-pagination>
+    <p class="field-hint">{{ pagination.first }}–{{ pagination.last }} no {{ pagination.total }} ierakstiem · {{ pagination.page }}. lapa no {{ pagination.pages }}</p>
+    <div class="admin-pagination-actions">
+        {% if pagination.previous_url %}<a class="admin-secondary-button" href="{{ pagination.previous_url }}" rel="prev" aria-label="Iepriekšējā lapa">←<span aria-hidden="true"> Iepriekšējā</span></a>{% else %}<span class="admin-secondary-button" aria-disabled="true" aria-label="Iepriekšējā lapa">←<span aria-hidden="true"> Iepriekšējā</span></span>{% endif %}
+        {% if pagination.next_url %}<a class="admin-secondary-button" href="{{ pagination.next_url }}" rel="next" aria-label="Nākamā lapa"><span aria-hidden="true">Nākamā </span>→</a>{% else %}<span class="admin-secondary-button" aria-disabled="true" aria-label="Nākamā lapa"><span aria-hidden="true">Nākamā </span>→</span>{% endif %}
+    </div>
+</nav>
+{% endif %}

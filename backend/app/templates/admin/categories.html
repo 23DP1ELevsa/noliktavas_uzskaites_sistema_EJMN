@@ -7,7 +7,7 @@
     <a class="admin-primary-button" href="{{ url_for('admin.create_category') }}"><span aria-hidden="true">+</span> Pievienot kategoriju</a>
 </div>
 <section class="panel" aria-label="Kategoriju saraksts">
-    <div class="panel-heading"><h2>Visas kategorijas</h2><span class="results-count">{{ categories|length }} kategorijas</span></div>
+    <div class="panel-heading"><h2>Visas kategorijas</h2><span class="results-count">{{ pagination.total }} kategorijas</span></div>
     {% if categories %}
     <div class="table-scroll" role="region" aria-label="Kategorijas" tabindex="0">
         <table class="admin-table"><thead><tr><th scope="col">Kategorija</th><th scope="col">Apraksts</th><th scope="col">Preces</th><th scope="col"><span class="sr-only">Darbības</span></th></tr></thead><tbody>
@@ -20,6 +20,7 @@
     <div class="empty-state"><span class="empty-icon">{{ icon('layers', 28) }}</span><h2>Kategorijas vēl nav izveidotas</h2><a class="admin-primary-button" href="{{ url_for('admin.create_category') }}">Pievienot kategoriju</a></div>
     {% endif %}
 </section>
+{% include 'admin/_pagination.html' %}
 <dialog class="confirmation-dialog" data-confirm-dialog aria-labelledby="delete-dialog-title" aria-describedby="delete-dialog-description">
     <span class="confirmation-icon">{{ icon('warning', 24) }}</span>
 

@@ -10,7 +10,7 @@
         <div><label for="product-status">Statuss</label><select id="product-status" name="status"><option value="all" {% if status == 'all' %}selected{% endif %}>Visas preces</option><option value="active" {% if status == 'active' %}selected{% endif %}>Aktīvās</option><option value="inactive" {% if status == 'inactive' %}selected{% endif %}>Neaktīvās</option></select></div>
         <button class="admin-primary-button" type="submit">Meklēt</button><a class="admin-secondary-button" href="{{ url_for('admin.products') }}">Notīrīt</a>
     </form>
-    <div class="panel-heading"><h2>Preces</h2><p class="results-count" role="status">Atrastas {{ products|length }} preces</p></div>
+    <div class="panel-heading"><h2>Preces</h2><p class="results-count" role="status">Atrastas {{ pagination.total }} preces</p></div>
     <div class="inventory-list">
     {% for product in products %}
         <article class="inventory-row">
@@ -24,4 +24,5 @@
     {% endfor %}
     </div>
 </section>
+{% include 'admin/_pagination.html' %}
 {% endblock %}

@@ -9,7 +9,7 @@
         <div><label for="supplier-status">Statuss</label><select id="supplier-status" name="status"><option value="all" {% if status == 'all' %}selected{% endif %}>Visi</option><option value="active" {% if status == 'active' %}selected{% endif %}>Aktīvi</option><option value="inactive" {% if status == 'inactive' %}selected{% endif %}>Neaktīvi</option></select></div>
         <button class="admin-primary-button" type="submit">Meklēt</button><a class="admin-secondary-button" href="{{ url_for('admin.suppliers') }}">Notīrīt</a>
     </form>
-    <div class="panel-heading"><h2>Piegādātāji</h2><p class="results-count" role="status">Atrasti {{ suppliers|length }} piegādātāji</p></div>
+    <div class="panel-heading"><h2>Piegādātāji</h2><p class="results-count" role="status">Atrasti {{ pagination.total }} piegādātāji</p></div>
     <div class="inventory-list">
     {% for supplier in suppliers %}
         <article class="inventory-row supplier-row">
@@ -24,4 +24,5 @@
     {% endfor %}
     </div>
 </section>
+{% include 'admin/_pagination.html' %}
 {% endblock %}

@@ -655,6 +655,51 @@ def interactions(cdp, base, ids, app, output):
         cdp.navigate(base+"/auth/profile?notifications_page=3&orders_page=3#profile-notifications-content")
         paging_audit=cdp.evaluate(AUDIT)
         record("profile-pagination-320-z2",not paging_audit["horizontalOverflow"] and not paging_audit["contrast"] and not paging_audit["unlabeled"],paging_audit)
+        # Give every administrator list at least three pages in the disposable DB.
+        from backend.app.models import Category, Offer, Product, Supplier
+        with app.app_context():
+            admin = db.session.scalar(db.select(User).where(User.email == "admin.demo@stockflow.test"))
+            owner = db.session.scalar(db.select(User).where(User.email == "browser.ui@stockflow.test"))
+            buyer_id, company_id = owner.id, owner.company_profile.id
+            for index in range(23):
+                category = Category(name=f"Lapošanas QA {index:02}")
+                supplier = Supplier(name=f"Lapošanas QA {index:02}", name_key=f"lapošanas qa {index:02}",
+                                    is_active=index < 21)
+                product = Product(name=f"Lapošanas QA {index:02}", sku=f"PAGE-QA-{index:02}",
+                                  category=category, is_active=index < 21)
+                offer = Offer(product=product, supplier=supplier, supplier_name=supplier.name,
+                              created_by_admin=admin, unit_price="1.00", vat_included=True,
+                              is_active=index < 21)
+                entry = Order(user_id=buyer_id, company_profile_id=company_id,
+                              total_amount="10.00", status="noraidīts")
+                db.session.add_all([category, supplier, product, offer, entry])
+            db.session.commit()
+        cdp.call("Emulation.setDeviceMetricsOverride",width=1440,height=900,deviceScaleFactor=1,mobile=False)
+        record("admin-pagination-login",login("admin.demo@stockflow.test","DemoAdmin123!","/admin"))
+        for section in ("orders", "suppliers", "products", "supplier-products", "categories"):
+            query = "status=noraidīts&sort=date-asc" if section == "orders" else "q=Lapošanas+QA&status=active" if section != "categories" else ""
+            cdp.navigate(base+f"/admin/{section}?"+query)
+            rows = ".inventory-row" if section in ("products", "suppliers") else ".admin-table tbody tr"
+            count = f"document.querySelectorAll({json.dumps(rows)}).length"
+            record("admin-"+section+"-first-ten",cdp.evaluate(count+"===10 && !document.querySelector('[data-admin-pagination] a[rel=prev]')"))
+            cdp.evaluate("document.querySelector('[data-admin-pagination] a[rel=next]').click()")
+            record("admin-"+section+"-next",wait_for("new URLSearchParams(location.search).get('page')==='2' && "+count+"===10") and
+                   all(cdp.evaluate("new URLSearchParams(location.search).get("+json.dumps(key)+")==="+json.dumps(value)) for key,value in
+                       ([('status','noraidīts'),('sort','date-asc')] if section=='orders' else [('q','Lapošanas QA'),('status','active')] if section!='categories' else [])))
+            cdp.evaluate("document.querySelector('[data-admin-pagination] a[rel=prev]').click()")
+            record("admin-"+section+"-previous",wait_for("new URLSearchParams(location.search).get('page')==='1' && "+count+"===10"))
+            cdp.navigate(base+f"/admin/{section}?"+query+"&page=3")
+            record("admin-"+section+"-last",cdp.evaluate(count+">0 && "+count+"<=10 && !document.querySelector('[data-admin-pagination] a[rel=next]')"))
+            audits = []
+            for zoom in (1, 2):
+                for width in (320, 375, 425, 768, 1024, 1440, 1920):
+                    cdp.call("Emulation.setDeviceMetricsOverride",width=round(width/zoom),height=round(900/zoom),deviceScaleFactor=zoom,mobile=False)
+                    audit = cdp.evaluate(AUDIT)
+                    audit.update(width=width, zoom=zoom)
+                    audits.append(audit)
+                    if width in (375, 1440) and zoom == 1:
+                        cdp.screenshot(output/"screenshots"/f"admin-{section}-pagination-{width}.png")
+            record("admin-"+section+"-pagination-responsive",all(not a["horizontalOverflow"] and not a["contrast"] and not a["unlabeled"] for a in audits),audits)
     except Exception as error:
         record("interaction-exception",False,str(error))
     return checks

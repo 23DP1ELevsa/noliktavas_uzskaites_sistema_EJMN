@@ -4,6 +4,7 @@ from sqlalchemy.orm import selectinload
 
 from ..extensions import db
 from ..models import Offer, OrderItem, Supplier
+from ..services.admin_pagination import paginate_admin
 from ..services.suppliers import supplier_form_data, supplier_values, validate_supplier
 from .admin import admin_bp, admin_required, _check_product_csrf, _product_csrf_token
 
@@ -25,8 +26,8 @@ def suppliers():
                                   Supplier.email.icontains(q, autoescape=True)))
     if status in {"active", "inactive"}:
         query = query.where(Supplier.is_active.is_(status == "active"))
-    items = db.session.scalars(query.order_by(Supplier.name_key, Supplier.id)).all()
-    return render_template("admin/suppliers.html", suppliers=items, q=q, status=status)
+    pagination = paginate_admin(query.order_by(Supplier.name_key, Supplier.id), q=q, status=status)
+    return render_template("admin/suppliers.html", suppliers=pagination.items, pagination=pagination, q=q, status=status)
 
 
 @admin_bp.get("/suppliers/<int:supplier_id>")
