@@ -94,5 +94,7 @@ def application_detail(order_id):
                     return redirect(url_for("admin.application_detail", order_id=order.id))
     if issues is None:
         issues = approval_issues(order) if order.status == "iesniegts" else []
+    if error:
+        flash(error, "error")
     return render_template("admin/order_detail.html", order=order, customer=customer_details(order),
                            error=error, note=note, approval_issues=issues, csrf_token=_product_csrf_token()), status_code

@@ -102,7 +102,7 @@ def test_duplicate_json_keys_are_not_silently_overwritten(inventory):
 
 def test_unknown_fields_and_supplier_reference_are_checked(inventory):
     with pytest.raises(JSONImportError) as failure:
-        read_json_offers(stream([json_record(inventory, data_source="API")]))
+        read_json_offers(stream([json_record(inventory, data_source="external")]))
     assert failure.value.field == "data_source"
     data = json_record(inventory)
     del data["supplier_id"]

@@ -1,3 +1,4 @@
+{% from '_icons.html' import icon %}
 <!doctype html>
 <html lang="lv">
 <head>
@@ -5,11 +6,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Pieteikuma noformēšana | StockFlow</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/account.css') }}">
 </head>
 <body class="marketplace-page">
     {% include '_market_header.html' %}
     <main id="main-content" class="admin-shell shopping-shell">
-        <nav class="breadcrumbs" aria-label="Atrašanās vieta"><a href="{{ url_for('cart.cart_page') }}">Grozs</a><span>/</span><span>Pieteikuma noformēšana</span></nav>
+        <nav class="breadcrumbs" aria-label="Atrašanās vieta"><a href="{{ url_for('cart.cart_page') }}">Grozs</a><span aria-hidden="true">/</span><span aria-current="page">Pieteikuma noformēšana</span></nav>
         {% include '_messages.html' %}
         <div class="admin-toolbar"><div><p class="account-kicker">Pārskatīt un iesniegt</p><h1>Pieteikuma noformēšana</h1><p class="account-help">Pārbaudiet preces un uzņēmuma datus pirms iesniegšanas.</p></div><a class="admin-secondary-button" href="{{ url_for('cart.cart_page') }}"><span aria-hidden="true">←</span> Atgriezties grozā</a></div>
         <ol class="checkout-progress" aria-label="Pieteikuma soļi">
@@ -20,7 +22,7 @@
         <div class="cart-layout">
             <div class="supplier-groups">
                 <section class="checkout-company">
-                    <div class="section-heading"><h2>Uzņēmums un piegāde</h2><a href="{{ url_for('auth.profile') }}">Labot profilu <span aria-hidden="true">↗</span></a></div>
+                    <div class="section-heading"><div><p class="account-kicker">01 · Pieteikuma dati</p><h2>Uzņēmums un piegāde</h2></div><a href="{{ url_for('auth.profile') }}">Labot profilu <span aria-hidden="true">↗</span></a></div>
                     {% if profile_complete %}
                     <dl class="checkout-company-facts">
                         <div><dt>Uzņēmums</dt><dd>{{ profile.company_name }}</dd></div>
@@ -34,12 +36,11 @@
                     </div>
                     {% else %}<p class="flash flash-error" role="alert">Pirms iesniegšanas pievienojiet uzņēmuma nosaukumu, reģistrācijas numuru un adresi savā profilā.</p><a class="admin-secondary-button" href="{{ url_for('auth.profile') }}">Papildināt uzņēmuma profilu</a>{% endif %}
                 </section>
-                <div class="section-heading"><h2>Izvēlētās preces</h2><span class="field-hint">{{ rows|length }} {{ 'prece' if rows|length == 1 else 'preces' }}</span></div>
+                <div class="section-heading checkout-products-heading"><div><p class="account-kicker">02 · Iepirkuma saturs</p><h2>Izvēlētās preces</h2></div><span class="count-badge">{{ rows|length }} {{ 'prece' if rows|length == 1 else 'preces' }}</span></div>
                 {% set editable = false %}{% include '_cart_groups.html' %}
             </div>
-            <aside class="shopping-summary" aria-labelledby="summary-title">
-                <p class="account-kicker">Pārbaudiet kopsummu</p>
-                <h2 id="summary-title">Pieteikuma kopsavilkums</h2>
+            <aside class="shopping-summary checkout-summary" aria-labelledby="summary-title">
+                <div class="summary-heading"><span class="summary-heading-icon">{{ icon('clipboard', 22) }}</span><div><p class="account-kicker">Pārbaudiet kopsummu</p><h2 id="summary-title">Pieteikuma kopsavilkums</h2></div></div>
                 {% include '_cart_totals.html' %}
                 <form method="post" id="checkout-submit">
                     <input type="hidden" name="csrf_token" value="{{ csrf_token }}">

@@ -65,7 +65,7 @@ def test_catalog_and_api_errors_keep_existing_response_contracts(database_app):
         "field": "min_price",
         "message": "Cena jānorāda no 0 līdz 99999999.99, ar ne vairāk kā divām zīmēm aiz punkta.",
     }
-    for path in ("/catalog", "/api/test/offers"):
+    for path in ("/catalog",):
         method_error = client.post(path)
         assert method_error.status_code == 405
         assert method_error.mimetype == "text/html"

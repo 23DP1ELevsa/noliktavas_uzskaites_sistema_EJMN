@@ -1,5 +1,4 @@
 from flask import Flask
-from ...test_api import test_api_bp
 
 from .admin import admin_bp
 from . import suppliers  # noqa: F401 -- add supplier routes to the admin blueprint
@@ -22,6 +21,5 @@ def register_blueprints(app: Flask):
         orders_bp,
         admin_bp,
         import_bp,
-        test_api_bp,
     ):
         app.register_blueprint(blueprint)

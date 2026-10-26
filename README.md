@@ -41,6 +41,8 @@ requirements.txt     Python atkarības
 .env.example         Konfigurācijas paraugs
 ```
 
+Saskarnes stili sadalīti pēc atbildības: `style.css` satur kopīgos dizaina mainīgos un komponentes, `storefront.css` — sākumlapu, katalogu un piedāvājumu salīdzināšanu, `account.css` — kontu un iepirkumu procesu, `security.css` — paroles maiņas formu, `admin.css` — pārvaldības darba telpu. Visas lapas izmanto vienotu StockFlow krāsu paleti un pielāgojas mobilajiem ekrāniem. Pārstrādes un pārbaudes apraksts: [dizaina atskaite](docs/stockflow-dizaina-parstrade.md).
+
 ## Palaišana
 
 Komandas izpilda PowerShell terminālī no projekta saknes mapes.
@@ -99,9 +101,9 @@ Demonstrēšanai katalogā meklē **kabelis**, salīdzini piegādātāju cenas u
 
 ## Piedāvājumu imports
 
-Administratora sadaļā **Imports** ir JSON, CSV un API cilnes. Piemēri: `data_samples/offers_import.json` un `data_samples/offers_import.csv`. Precēm un piegādātājiem jau jābūt sistēmā; kļūdas gadījumā datu kopa netiek daļēji saglabāta. Atkārtots imports atjaunina piedāvājumu pēc tā identitātes, ņemot vērā vietējās rezervācijas.
+Administratora sadaļā **Imports** ir JSON un CSV cilnes. Piemēri: `data_samples/offers_import.json` un `data_samples/offers_import.csv`. Precēm un piegādātājiem jau jābūt sistēmā; kļūdas gadījumā datu kopa netiek daļēji saglabāta. Atkārtots imports atjaunina piedāvājumu pēc tā identitātes, ņemot vērā vietējās rezervācijas.
 
-Iebūvētais demonstrācijas avots ir `GET /api/test/offers`. `TEST_API_URL` ļauj norādīt citu avotu; noklusējums ir lietotnes HTTP adrese ar `PORT` (lokāli 5000). Importā piegādātāja atlikums nozīmē kopējo atlikumu pirms StockFlow vietējām rezervācijām.
+Importā piegādātāja atlikums nozīmē kopējo atlikumu pirms StockFlow vietējām rezervācijām.
 
 ## Testēšana
 

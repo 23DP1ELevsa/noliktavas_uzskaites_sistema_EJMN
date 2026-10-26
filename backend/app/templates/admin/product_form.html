@@ -4,7 +4,7 @@
     <nav class="admin-breadcrumbs" aria-label="Atrašanās vieta"><a href="{{ url_for('admin.products') }}">Preces</a><span>/</span><span>{{ self.title() }}</span></nav>
     <section class="form-panel">
         {% if supplier %}<p class="admin-context">Piegādātājs: <strong>{{ supplier.name }}</strong>. Pēc preces izveides norādiet cenu un pasūtīšanas nosacījumus.</p>{% endif %}
-        <div class="form-section-heading"><h2>Preces pamatinformācija</h2></div>
+        <div class="form-section-heading"><span class="admin-form-section-number" aria-hidden="true">01</span><div><h2>Preces pamatinformācija</h2><p>Nosaukums un identifikācija vienotajā katalogā. Ar * atzīmētie lauki ir obligāti.</p></div></div>
         {% if errors %}<div class="flash flash-error" role="alert"><strong>Prece nav saglabāta.</strong> Pārbaudiet atzīmētos laukus.</div>{% endif %}
         {% if not categories %}<p class="flash flash-error" role="alert">Vispirms <a href="{{ url_for('admin.create_category') }}">izveidojiet kategoriju</a>, lai varētu pievienot preci.</p>{% endif %}
         {% macro field(name, label, limit, required=false, type='text') %}
@@ -33,13 +33,13 @@
             {{ field('unit', 'Mērvienība', 30, true) }}
             </section>
             <section class="form-section" aria-label="Preces apraksts un attēls">
-            <div class="form-section-heading"><h2>Apraksts un attēls</h2></div>
+            <div class="form-section-heading"><span class="admin-form-section-number" aria-hidden="true">02</span><div><h2>Apraksts un attēls</h2><p>Palīdziet pircējam atpazīt preci un izvērtēt tās piemērotību.</p></div></div>
             <div class="form-field"><label for="description">Apraksts</label><textarea id="description" name="description" rows="5" placeholder="Preces īpašības un lietojums">{{ form_data.description }}</textarea></div>
             {{ field('image_url', 'Attēla saite', 2048, false, 'url') }}
 
             </section>
             <section class="form-section" aria-label="Preces pieejamība">
-            <div class="form-section-heading"><h2>Pieejamība katalogā</h2></div>
+            <div class="form-section-heading"><span class="admin-form-section-number" aria-hidden="true">03</span><div><h2>Pieejamība katalogā</h2><p>Nosakiet, vai preci drīkst rādīt publiskajā katalogā.</p></div></div>
             <label class="filter-check"><input type="checkbox" name="is_active" value="1" {% if form_data.is_active %}checked{% endif %}><span>Aktīva prece — redzama publiskajā katalogā</span></label>
             </section>
             <div class="admin-form-actions">

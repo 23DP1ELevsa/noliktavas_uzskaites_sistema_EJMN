@@ -4,7 +4,7 @@
     {% set sums = namespace(products=0, delivery=0) %}
     {% for item in items %}
     {% set sums.products = sums.products + item.unit_price * item.quantity %}{% set sums.delivery = sums.delivery + item.delivery_price %}
-    <div class="order-item"><div><h3>{{ item.product_name }}</h3><p class="field-hint">{{ item.quantity }} × {{ '%.2f'|format(item.unit_price) }} € · {{ 'Ar PVN' if item.vat_included else 'Bez PVN' }}{% if item.vat_rate is not none %} · PVN {{ '%g'|format(item.vat_rate) }} %{% endif %}</p></div><div class="shopping-line-total"><span>Ar piegādi</span><strong>{{ '%.2f'|format(item.line_total) }} €</strong></div></div>
+    <div class="order-item"><div><h3>{{ item.product_name }}</h3><p class="field-hint">{{ item.quantity }} × {{ '%.2f'|format(item.unit_price) }} € · {{ 'Ar PVN' if item.vat_included else 'Bez PVN' }}{% if item.vat_rate is not none %} · PVN {{ '%g'|format(item.vat_rate) }} %{% endif %}</p><p class="field-hint">Piegāde: {{ '%.2f'|format(item.delivery_price) }} €</p></div><div class="shopping-line-total"><span>Ar piegādi</span><strong>{{ '%.2f'|format(item.line_total) }} €</strong></div></div>
     {% endfor %}
     <div class="supplier-group-total"><span>Preces <strong>{{ '%.2f'|format(sums.products) }} €</strong></span><span>Piegāde <strong>{{ '%.2f'|format(sums.delivery) }} €</strong></span><span>Kopā <strong>{{ '%.2f'|format(sums.products + sums.delivery) }} €</strong></span></div>
     </section>

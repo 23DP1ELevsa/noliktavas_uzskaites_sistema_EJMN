@@ -1,33 +1,38 @@
 // Bez JavaScript izvēlne paliek redzama, lai visas lapas būtu sasniedzamas.
 document.documentElement.classList.add('js');
+const toastTimers = new WeakMap();
 document.querySelectorAll('[data-toast]').forEach((toast) => {
+    const stack = toast.parentElement;
+    toast.hidden = toast !== stack.querySelector('[data-toast]');
     const closeButton = toast.querySelector('.toast-close');
     let timer;
     let closing = false;
     const dismiss = () => {
-        if (closing) return;
+        if (closing || toast.hidden) return;
         closing = true;
         clearTimeout(timer);
         toast.classList.add('is-leaving');
         window.setTimeout(() => {
-            const stack = toast.parentElement;
+            const restoreFocus = toast.contains(document.activeElement);
             toast.remove();
-            if (!stack.children.length) stack.remove();
+            const next = stack.querySelector('[data-toast]');
+            if (next) {
+                next.hidden = false;
+                if (restoreFocus) next.querySelector('.toast-close').focus();
+                toastTimers.get(next)?.();
+            } else stack.remove();
         }, window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 0 : 600);
     };
-    const pause = () => clearTimeout(timer);
     const resume = () => {
-        pause();
-        if (!closing && !toast.matches(':hover') && !toast.contains(document.activeElement)) {
-            timer = window.setTimeout(dismiss, 3000);
+        clearTimeout(timer);
+        if (!toast.hidden && !closing) {
+            const duration = Math.min(10000, Math.max(5000, toast.querySelector('span').textContent.length * 55));
+            timer = window.setTimeout(dismiss, duration);
         }
     };
     closeButton.hidden = false;
     closeButton.addEventListener('click', dismiss);
-    toast.addEventListener('mouseenter', pause);
-    toast.addEventListener('mouseleave', resume);
-    toast.addEventListener('focusin', pause);
-    toast.addEventListener('focusout', () => window.setTimeout(resume, 0));
+    toastTimers.set(toast, resume);
     resume();
 });
 const navigationToggle = document.querySelector('.nav-toggle');
@@ -67,6 +72,7 @@ document.querySelectorAll('[data-mobile-section]').forEach((section) => {
         toggle.setAttribute('aria-expanded', String(open));
         section.classList.toggle('is-open', open);
     };
+    if (window.location.hash === `#${content.id}`) setOpen(true);
     toggle.addEventListener('click', () => setOpen(toggle.getAttribute('aria-expanded') !== 'true'));
     section.addEventListener('keydown', (event) => {
         if (event.key === 'Escape' && mobileSections.matches && toggle.getAttribute('aria-expanded') === 'true') {

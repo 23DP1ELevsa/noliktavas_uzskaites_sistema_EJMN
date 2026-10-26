@@ -42,7 +42,7 @@ def offers():
     return db.session.scalars(db.select(Offer).order_by(Offer.id)).all()
 
 
-@pytest.mark.parametrize("source", ["CSV", "JSON", "API"])
+@pytest.mark.parametrize("source", ["CSV", "JSON"])
 def test_add_repeat_and_update_use_one_identity_and_success_timestamp(inventory, source):
     admin, _, products, suppliers = inventory
     assert save(inventory, [record(inventory)], source) == {"added": 1, "updated": 0}
@@ -56,11 +56,11 @@ def test_add_repeat_and_update_use_one_identity_and_success_timestamp(inventory,
     db.session.commit()
     assert save(inventory, [record(inventory)], source) == {"added": 0, "updated": 1}
     assert offers()[0].id == identifier and offers()[0].updated_at > datetime(2000, 1, 1)
-    assert save(inventory, [record(inventory, unit_price="12,50", stock_qty=7, delivery_price="0.00")], "API") == {
+    assert save(inventory, [record(inventory, unit_price="12,50", stock_qty=7, delivery_price="0.00")], "JSON") == {
         "added": 0, "updated": 1}
     assert len(offers()) == 1
     assert offers()[0].unit_price == Decimal("12.50") and offers()[0].stock_qty == 7
-    assert offers()[0].delivery_price == Decimal("0.00") and offers()[0].data_source == "API"
+    assert offers()[0].delivery_price == Decimal("0.00") and offers()[0].data_source == "JSON"
 
 
 def test_same_code_from_different_suppliers_and_multiple_codes_are_distinct(inventory):
@@ -175,7 +175,7 @@ def test_existing_author_and_inactive_state_preserved_without_explicit_activatio
     other = User(email="other-admin@example.test", full_name="Admin 2", role="admin", password_hash="hash")
     db.session.add(other)
     db.session.commit()
-    assert save_imported_offers([record(inventory)], source="API", admin_id=other.id) == {"added": 0, "updated": 1}
+    assert save_imported_offers([record(inventory)], source="JSON", admin_id=other.id) == {"added": 0, "updated": 1}
     offer = offers()[0]
     assert offer.id == identifier and offer.created_by_admin_id == author and not offer.is_active
     save(inventory, [record(inventory, is_active="true")])

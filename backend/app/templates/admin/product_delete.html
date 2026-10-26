@@ -4,7 +4,8 @@
 {% block content %}
 <nav class="admin-breadcrumbs" aria-label="Atrašanās vieta"><a href="{{ url_for('admin.products') }}">Preces</a><span aria-hidden="true">/</span><span>{{ self.title() }}</span></nav>
 <section class="form-panel confirmation-panel">
-    <div class="confirmation-icon">{{ icon('shield', 28) }}</div>
+    <div class="confirmation-icon">{{ icon('warning', 28) }}</div>
+    <p class="eyebrow">Darbības apstiprināšana</p>
     <h2>{{ self.title() }}</h2>
     <div class="admin-context"><strong>{{ product.name }}</strong><p>SKU: {{ product.sku }}</p></div>
     {% if has_relations %}<p>Precei ir piesaistīti piedāvājumi. Tā tiks deaktivizēta un vairs nebūs redzama publiskajā katalogā. Saistītie dati tiks saglabāti.</p><p class="field-hint">Preci varēs atkal aktivizēt rediģēšanas formā.</p>

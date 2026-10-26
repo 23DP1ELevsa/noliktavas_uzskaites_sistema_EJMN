@@ -1,20 +1,25 @@
 {% extends 'admin/base.html' %}
+{% from '_icons.html' import icon %}
 {% block title %}Pārskats{% endblock %}
 {% block content %}
 <div class="admin-page-heading">
-    <div><h2>Viss pārvaldībai vienuviet</h2></div>
+    <div><h2>Viss pārvaldībai vienuviet</h2><p>Aktuālie pieteikumi, partneri un kataloga dati jūsu darba dienai.</p></div>
     <a class="admin-secondary-button" href="{{ url_for('catalog.catalog_page') }}">Atvērt katalogu <span aria-hidden="true">↗</span></a>
 </div>
-<div class="admin-dashboard">
+<div class="admin-dashboard" aria-label="Sistēmas kopsavilkums">
     {% for card in cards %}
-    <section class="admin-section-card">
-        <div class="admin-section-heading"><h2>{{ card.title }}</h2><span class="admin-section-count">{{ card.count }}</span></div>
+    <section class="admin-section-card{% if loop.first %} admin-section-card-featured{% endif %}">
+        <div class="admin-section-heading"><span class="admin-card-icon">{{ icon(['clipboard', 'shield', 'box', 'compare', 'layers'][loop.index0], 23) }}</span><h2>{{ card.title }}</h2></div>
+        <div class="admin-card-metric"><strong>{{ card.count }}</strong><span>{{ 'Gaida izskatīšanu' if loop.first else 'Ieraksti sistēmā' }}</span></div>
+        <p>{{ card.description }}</p>
         <div class="admin-section-actions"><a class="admin-primary-button" href="{{ card.add_url }}">{{ card.action }}</a><a class="admin-secondary-button" href="{{ card.list_url }}">{{ card.secondary|default('Atvērt sadaļu') }} <span aria-hidden="true">→</span></a></div>
     </section>
     {% endfor %}
+    <section class="admin-section-card">
+        <div class="admin-section-heading"><span class="admin-card-icon">{{ icon('compare', 23) }}</span><h2>Piedāvājumu imports</h2></div>
+        <div class="admin-card-metric"><strong class="admin-import-formats">CSV · JSON</strong><span>Failu imports</span></div>
+        <p>Atjaunojiet piedāvājumu cenas un atlikumus no CSV vai JSON faila.</p>
+        <div class="admin-section-actions"><a class="admin-primary-button" href="{{ url_for('import_data.csv_page') }}">Importēt CSV</a><a class="admin-secondary-button" href="{{ url_for('import_data.json_page') }}">Importēt JSON <span aria-hidden="true">→</span></a></div>
+    </section>
 </div>
-<section class="panel admin-page-heading">
-    <div><h2>Vairāki piedāvājumi vienā reizē</h2></div>
-    <a class="admin-secondary-button" href="{{ url_for('import_data.json_page') }}">Atvērt importu <span aria-hidden="true">→</span></a>
-</section>
 {% endblock %}

@@ -6,11 +6,12 @@
     <article class="shopping-row">
         <div class="shopping-product">
             <div class="cart-product-image">
-                <span class="image-fallback" aria-hidden="true" {% if offer.product.image_url %}hidden{% endif %}>{{ offer.product.name[:1]|upper }}</span>
+                <span class="image-fallback" aria-hidden="true" {% if offer.product.image_url %}hidden{% endif %}>{{ icon('box', 27) }}</span>
                 {% if offer.product.image_url %}<img src="{{ offer.product.image_url }}" alt="{{ offer.product.name }}" loading="lazy" referrerpolicy="no-referrer" data-cart-image>{% endif %}
             </div>
             <div class="shopping-product-copy">
                 <h3><a href="{{ url_for('catalog.product_page', product_id=offer.product_id, quantity=item.quantity) }}">{{ offer.product.name }}</a></h3>
+                <p class="field-hint cart-product-sku">SKU: {{ offer.product.sku }}</p>
                 <p class="shopping-unit-price">{{ '%.2f'|format(offer.unit_price) }} € / {{ offer.product.unit }} <span class="price-vat">· {{ 'Ar PVN' if offer.vat_included else 'Bez PVN' }}</span></p>
                 <p class="field-hint">Piegāde: {{ '%.2f'|format(offer.delivery_price) }} € · {{ offer.delivery_days }} dienas</p>
             </div>

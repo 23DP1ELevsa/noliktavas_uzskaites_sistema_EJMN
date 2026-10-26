@@ -2,7 +2,7 @@
 {% from '_icons.html' import icon %}
 {% block title %}Piegādātāji{% endblock %}
 {% block content %}
-<div class="admin-page-heading"><div><h2>Jūsu sadarbības partneri</h2></div><a class="admin-primary-button" href="{{ url_for('admin.supplier_form') }}"><span aria-hidden="true">+</span> Pievienot piegādātāju</a></div>
+<div class="admin-page-heading"><div><h2>Jūsu sadarbības partneri</h2><p>Kontaktinformācija, piegādes nosacījumi un katra partnera piedāvājumi.</p></div><a class="admin-primary-button" href="{{ url_for('admin.supplier_form') }}"><span aria-hidden="true">+</span> Pievienot piegādātāju</a></div>
 <section class="panel" aria-label="Piegādātāju saraksts">
     <form class="inventory-filters" method="get" role="search">
         <div><label for="supplier-search">Meklēt piegādātāju</label><input id="supplier-search" type="search" name="q" value="{{ q }}" maxlength="255" placeholder="Nosaukums, kontaktpersona vai e-pasts"></div>

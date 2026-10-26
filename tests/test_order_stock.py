@@ -101,7 +101,7 @@ def test_failed_transaction_rolls_back_stock_and_order(comparison_data, monkeypa
     assert balance(offers[0]) == expected
 
 
-@pytest.mark.parametrize("source", ["CSV", "JSON", "API"])
+@pytest.mark.parametrize("source", ["CSV", "JSON"])
 @pytest.mark.parametrize("decision", ["approve", "decline"])
 def test_reimport_retains_local_allocations(comparison_data, source, decision):
     client, product, offers, _ = comparison_data

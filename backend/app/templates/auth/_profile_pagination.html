@@ -1,0 +1,18 @@
+{% from '_icons.html' import icon %}
+{% macro profile_pagination(pagination, label, kind) %}
+{% if pagination.total %}
+<nav class="profile-pagination" aria-label="{{ label }}" data-profile-pagination="{{ kind }}">
+    {% if pagination.previous_url %}
+    <a class="profile-page-arrow profile-page-previous" href="{{ pagination.previous_url }}" aria-label="{{ label }}: iepriekšējā lapa" rel="prev">{{ icon('arrow', 18) }}</a>
+    {% else %}
+    <button class="profile-page-arrow profile-page-previous" type="button" disabled aria-label="{{ label }}: iepriekšējā lapa">{{ icon('arrow', 18) }}</button>
+    {% endif %}
+    <span class="profile-page-meta" aria-live="polite"><strong aria-current="page">{{ pagination.page }}. lapa no {{ pagination.pages }}</strong><small>{{ (pagination.page - 1) * 5 + 1 }}–{{ [pagination.page * 5, pagination.total]|min }} no {{ pagination.total }}</small></span>
+    {% if pagination.next_url %}
+    <a class="profile-page-arrow" href="{{ pagination.next_url }}" aria-label="{{ label }}: nākamā lapa" rel="next">{{ icon('arrow', 18) }}</a>
+    {% else %}
+    <button class="profile-page-arrow" type="button" disabled aria-label="{{ label }}: nākamā lapa">{{ icon('arrow', 18) }}</button>
+    {% endif %}
+</nav>
+{% endif %}
+{% endmacro %}

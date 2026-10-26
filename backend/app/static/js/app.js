@@ -16,6 +16,10 @@ const applyFiltersButton = document.querySelector("#apply-filters");
 const filtersToggle = document.querySelector("#filters-toggle");
 const filtersPanel = document.querySelector(".catalog-filter-panel");
 const mobileFilters = window.matchMedia("(max-width: 760px)");
+const retryButton = document.querySelector("#catalog-retry");
+const resultsTitle = document.querySelector("#catalog-results-title");
+const filterControls = { category_id: categorySelect, supplier: supplierInput, min_price: minPriceInput, max_price: maxPriceInput, q: searchInput };
+const placeholderMarkup = '<span class="product-image-placeholder"><svg class="icon" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m12 3 9 5-9 5-9-5 9-5Z"/><path d="M3 8v9l9 5 9-5V8M12 13v9M7.5 5.5l9 5"/></svg><small>Attēls nav pieejams</small></span>';
 
 // Paslēpjam tikai paneļa attēlojumu, lai izvēlētie filtri nepazustu pēc aizvēršanas.
 function setFiltersOpen(open) {
@@ -103,6 +107,8 @@ function renderProducts() {
     const singular = sorted.length % 10 === 1 && sorted.length % 100 !== 11;
     catalogCount.textContent = `${sorted.length} ${singular ? "prece" : "preces"}`;
     productGrid.replaceChildren();
+    resultsTitle.textContent = categorySelect.selectedOptions[0]?.value
+        ? categorySelect.selectedOptions[0].textContent : searchInput.value.trim() ? "Meklēšanas rezultāti" : "Visas preces";
 
     if (!sorted.length) {
         catalogMessage.textContent = "Pēc izvēlētajiem kritērijiem preces netika atrastas.";
@@ -113,15 +119,21 @@ function renderProducts() {
         const card = document.createElement("article");
         card.className = "product-card";
         const availability = product.available ? "Pieejams" : "Nav pieejams";
+        const priceOffer = product.offers?.[0];
         card.innerHTML = `
-            <div class="product-image" aria-hidden="true">${escapeHtml(product.name.slice(0, 1).toUpperCase())}</div>
+            <a class="product-image" href="${escapeHtml(product.detail_url)}" aria-label="${escapeHtml('Atvērt preci: ' + product.name)}">${placeholderMarkup}</a>
+            <div class="product-card-body">
             <p class="product-category">${escapeHtml(product.category)}</p>
             <h3><a href="${escapeHtml(product.detail_url)}">${escapeHtml(product.name)}</a></h3>
-            <p class="product-sku">Preces kods: ${escapeHtml(product.sku)}</p>
-            <p class="price">${formatPrice(product.price)}</p>
-            <p class="offer-count">${product.offer_count} ${product.offer_count % 10 === 1 && product.offer_count % 100 !== 11 ? "piedāvājums" : "piedāvājumi"}</p>
+            <p class="product-sku">SKU: ${escapeHtml(product.sku)}</p>
+            <div class="product-pricing">
+            <p class="price ${product.price === null ? 'price-missing' : ''}">${product.price === null ? '' : '<span class="price-label">No</span>'}${escapeHtml(formatPrice(product.price))}</p>
+            ${priceOffer ? `<p class="product-tax-note">/ ${escapeHtml(product.unit)} · ${priceOffer.vat_included ? 'Ar PVN' : 'Bez PVN'} · bez piegādes</p>` : ''}
+            <p class="offer-count">${escapeHtml(product.offer_count)} ${product.offer_count % 10 === 1 && product.offer_count % 100 !== 11 ? "piedāvājums" : "piedāvājumi"}</p>
+            </div>
             <p class="availability ${product.available ? '' : 'availability-unavailable'}">${escapeHtml(availability)}</p>
             <a class="card-button" href="${escapeHtml(product.detail_url)}" aria-label="${escapeHtml('Skatīt piedāvājumus: ' + product.name)}">Skatīt piedāvājumus <span aria-hidden="true">→</span></a>
+            </div>
         `;
         if (product.image_url) {
             const image = document.createElement("img");
@@ -129,11 +141,10 @@ function renderProducts() {
             image.alt = product.name;
             image.loading = "lazy";
             image.referrerPolicy = "no-referrer";
+            image.decoding = "async";
             const container = card.querySelector(".product-image");
-            container.removeAttribute("aria-hidden");
             image.addEventListener("error", () => {
-                container.textContent = product.name.slice(0, 1).toUpperCase();
-                container.setAttribute("aria-hidden", "true");
+                container.innerHTML = placeholderMarkup;
             }, { once: true });
             container.replaceChildren(image);
         }
@@ -145,6 +156,12 @@ async function loadCatalog() {
     const requestNumber = ++latestRequest;
     const content = productGrid.closest('.catalog-content');
     content.setAttribute('aria-busy', 'true');
+    retryButton.hidden = true;
+    catalogMessage.classList.remove('is-error');
+    Object.values(filterControls).forEach((control) => {
+        control.removeAttribute('aria-invalid');
+        control.removeAttribute('aria-errormessage');
+    });
     catalogMessage.textContent = "Ielādē katalogu...";
     let errorMessage = "Katalogu neizdevās ielādēt. Pārbaudiet savienojumu un mēģiniet vēlreiz.";
     const params = currentParams();
@@ -157,6 +174,11 @@ async function loadCatalog() {
         if (requestNumber !== latestRequest) return;
         if (!response.ok) {
             errorMessage = data.message || errorMessage;
+            if (filterControls[data.field]) {
+                filterControls[data.field].setAttribute('aria-invalid', 'true');
+                filterControls[data.field].setAttribute('aria-errormessage', 'catalog-message');
+                if (mobileFilters.matches) setFiltersOpen(true);
+            }
             throw new Error(errorMessage);
         }
         products = data.items;
@@ -166,6 +188,8 @@ async function loadCatalog() {
         if (requestNumber !== latestRequest) return;
         catalogCount.textContent = "Kļūda";
         catalogMessage.textContent = errorMessage;
+        catalogMessage.classList.add('is-error');
+        retryButton.hidden = false;
         productGrid.replaceChildren();
     } finally {
         if (requestNumber === latestRequest) content.setAttribute('aria-busy', 'false');
@@ -195,6 +219,7 @@ applyFiltersButton.addEventListener("click", async () => {
     }
 });
 categorySelect.addEventListener("change", loadCatalog);
+retryButton.addEventListener("click", loadCatalog);
 sortSelect.addEventListener("change", renderProducts);
 clearFiltersButton.addEventListener("click", () => {
     searchInput.value = "";

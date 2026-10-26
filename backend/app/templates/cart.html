@@ -6,11 +6,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Grozs | StockFlow</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/account.css') }}">
 </head>
 <body class="marketplace-page">
     {% include '_market_header.html' %}
     <main id="main-content" class="admin-shell shopping-shell">
-        <nav class="breadcrumbs" aria-label="Atrašanās vieta"><a href="{{ url_for('catalog.catalog_page') }}">Katalogs</a><span>/</span><span>Grozs</span></nav>
+        <nav class="breadcrumbs" aria-label="Atrašanās vieta"><a href="{{ url_for('catalog.catalog_page') }}">Katalogs</a><span aria-hidden="true">/</span><span aria-current="page">Grozs</span></nav>
         {% include '_messages.html' %}
         <div class="admin-toolbar">
             <div><p class="account-kicker">Jūsu iepirkumi</p><h1>Grozs</h1><p class="account-help">{{ rows|length }} {{ 'prece' if rows|length == 1 else 'preces' }} · {{ groups|length }} {{ 'piegādātājs' if groups|length == 1 else 'piegādātāji' }}</p></div>
@@ -25,12 +26,10 @@
         <div class="cart-layout">
             <div class="supplier-groups">{% set editable = true %}{% include '_cart_groups.html' %}</div>
             <aside class="shopping-summary" aria-labelledby="summary-title">
-                <p class="account-kicker">Pirms turpināt</p>
-                <h2 id="summary-title">Pasūtījuma kopsavilkums</h2>
+                <div class="summary-heading"><span class="summary-heading-icon">{{ icon('clipboard', 22) }}</span><h2 id="summary-title">Pieteikuma kopsavilkums</h2></div>
                 {% include '_cart_totals.html' %}
                 {% if can_checkout %}<a class="admin-primary-button checkout-primary" href="{{ url_for('orders.checkout') }}">Noformēt pieteikumu →</a>
                 {% else %}<p class="field-error">{{ checkout_error or 'Lai turpinātu, labojiet atzīmētās preces vai izņemiet tās.' }}</p><button class="admin-primary-button checkout-primary" type="button" disabled>Noformēt pieteikumu →</button>{% endif %}
-                <p class="field-hint summary-help">{{ icon('lock', 16) }} Preces grozā netiek rezervētas.</p>
             </aside>
         </div>
         {% else %}

@@ -6,14 +6,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Mani pieteikumi | StockFlow</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/account.css') }}">
 </head>
 <body class="marketplace-page">
     {% include '_market_header.html' %}
-    <main id="main-content" class="admin-shell">
-        <nav class="breadcrumbs" aria-label="Atrašanās vieta"><a href="{{ url_for('auth.profile') }}">Mans profils</a><span>/</span><span>Mani pieteikumi</span></nav>
+    <main id="main-content" class="admin-shell history-shell">
+        <nav class="breadcrumbs" aria-label="Atrašanās vieta"><a href="{{ url_for('auth.profile') }}">Mans profils</a><span aria-hidden="true">/</span><span aria-current="page">Mani pieteikumi</span></nav>
         <div class="admin-toolbar">
             <div><p class="account-kicker">Iepirkumu vēsture</p><h1>Mani pieteikumi</h1><p class="account-help">Šeit redzami jūsu iesniegtie pieteikumi, to statuss un saglabātās summas.</p></div>
-            <a class="admin-secondary-button" href="{{ url_for('auth.profile') }}">Mans profils</a>
+            <a class="admin-primary-button" href="{{ url_for('catalog.catalog_page') }}">Jauns iepirkums {{ icon('arrow', 18) }}</a>
         </div>
         <form class="inventory-filters history-filters" method="get" aria-label="Pieteikumu atlase">
             <div class="form-field">
@@ -42,7 +43,7 @@
                     <p class="field-hint"><time datetime="{{ order.created_at.isoformat() }}Z" data-local-time>{{ order.created_at.strftime('%d.%m.%Y. %H:%M') }} UTC</time></p>
                 </div>
                 <span class="status-badge order-status-{{ order.status }}">{{ order.status }}</span>
-                <strong>{{ '%.2f'|format(order.total_amount) }} €</strong>
+                <strong class="history-amount">{{ '%.2f'|format(order.total_amount) }} €</strong>
                 <div class="category-row-actions"><a href="{{ url_for('orders.order_detail', order_id=order.id) }}" aria-label="Apskatīt pieteikumu #{{ order.id }}">Apskatīt <span aria-hidden="true">→</span></a></div>
             </article>
             {% else %}

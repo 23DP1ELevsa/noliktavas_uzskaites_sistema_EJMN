@@ -1,0 +1,6 @@
+/* Account security is kept separate from the shared company profile form. */
+.profile-security { margin-top: 30px; padding-top: 26px; border-top: 1px solid var(--line); }
+.profile-security .section-heading { margin-bottom: 20px; }
+.profile-security h2 { margin-bottom: 8px; font-size: 1.2rem; }
+.profile-security .password-change-form { margin-top: 0; }
+.password-change-form .form-actions { margin-top: 0; }

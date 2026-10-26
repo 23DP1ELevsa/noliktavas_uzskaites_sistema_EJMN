@@ -3,7 +3,7 @@
 {% block content %}
 <nav class="admin-breadcrumbs" aria-label="Atrašanās vieta"><a href="{{ url_for('admin.categories') }}">Kategorijas</a><span aria-hidden="true">/</span><span>{% if category %}Rediģēt{% else %}Jauna kategorija{% endif %}</span></nav>
 <section class="form-panel">
-    <div class="form-section-heading"><h2>Kategorijas informācija</h2></div>
+    <div class="form-section-heading"><span class="admin-form-section-number" aria-hidden="true">01</span><div><h2>Kategorijas informācija</h2><p>Izveidojiet saprotamu preču grupu. Ar * atzīmētais lauks ir obligāts.</p></div></div>
     <form method="post" class="admin-form">
         <div class="form-field"><label for="name">Kategorijas nosaukums *</label><input id="name" name="name" value="{{ form_data.name }}" maxlength="150" required autofocus placeholder="Piemēram, biroja piederumi"></div>
         <div class="form-field"><label for="description">Apraksts <span class="field-hint">(neobligāts)</span></label><textarea id="description" name="description" rows="5" placeholder="Kādas preces ietilpst šajā kategorijā?">{{ form_data.description or '' }}</textarea></div>

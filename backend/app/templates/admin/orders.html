@@ -1,7 +1,7 @@
 {% extends 'admin/base.html' %}
 {% block title %}Pieteikumi{% endblock %}
 {% block content %}
-<div class="admin-page-heading"><div><h2>Klientu pieteikumi</h2></div><p class="admin-context"><strong>{{ pending }}</strong> gaida izskatīšanu</p></div>
+<div class="admin-page-heading"><div><h2>Klientu pieteikumi</h2><p>Pārskatiet iesniegtos iepirkumus un paziņojiet klientiem pieņemto lēmumu.</p></div><p class="admin-context admin-pending-count"><strong>{{ pending }}</strong> gaida izskatīšanu</p></div>
 <section class="panel" aria-label="Klientu pieteikumi">
     <form class="inventory-filters history-filters" method="get">
         <div class="form-field"><label for="status">Statuss</label><select id="status" name="status">{% for value,label in [('iesniegts','Gaida izskatīšanu'), ('apstiprināts','Apstiprināti'), ('noraidīts','Noraidīti'), ('all','Visi pieteikumi')] %}<option value="{{ value }}" {% if status == value %}selected{% endif %}>{{ label }}</option>{% endfor %}</select></div>

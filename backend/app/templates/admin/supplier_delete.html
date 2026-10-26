@@ -4,7 +4,8 @@
 {% block content %}
 <nav class="admin-breadcrumbs" aria-label="Atrašanās vieta"><a href="{{ url_for('admin.suppliers') }}">Piegādātāji</a><span aria-hidden="true">/</span><span>Dzēst piegādātāju</span></nav>
 <section class="form-panel confirmation-panel">
-    <div class="confirmation-icon">{{ icon('shield', 28) }}</div>
+    <div class="confirmation-icon">{{ icon('warning', 28) }}</div>
+    <p class="eyebrow">Darbības apstiprināšana</p>
     <h2>{{ 'Piegādātājs ir saistīts ar datiem' if has_relations else 'Dzēst piegādātāju' }}</h2>
     <div class="admin-context"><strong>{{ supplier.name }}</strong></div>
     {% if has_relations %}<p>Piegādātāju nevar dzēst: tam ir saistīti piedāvājumi vai pasūtījumi. Dati jāsaglabā.</p><p class="field-hint">Piegādātāju var deaktivizēt tā detalizētajā skatā.</p><div class="admin-form-actions"><a class="admin-secondary-button" href="{{ url_for('admin.supplier_detail', supplier_id=supplier.id) }}">Atgriezties pie piegādātāja</a></div>

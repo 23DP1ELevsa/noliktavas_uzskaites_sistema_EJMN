@@ -9,7 +9,7 @@ from __future__ import annotations
 
 import argparse
 import base64
-from datetime import datetime
+from datetime import datetime, timedelta
 import hashlib
 from html.parser import HTMLParser
 import json
@@ -188,7 +188,7 @@ AUDIT = r"""(() => {
     for(const el of document.body.querySelectorAll('*')){
         if(!rendered(el))continue;
         const r=el.getBoundingClientRect();
-        if(r.right<=innerWidth+1&&r.left>=-1)continue;
+        if(r.right<=document.documentElement.clientWidth+1&&r.left>=-1)continue;
         let contained=false;
         for(let p=el.parentElement;p&&p!==document.body;p=p.parentElement){
             if(['auto','scroll'].includes(getComputedStyle(p).overflowX)&&p.clientWidth<p.scrollWidth){contained=true;break;}}
@@ -198,14 +198,14 @@ AUDIT = r"""(() => {
         .filter(el=>rendered(el)&&!el.labels?.length&&!el.getAttribute('aria-label')&&!el.getAttribute('aria-labelledby'))
         .map(description);
     const text=document.body.innerText;
-    const overflowSources=document.documentElement.scrollWidth>innerWidth+1 ? [...document.querySelectorAll('*')]
+    const overflowSources=document.documentElement.scrollWidth>document.documentElement.clientWidth+1 ? [...document.querySelectorAll('*')]
         .filter(el=>el.scrollWidth>el.clientWidth+2&&el.clientWidth>0)
         .map(el=>({...description(el),clientWidth:el.clientWidth,scrollWidth:el.scrollWidth,
             overflowX:getComputedStyle(el).overflowX,position:getComputedStyle(el).position,
             rectRight:Math.round(el.getBoundingClientRect().right)})).slice(0,30) : [];
     return {title:document.title,url:location.pathname+location.search,lang:document.documentElement.lang,
         viewport:innerWidth,documentWidth:document.documentElement.scrollWidth,
-        horizontalOverflow:document.documentElement.scrollWidth>innerWidth+1,overflow:overflow.slice(0,30),
+        horizontalOverflow:document.documentElement.scrollWidth>document.documentElement.clientWidth+1,overflow:overflow.slice(0,30),
         overflowSources,
         contrast,uncertainBackgrounds:uncertain.slice(0,20),unlabeled,
         imagesWithoutAlt:[...document.images].filter(el=>!el.hasAttribute('alt')).map(el=>el.src),
@@ -229,7 +229,7 @@ class Inputs(HTMLParser):
 
 
 def seeded_app(directory, stress=False):
-    from flask import render_template
+    from flask import flash, render_template
     from backend.app import create_app
     from backend.app.extensions import db
     from backend.app.models import Cart, CartItem, Category, Offer, Order, Product, Supplier, User
@@ -243,9 +243,11 @@ def seeded_app(directory, stress=False):
     def audit_shopping_error():
         return render_template("shopping_error.html"), 503
 
-    @app.get("/__ui/api-failure")
-    def audit_api_failure():
-        return {"error":"Pārbaudes avots īslaicīgi nav pieejams."}, 503
+    @app.get("/__ui/notices")
+    def audit_notices():
+        flash("Pirmais pārbaudes paziņojums.", "success")
+        flash("Otrais pārbaudes paziņojums.", "error")
+        return render_template("index.html")
 
     with app.app_context():
         db.create_all()
@@ -312,7 +314,7 @@ def pages(ids):
         ("offer-edit", f"/admin/supplier-products/{o}/edit"), ("offer-delete", f"/admin/supplier-products/{o}/delete"),
         ("categories", "/admin/categories"), ("category-new", "/admin/categories/new"),
         ("category-edit", f"/admin/categories/{c}/edit"), ("import-json", "/admin/import/json"),
-        ("import-csv", "/admin/import/csv"), ("import-api", "/admin/import/api")]
+        ("import-csv", "/admin/import/csv")]
     return [(role, name, path) for role, routes in (("guest", guest), ("user", user), ("empty", empty), ("admin", admin))
             for name, path in routes]
 
@@ -409,6 +411,37 @@ def interactions(cdp, base, ids, app, output):
         record("catalog-search-empty",wait_for("document.querySelector('#catalog-count').textContent==='0 preces' && new URLSearchParams(location.search).get('q')==='neeksistējoša-pārbaudes-prece'"))
         cdp.evaluate("document.querySelector('#clear-filters').click()")
         record("catalog-clear",wait_for("document.querySelectorAll('.product-card').length>0 && !location.search"))
+        cdp.evaluate("document.querySelector('#min-price').value='100';document.querySelector('#max-price').value='1';document.querySelector('#apply-filters').click()")
+        record("catalog-filter-validation",wait_for("""document.querySelector('#max-price').getAttribute('aria-invalid')==='true'
+            && document.querySelector('#max-price').getAttribute('aria-errormessage')==='catalog-message'
+            && document.querySelector('#filters-toggle').getAttribute('aria-expanded')==='true'
+            && document.querySelector('#catalog-message').classList.contains('is-error')
+            && document.querySelector('#catalog-message').textContent.includes('Maksimālā cena nedrīkst būt mazāka')
+            && document.querySelector('.catalog-content').getAttribute('aria-busy')==='false'"""))
+        cdp.screenshot(output/"screenshots"/"catalog-filter-error.png")
+        cdp.evaluate("document.querySelector('#clear-filters').click()")
+        record("catalog-validation-clear",wait_for("""document.querySelectorAll('.product-card').length>0
+            && !document.querySelector('#catalog-filters [aria-invalid=true]')
+            && !document.querySelector('#catalog-message').classList.contains('is-error')
+            && document.querySelector('#catalog-retry').hidden"""))
+        cdp.call("Network.enable")
+        try:
+            cdp.call("Network.setBlockedURLs",urls=[base+"/catalog?*"])
+            cdp.evaluate("document.querySelector('#apply-filters').click()")
+            record("catalog-network-error",wait_for("""document.querySelector('#catalog-count').textContent==='Kļūda'
+                && document.querySelector('#catalog-message').classList.contains('is-error')
+                && document.querySelector('#catalog-message').textContent.includes('Pārbaudiet savienojumu')
+                && !document.querySelector('#catalog-retry').hidden
+                && !document.querySelector('.product-card')
+                && document.querySelector('.catalog-content').getAttribute('aria-busy')==='false'"""))
+            cdp.screenshot(output/"screenshots"/"catalog-network-error.png")
+        finally:
+            cdp.call("Network.setBlockedURLs",urls=[])
+        cdp.evaluate("document.querySelector('#catalog-retry').click()")
+        record("catalog-network-retry",wait_for("""document.querySelectorAll('.product-card').length>0
+            && document.querySelector('#catalog-retry').hidden
+            && !document.querySelector('#catalog-message').classList.contains('is-error')
+            && document.querySelector('.catalog-content').getAttribute('aria-busy')==='false'"""))
         cdp.evaluate("const select=document.querySelector('#sort-control');select.value='name-desc';select.dispatchEvent(new Event('change',{bubbles:true}));")
         record("catalog-sort",cdp.evaluate("(() => {const names=[...document.querySelectorAll('.product-card h3')].map(n=>n.textContent);return names.every((name,i)=>!i||names[i-1].localeCompare(name,'lv')>=0);})()"))
         cdp.evaluate("const category=document.querySelector('#category-filter');category.selectedIndex=1;category.dispatchEvent(new Event('change',{bubbles:true}));")
@@ -427,6 +460,10 @@ def interactions(cdp, base, ids, app, output):
         cdp.navigate(base+f"/catalog/products/{ids['product']}")
         cdp.evaluate("const q=document.querySelector('#compare-quantity');q.value='3';q.dispatchEvent(new Event('change',{bubbles:true}));")
         record("comparison-autosubmit",wait_for("new URLSearchParams(location.search).get('quantity')==='3' && document.readyState==='complete'"))
+        cdp.evaluate("const s=document.querySelector('#compare-sort');s.value='delivery';s.dispatchEvent(new Event('change',{bubbles:true}));")
+        record("comparison-sort",wait_for("new URLSearchParams(location.search).get('sort')==='delivery' && document.readyState==='complete'"))
+        cdp.evaluate("document.querySelector('#clear-comparison-filters').click()")
+        record("comparison-clear",wait_for("!location.search && document.readyState==='complete' && document.querySelector('#compare-quantity').value==='1' && document.querySelector('#compare-sort').value==='total-asc'"))
         cdp.evaluate("document.querySelector('.offer-order-form button:not(:disabled)').click()")
         record("add-to-cart",wait_for("document.body.innerText.includes('pievienoti grozam') && document.readyState==='complete'"))
         cdp.navigate(base+"/cart")
@@ -434,9 +471,21 @@ def interactions(cdp, base, ids, app, output):
         submit(".cart-quantity-form",{"quantity":quantity})
         record("cart-quantity",wait_for("document.body.innerText.includes('Daudzums grozā atjaunināts.') && document.readyState==='complete'"))
         cdp.navigate(base+"/orders/checkout")
+        cdp.call("Emulation.setDeviceMetricsOverride",width=1440,height=720,deviceScaleFactor=1,mobile=False)
+        record("checkout-summary-static",cdp.evaluate("(() => {const s=document.querySelector('.checkout-summary'),top=s.getBoundingClientRect().top+scrollY;window.scrollBy(0,240);return getComputedStyle(s).position==='static' && Math.abs(s.getBoundingClientRect().top+scrollY-top)<2;})()"))
+        cdp.call("Emulation.setDeviceMetricsOverride",width=375,height=900,deviceScaleFactor=1,mobile=False)
+        cdp.evaluate("window.scrollTo(0,0)")
         submit("#checkout-submit",{"note":"Pārlūka pārbaudes pieteikums"})
         created=wait_for("/^\\/orders\\/\\d+$/.test(location.pathname) && document.readyState==='complete'")
         record("checkout-submit",created)
+        record("submission-toast",cdp.evaluate("[...document.querySelectorAll('.toast-stack [data-toast]')].some(t=>t.textContent.includes('Pieteikums saņemts.')) && !document.querySelector('.receipt-notice') && getComputedStyle(document.querySelector('.toast-stack')).position==='fixed'"))
+        cdp.evaluate("Promise.all(document.querySelector('.toast-stack').getAnimations({subtree:true}).map(a=>a.finished.catch(()=>{})))")
+        cdp.screenshot(output/"screenshots"/"submission-toast.png",full_page=False)
+        cdp.call("Emulation.setDeviceMetricsOverride",width=160,height=450,deviceScaleFactor=2,mobile=False)
+        cdp.evaluate("new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)))")
+        record("submission-toast-small-screen",cdp.evaluate("(() => {const s=document.querySelector('.toast-stack').getBoundingClientRect();return s.top>=-1 && s.bottom<=innerHeight+1 && document.documentElement.scrollWidth<=document.documentElement.clientWidth+1;})()"))
+        cdp.screenshot(output/"screenshots"/"submission-toast-320-z2.png",full_page=False)
+        record("submission-toast-dismisses",wait_for("![...document.querySelectorAll('[data-toast]')].some(t=>t.textContent.includes('Pieteikums saņemts.'))",timeout=12))
         order=cdp.evaluate("location.pathname.split('/').pop()") if created else str(ids["order"])
         cdp.call("Emulation.setDeviceMetricsOverride",width=1024,height=720,deviceScaleFactor=1,mobile=False)
         cdp.navigate(base+"/orders/"+order)
@@ -466,6 +515,11 @@ def interactions(cdp, base, ids, app, output):
             return !!link && !link.closest('.notification-row').classList.contains('notification-unread');
         })()""")
         record("notification-auto-read", opened and read)
+        submit(".password-change-form",{"current_password":"WrongPassword!","new_password":"BrowserUser123!","new_password_confirmation":"BrowserUser123!"})
+        record("password-change-current-validation",wait_for("document.querySelector('#current-password-error')?.textContent.includes('Pašreizējā parole nav pareiza.') && document.querySelector('#current_password').value===''"))
+        submit(".password-change-form",{"current_password":"DemoUser123!","new_password":"BrowserUser123!","new_password_confirmation":"BrowserUser123!"})
+        record("password-change-success",wait_for("location.pathname==='/auth/profile' && document.body.innerText.includes('Parole veiksmīgi nomainīta.')"))
+        record("password-change-login",login("user.demo@stockflow.test","BrowserUser123!","/"))
         record("admin-login",login("admin.demo@stockflow.test","DemoAdmin123!","/admin"))
         record("admin-sections-collapsed",cdp.evaluate("getComputedStyle(document.querySelector('#admin-section-links')).display==='none'"))
         cdp.evaluate("document.querySelector('[aria-controls=admin-section-links]').click()")
@@ -476,6 +530,15 @@ def interactions(cdp, base, ids, app, output):
         cdp.call("Emulation.setDeviceMetricsOverride",width=375,height=900,deviceScaleFactor=1,mobile=False)
         record("admin-sections-resize",wait_for("document.querySelector('[aria-controls=admin-section-links]').getAttribute('aria-expanded')==='false' && getComputedStyle(document.querySelector('#admin-section-links')).display==='none'"))
         cdp.navigate(base+"/admin/orders/"+order)
+        cdp.call("Emulation.setDeviceMetricsOverride",width=1440,height=900,deviceScaleFactor=1,mobile=False)
+        record("admin-review-two-columns",cdp.evaluate("(() => {const c=document.querySelector('.cart-layout > .supplier-groups').getBoundingClientRect(),s=document.querySelector('.admin-review-summary').getBoundingClientRect();return s.left>=c.right+20 && s.top<c.bottom;})()"))
+        cdp.call("Emulation.setDeviceMetricsOverride",width=375,height=900,deviceScaleFactor=1,mobile=False)
+        submit("form.admin-form",button="button[value=decline]")
+        record("decline-reason-toast",wait_for("[...document.querySelectorAll('.toast-stack [data-toast]')].some(t=>t.textContent.includes('Lai noraidītu pieteikumu')) && document.querySelector('#admin_note').getAttribute('aria-invalid')==='true'"))
+        record("decision-actions-gap",cdp.evaluate("(() => {const a=document.querySelector('button[value=approve]').getBoundingClientRect(),b=document.querySelector('button[value=decline]').getBoundingClientRect();return b.left-a.right>=12 || b.top-a.bottom>=12;})()"))
+        cdp.evaluate("Promise.all(document.querySelector('.toast-stack').getAnimations({subtree:true}).map(a=>a.finished.catch(()=>{})))")
+        cdp.screenshot(output/"screenshots"/"decline-reason-toast.png",full_page=False)
+        cdp.evaluate("document.querySelectorAll('.toast-close').forEach(b=>b.click())")
         submit("form.admin-form",button="button[value=approve]")
         record("admin-approve",wait_for("document.body.innerText.includes('Lēmums saglabāts.') && document.body.innerText.includes('apstiprināts') && document.readyState==='complete'"))
         cdp.navigate(base+"/admin/categories/new")
@@ -521,16 +584,6 @@ def interactions(cdp, base, ids, app, output):
             record("import-"+kind+"-picker",cdp.evaluate("document.querySelector('[data-file-name]').textContent==="+json.dumps("offers_import."+kind)))
             submit("form.admin-form")
             record("import-"+kind+"-success",wait_for("document.readyState==='complete' && document.body.innerText.includes("+json.dumps(kind.upper()+" imports pabeigts.")+")"))
-        cdp.navigate(base+"/admin/import/api")
-        submit("form.admin-form")
-        record("import-api-success",wait_for("document.readyState==='complete' && document.body.innerText.includes('API imports pabeigts.')"))
-        app.config["TEST_API_URL"]=base+"/__ui/api-failure"
-        cdp.navigate(base+"/admin/import/api")
-        result=cdp.evaluate("""(async () => {
-            const response=await fetch(location.href,{method:'POST',body:new FormData(document.querySelector('form.admin-form'))});
-            return {status:response.status,text:await response.text()};
-        })()""")
-        record("import-api-failure",result["status"]==422 and "Importa dati nav saglabāti." in result["text"])
         cdp.navigate(base+"/auth/logout")
         cdp.navigate(base+"/auth/register")
         # Pārbaudām katras prasības maiņu, ielīmēšanu un atkārtotu dzēšanu pārlūkā.
@@ -546,11 +599,62 @@ def interactions(cdp, base, ids, app, output):
                         valid:input.checkValidity()};
             })()""")
             record("password-requirements-"+str(len(checks)), state['met']==expected and state['valid']==all(expected), state)
+        cdp.call("Emulation.setDeviceMetricsOverride",width=1440,height=900,deviceScaleFactor=1,mobile=False)
+        record("register-button-full-width",cdp.evaluate("(() => {const f=document.querySelector('.account-form').getBoundingClientRect(),b=document.querySelector('.form-actions > button').getBoundingClientRect();return Math.abs(f.width-b.width)<2;})()"))
+        cdp.call("Emulation.setDeviceMetricsOverride",width=375,height=900,deviceScaleFactor=1,mobile=False)
         submit(".account-form",{"full_name":"Pārlūka Pārbaude","email":"browser.ui@stockflow.test",
             "password":"BrowserUi123!","password_confirmation":"BrowserUi123!",
             "company_name":"Pārlūka Pārbaude SIA","registration_no":"40000000002",
             "address":"Pārbaudes iela 2, Rīga"})
         record("registration",wait_for("location.pathname==='/' && document.readyState==='complete' && document.body.innerText.includes('Konts izveidots.')"))
+        cdp.navigate(base+"/__ui/notices")
+        no_toast_scroll="(() => {const s=document.querySelector('.toast-stack'),t=s.querySelector('[data-toast]:not([hidden])');return getComputedStyle(s).overflowY==='visible' && s.scrollHeight<=s.clientHeight+1 && s.scrollWidth<=s.clientWidth+1 && t.scrollHeight<=t.clientHeight+1 && t.scrollWidth<=t.clientWidth+1;})()"
+        record("toast-queue-first",cdp.evaluate("document.querySelectorAll('[data-toast]:not([hidden])').length===1 && document.querySelector('[data-toast]:not([hidden])').textContent.includes('Pirmais')") and cdp.evaluate(no_toast_scroll))
+        cdp.evaluate("document.querySelector('[data-toast]:not([hidden]) .toast-close').click()")
+        record("toast-queue-next",wait_for("document.querySelectorAll('[data-toast]:not([hidden])').length===1 && document.querySelector('[data-toast]:not([hidden])').textContent.includes('Otrais')") and cdp.evaluate(no_toast_scroll))
+        cdp.evaluate("document.querySelector('[data-toast]:not([hidden]) .toast-close').click()")
+        record("toast-queue-close",wait_for("!document.querySelector('.toast-stack')"))
+        cdp.navigate(base+"/__ui/notices")
+        bounds=cdp.evaluate("(() => {const t=document.querySelector('[data-toast]:not([hidden])');t.querySelector('.toast-close').focus();const r=t.getBoundingClientRect();return {x:r.left+r.width/2,y:r.top+r.height/2};})()")
+        cdp.call("Input.dispatchMouseEvent",type="mouseMoved",x=bounds["x"],y=bounds["y"])
+        record("toast-auto-next-while-hovered-and-focused",wait_for("document.querySelector('[data-toast]:not([hidden])')?.textContent.includes('Otrais')",timeout=12))
+        record("toast-auto-close-while-hovered-and-focused",wait_for("!document.querySelector('.toast-stack')",timeout=12))
+        # Populate only this disposable account to exercise all three history pages.
+        from backend.app.extensions import db
+        from backend.app.models import Notification, Order, User
+        with app.app_context():
+            owner = db.session.scalar(db.select(User).where(User.email == "browser.ui@stockflow.test"))
+            page_order_ids = []
+            for index in range(12):
+                timestamp = datetime(2026, 1, 1) + timedelta(days=index)
+                entry = Order(user_id=owner.id, company_profile_id=owner.company_profile.id,
+                              total_amount="10.00", created_at=timestamp)
+                db.session.add(entry)
+                db.session.flush()
+                page_order_ids.append(entry.id)
+                db.session.add(Notification(user_id=owner.id, order_id=entry.id, kind="submitted",
+                    message=f"Lapošanas paziņojums {index + 1:02}", created_at=timestamp))
+            db.session.commit()
+        cdp.navigate(base+"/auth/profile")
+        record("profile-first-five",cdp.evaluate("document.querySelectorAll('.notification-row').length===5 && document.querySelector('.notification-row a').textContent.includes('12') && document.querySelectorAll('.profile-order-row').length===5"))
+        cdp.evaluate("document.querySelector('[aria-controls=profile-notifications-content]').click();document.querySelector('[data-profile-pagination=notifications] a[rel=next]').click()")
+        record("profile-notifications-next",wait_for("new URLSearchParams(location.search).get('notifications_page')==='2' && document.querySelector('.notification-row a')?.textContent.includes('07') && document.querySelector('[aria-controls=profile-notifications-content]').getAttribute('aria-expanded')==='true'"))
+        cdp.screenshot(output/"screenshots"/"profile-notifications-page-2-mobile.png",full_page=False)
+        cdp.evaluate("document.querySelector('[aria-controls=profile-orders-content]').click();document.querySelector('[data-profile-pagination=orders] a[rel=next]').click()")
+        record("profile-orders-next-independent",wait_for("new URLSearchParams(location.search).get('notifications_page')==='2' && new URLSearchParams(location.search).get('orders_page')==='2' && document.querySelectorAll('.profile-order-row').length===5 && document.querySelector('.profile-order-row').pathname.endsWith('/'+"+json.dumps(str(page_order_ids[6]))+")"))
+        cdp.evaluate("document.querySelector('[data-profile-pagination=orders] a[rel=next]').click()")
+        record("profile-orders-last-page",wait_for("new URLSearchParams(location.search).get('orders_page')==='3' && document.querySelectorAll('.profile-order-row').length===2 && !document.querySelector('[data-profile-pagination=orders] a[rel=next]') && document.querySelector('.notification-row a').textContent.includes('07')"))
+        cdp.evaluate("document.querySelector('[aria-controls=profile-notifications-content]').click();document.querySelector('[data-profile-pagination=notifications] a[rel=next]').click()")
+        record("profile-notifications-last-page",wait_for("new URLSearchParams(location.search).get('notifications_page')==='3' && new URLSearchParams(location.search).get('orders_page')==='3' && document.querySelectorAll('.notification-row').length===2 && !document.querySelector('[data-profile-pagination=notifications] a[rel=next]')"))
+        cdp.evaluate("document.querySelector('[data-profile-pagination=notifications] a[rel=prev]').click()")
+        record("profile-previous-preserves-other-page",wait_for("new URLSearchParams(location.search).get('notifications_page')==='2' && new URLSearchParams(location.search).get('orders_page')==='3' && document.querySelector('.notification-row a')?.textContent.includes('07')"))
+        cdp.call("Emulation.setDeviceMetricsOverride",width=1440,height=900,deviceScaleFactor=1,mobile=False)
+        cdp.evaluate("window.scrollTo(0,0)")
+        cdp.screenshot(output/"screenshots"/"profile-pagination-desktop.png")
+        cdp.call("Emulation.setDeviceMetricsOverride",width=160,height=450,deviceScaleFactor=2,mobile=False)
+        cdp.navigate(base+"/auth/profile?notifications_page=3&orders_page=3#profile-notifications-content")
+        paging_audit=cdp.evaluate(AUDIT)
+        record("profile-pagination-320-z2",not paging_audit["horizontalOverflow"] and not paging_audit["contrast"] and not paging_audit["unlabeled"],paging_audit)
     except Exception as error:
         record("interaction-exception",False,str(error))
     return checks
@@ -559,6 +663,8 @@ def interactions(cdp, base, ids, app, output):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--browser", help="Installed Chromium executable")
+    parser.add_argument("--browser-no-sandbox", action="store_true",
+                        help="Disable Chromium sandbox only for isolated local QA in restricted environments")
     parser.add_argument("--widths", nargs="+", type=int, default=[320,375,425,768,1024,1440,1920])
     parser.add_argument("--zooms", nargs="+", type=float, default=[1,2], help="Effective browser zoom factors")
     parser.add_argument("--roles", nargs="+", choices=["guest","user","empty","admin"])
@@ -580,12 +686,14 @@ def main():
         app,users,ids=seeded_app(directory,args.stress)
         server=make_server("127.0.0.1",0,app,threaded=True)
         base=f"http://127.0.0.1:{server.server_port}"
-        app.config["TEST_API_URL"]=base+"/api/test/offers"
         thread=threading.Thread(target=server.serve_forever,daemon=True)
         thread.start()
         profile=directory/"chromium"
         browser_log=(args.output/"browser.log").open("wb")
-        process=subprocess.Popen([browser_path(args.browser),"--headless=new","--no-first-run",
+        browser_flags = ["--disable-gpu"]
+        if args.browser_no_sandbox:
+            browser_flags.append("--no-sandbox")
+        process=subprocess.Popen([browser_path(args.browser),*browser_flags,"--headless=new","--no-first-run",
             "--no-default-browser-check","--disable-background-networking","--disable-sync",
             "--remote-debugging-port=0",f"--user-data-dir={profile}","about:blank"],
             stdout=subprocess.DEVNULL,stderr=browser_log)

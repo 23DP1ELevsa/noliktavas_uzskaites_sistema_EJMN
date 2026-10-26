@@ -5,12 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>{{ error_title }} | StockFlow</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/account.css') }}">
 </head>
 <body>
     {% include '_market_header.html' %}
     {% from '_icons.html' import icon %}
     <main class="admin-shell error-page" id="main-content">
-        <span class="empty-state-icon">{{ icon('box', 30) }}</span>
+        <span class="empty-state-icon" aria-hidden="true">{{ icon('box', 30) }}</span>
         <p class="account-kicker">Kļūda {{ code }}</p>
         <h1>{{ error_title }}</h1>
         <p class="account-help">{{ error_message }}</p>

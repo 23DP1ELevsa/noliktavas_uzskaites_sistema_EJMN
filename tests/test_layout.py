@@ -5,6 +5,26 @@ from backend.app.models import Category, Offer, Product, Supplier
 from backend.app.services.demo_data import ADMIN_EMAIL, DEFAULT_ADMIN_PASSWORD, USER_EMAIL, DEFAULT_USER_PASSWORD
 
 
+def test_home_restores_the_preview_and_three_features_from_the_reference(database_app):
+    response = database_app.test_client().get("/")
+
+    assert response.status_code == 200
+    html = response.get_data(as_text=True)
+    assert "Vairāk skaidrības." in html
+    assert "Viss, kas vajadzīgs izvēlei" in html
+    assert html.count('class="preview-item"') == 3
+    features = re.search(r'<section class="landing-features".*?</section>', html, flags=re.S)
+    assert features is not None
+    assert len(re.findall(r"<article\b", features.group(0))) == 3
+    assert 'class="process-grid"' not in html
+    assert 'class="hero-art"' not in html
+    assert "<picture" not in html
+    assert "Viss process vienuviet." not in html
+    assert "Jūs izvēlaties, administrators izskata." not in html
+    assert "Mazāk meklēšanas." not in html
+    assert "/catalog/page" in html
+
+
 def test_all_pages_render_the_same_single_footer(database_app):
     result = database_app.test_cli_runner().invoke(args=["seed-demo"])
     assert result.exit_code == 0, result.output
@@ -37,7 +57,7 @@ def test_all_pages_render_the_same_single_footer(database_app):
 
     client.get('/auth/logout')
     client.post("/auth/login", data={"email": ADMIN_EMAIL, "password": DEFAULT_ADMIN_PASSWORD})
-    for path in ("/auth/profile", "/cart", "/admin", "/admin/import/json", "/admin/import/csv", "/admin/import/api", "/admin/supplier-products",
+    for path in ("/auth/profile", "/cart", "/admin", "/admin/import/json", "/admin/import/csv", "/admin/supplier-products",
                  "/admin/orders",
                  "/admin/supplier-products/new", f"/admin/supplier-products/{offer_id}/edit",
                  f"/admin/supplier-products/{offer_id}/delete",

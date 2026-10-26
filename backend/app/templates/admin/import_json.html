@@ -2,14 +2,15 @@
 {% block title %}{{ import_format }} piedāvājumu imports{% endblock %}
 {% block content %}
 {% include 'admin/_import_tabs.html' %}
-<div class="admin-page-heading"><div><h2>Atjaunojiet piedāvājumus no faila</h2></div><a class="admin-secondary-button" href="{{ url_for(sample_endpoint) }}"><span aria-hidden="true">↓</span> Lejupielādēt {{ import_format }} paraugu</a></div>
+<div class="admin-page-heading"><div><h2>Atjaunojiet piedāvājumus no faila</h2><p>Augšupielādējiet {{ import_format }} failu, lai pievienotu vai atjauninātu piegādātāju piedāvājumus.</p></div><a class="admin-secondary-button" href="{{ url_for(sample_endpoint) }}"><span aria-hidden="true">↓</span> Lejupielādēt {{ import_format }} paraugu</a></div>
 <div class="import-layout">
     <section class="form-panel">
-        <div class="form-section-heading"><h2>Izvēlieties sagatavoto failu</h2></div>
+        <div class="form-section-heading"><span class="admin-form-section-number" aria-hidden="true">01</span><div><h2>Izvēlieties sagatavoto failu</h2><p>Izmantojiet paraugu, lai saglabātu pareizo lauku struktūru.</p></div></div>
         {% if error %}<p class="flash flash-error" role="alert">{{ error }} Importa dati nav saglabāti.</p>{% endif %}
         <form method="post" enctype="multipart/form-data" class="admin-form">
             <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
             <div class="form-field file-upload-field">
+                <span class="admin-upload-icon" aria-hidden="true">{{ icon('arrow', 28) }}</span>
                 <label for="import-file">{{ import_format }} fails *</label>
                 <div class="file-picker"><span aria-hidden="true">Izvēlēties failu</span><input id="import-file" name="file" type="file" accept="{{ '.csv,text/csv' if import_format == 'CSV' else '.json,application/json' }}" required aria-describedby="import-file-hint selected-file-name" data-file-picker></div>
                 <span class="field-hint" id="selected-file-name" data-file-name aria-live="polite">Fails nav izvēlēts</span>
@@ -21,6 +22,7 @@
     </section>
     <aside class="panel import-guide" aria-label="Importa sagatavošana">
         <h2>Trīs soļi veiksmīgam importam</h2>
+        <ol class="import-steps"><li><strong>Sagatavojiet datus</strong><span>Lejupielādējiet paraugu un aizpildiet piedāvājumu laukus.</span></li><li><strong>Pārbaudiet sasaistes</strong><span>Precēm un piegādātājiem jau jābūt StockFlow sistēmā.</span></li><li><strong>Importējiet failu</strong><span>Pēc pārbaudes piedāvājumi tiks saglabāti vienā darbībā.</span></li></ol>
         <details><summary>Obligātie datu lauki</summary><p class="field-hint">Preces kods <code>product_sku</code>, piegādātāja kods <code>supplier_sku</code>, piegādātājs <code>supplier_id</code> vai <code>supplier_name</code>, valūta <code>currency</code>, cena <code>unit_price</code>, PVN nosacījums <code>vat_included</code>, minimālais daudzums <code>min_order_qty</code>, atlikums <code>stock_qty</code> un piegādes dienas <code>delivery_days</code>. Cenai bez PVN norādiet arī likmi <code>vat_rate</code>.</p></details>
     </aside>
 </div>

@@ -7,7 +7,7 @@
     <div class="category-row-actions"><a class="admin-secondary-button" href="{{ url_for('admin.supplier_form', supplier_id=supplier.id) }}">Rediģēt informāciju</a><form method="post" action="{{ url_for('admin.supplier_status', supplier_id=supplier.id) }}"><input type="hidden" name="csrf_token" value="{{ csrf_token }}"><input type="hidden" name="is_active" value="{{ '0' if supplier.is_active else '1' }}"><button type="submit">{{ 'Deaktivizēt' if supplier.is_active else 'Aktivizēt' }}</button></form>{% if not has_relations %}<a href="{{ url_for('admin.delete_supplier', supplier_id=supplier.id) }}">Dzēst</a>{% endif %}</div>
 </div>
 <section class="supplier-detail-panel panel">
-    <div class="panel-heading"><h2>Piegādātāja informācija</h2></div>
+    <div class="panel-heading"><div class="admin-supplier-identity"><span class="inventory-thumbnail" aria-hidden="true">{{ supplier.name[:1]|upper }}</span><div><p class="eyebrow">Sadarbības partneris</p><h2>Piegādātāja informācija</h2></div></div></div>
     <dl class="supplier-facts">
         <div><dt>Kontaktpersona</dt><dd>{{ supplier.contact_person or 'Nav norādīta' }}</dd></div>
         <div><dt>E-pasts</dt><dd>{% if supplier.email %}<a href="mailto:{{ supplier.email }}">{{ supplier.email }}</a>{% else %}Nav norādīts{% endif %}</dd></div>

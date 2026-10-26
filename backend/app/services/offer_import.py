@@ -1,4 +1,4 @@
-"""Atomic persistence for records supplied by CSV, JSON and API adapters."""
+"""Atomic persistence for records supplied by CSV and JSON adapters."""
 
 from collections.abc import Mapping
 from datetime import datetime, timezone
@@ -11,7 +11,7 @@ from ..extensions import db
 from ..models import Offer, Product, Supplier, User
 
 
-SOURCES = {"CSV", "JSON", "API"}
+SOURCES = {"CSV", "JSON"}
 MAX_FILE_BYTES = 2 * 1024 * 1024
 MAX_RECORDS = 10000
 REQUIRED_FIELDS = ("product_sku", "supplier_sku", "currency", "unit_price", "vat_included",
@@ -123,7 +123,7 @@ def save_imported_offers(records, *, source, admin_id):
         raise OfferImportError("Pirms importa pabeidziet citas nesaglabātās izmaiņas.", field="transaction")
     try:
         if not isinstance(source, str) or source not in SOURCES:
-            raise OfferImportError("Importa avotam jābūt CSV, JSON vai API.", field="source")
+            raise OfferImportError("Importa avotam jābūt CSV vai JSON.", field="source")
         actor_id = _integer(admin_id, "admin_id", None, minimum=1, maximum=9223372036854775807)
         actor = session.get(User, actor_id)
         if actor is None or actor.role != "admin" or not actor.is_active:

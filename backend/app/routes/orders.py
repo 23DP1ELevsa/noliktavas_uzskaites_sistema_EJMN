@@ -85,6 +85,7 @@ def checkout():
             notify_submission(order)
             db.session.commit()
             session.pop("checkout_review", None)
+            flash("Pieteikums saņemts. Administrators pārskatīs jūsu iepirkumu; par lēmumu saņemsiet paziņojumu savā profilā.", "success")
             return redirect(url_for("orders.order_detail", order_id=order.id))
     review = {"fingerprint": fingerprint, "token": secrets.token_hex(32)}
     session["checkout_review"] = review

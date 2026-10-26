@@ -1,3 +1,4 @@
+{% from '_icons.html' import icon %}
 <!doctype html>
 <html lang="lv">
 <head>
@@ -5,11 +6,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Pieteikums #{{ order.id }} | StockFlow</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/account.css') }}">
 </head>
 <body class="marketplace-page">
     {% include '_market_header.html' %}
     <main id="main-content" class="admin-shell shopping-shell">
-        <nav class="breadcrumbs" aria-label="Atrašanās vieta"><a href="{{ url_for('orders.order_list') }}">Mani pieteikumi</a><span>/</span><span>Pieteikums #{{ order.id }}</span></nav>
+        {% include '_messages.html' %}
+        <nav class="breadcrumbs" aria-label="Atrašanās vieta"><a href="{{ url_for('orders.order_list') }}">Mani pieteikumi</a><span aria-hidden="true">/</span><span aria-current="page">Pieteikums #{{ order.id }}</span></nav>
         <section class="order-receipt" aria-labelledby="order-title">
             <div class="receipt-heading">
                 <div><p class="account-kicker">Pieteikums #{{ order.id }}</p><h1 id="order-title">{{ 'Pieteikums iesniegts' if order.status == 'iesniegts' else 'Pieteikums #' ~ order.id }}</h1><p class="field-hint">Iesniegts: <time datetime="{{ order.created_at.isoformat() }}Z" data-local-time>{{ order.created_at.strftime('%d.%m.%Y. %H:%M') }} UTC</time></p></div>
@@ -29,7 +32,7 @@
                         <span class="status-badge order-status-{{ order.status }}">{{ order.status }}</span>
                     </div>
                     {% if order.processed_at %}<p class="field-hint">Lēmums pieņemts: <time datetime="{{ order.processed_at.isoformat() }}Z" data-local-time>{{ order.processed_at.strftime('%d.%m.%Y. %H:%M') }} UTC</time></p>{% endif %}
-                    {% if order.status == 'iesniegts' %}<p class="summary-help">Administrators saņēmis pieteikumu izskatīšanai. Par lēmumu saņemsiet paziņojumu savā profilā.</p>{% else %}{% include '_order_decision.html' %}{% endif %}
+                    {% if order.status != 'iesniegts' %}{% include '_order_decision.html' %}{% endif %}
                     <div class="shopping-grand-total receipt-total"><span>Kopsumma</span><strong>{{ '%.2f'|format(order.total_amount) }} €</strong></div>
                     <p class="field-hint">Pieteikumā saglabātās cenas un piegādes maksas.</p>
                     <div class="receipt-actions">

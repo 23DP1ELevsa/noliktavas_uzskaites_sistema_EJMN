@@ -1,9 +1,9 @@
 import re
 from urllib.parse import urljoin, urlparse
 
-from flask import Blueprint, flash, redirect, render_template, request, url_for
+from flask import Blueprint, abort, flash, redirect, render_template, request, url_for
 from flask_login import current_user, login_required, login_user, logout_user
-from sqlalchemy.exc import IntegrityError
+from sqlalchemy.exc import IntegrityError, SQLAlchemyError
 
 from ..extensions import db
 from ..models import CompanyProfile, Notification, Order, User
@@ -181,15 +181,85 @@ def profile():
                      for field in COMPANY_FIELDS}
         form_data["full_name"] = current_user.full_name
 
-    notifications = db.session.scalars(db.select(Notification).where(Notification.user_id == current_user.id)
-                                        .order_by(Notification.is_read, Notification.created_at.desc(), Notification.id.desc())
-                                        .limit(20)).all()
+    return _render_profile(form_data=form_data, errors=errors)
+
+
+def _profile_page(model, parameter):
+    values = request.args.getlist(parameter)
+    value = values[0] if values else "1"
+    if (len(values) > 1 or not re.fullmatch(r"[0-9]{1,7}", value)
+            or not 1 <= int(value) <= 1000000):
+        abort(400, description="Nederīgs profila sadaļas lapas numurs.")
+    condition = model.user_id == current_user.id
+    total = db.session.scalar(db.select(db.func.count(model.id)).where(condition))
+    pages = max(1, (total + 4) // 5)
+    page = min(int(value), pages)
+    items = db.session.scalars(db.select(model).where(condition)
+                               .order_by(model.created_at.desc(), model.id.desc())
+                               .limit(5).offset((page - 1) * 5)).all()
+    return items, {"page": page, "pages": pages, "total": total,
+                   "previous_url": None, "next_url": None}
+
+
+def _render_profile(*, form_data=None, errors=None, password_change_errors=None):
+    profile = current_user.company_profile
+    if form_data is None:
+        form_data = {field: (getattr(profile, field) or "") if profile else ""
+                     for field in COMPANY_FIELDS}
+        form_data["full_name"] = current_user.full_name
+    notifications, notification_pagination = _profile_page(Notification, "notifications_page")
+    orders, order_pagination = _profile_page(Order, "orders_page")
+    for pagination, parameter, anchor in (
+        (notification_pagination, "notifications_page", "profile-notifications-content"),
+        (order_pagination, "orders_page", "profile-orders-content"),
+    ):
+        for direction, change in (("previous_url", -1), ("next_url", 1)):
+            target = pagination["page"] + change
+            if 1 <= target <= pagination["pages"]:
+                params = {"notifications_page": notification_pagination["page"],
+                          "orders_page": order_pagination["page"]}
+                params[parameter] = target
+                pagination[direction] = url_for("auth.profile", **params, _anchor=anchor)
     unread = db.session.scalar(db.select(db.func.count(Notification.id)).where(
         Notification.user_id == current_user.id, Notification.is_read.is_(False)))
-    orders = db.session.scalars(db.select(Order).where(Order.user_id == current_user.id)
-                               .order_by(Order.created_at.desc(), Order.id.desc()).limit(5)).all()
-    return render_template("auth/profile.html", profile=profile, form_data=form_data, errors=errors,
+    return render_template("auth/profile.html", profile=profile, form_data=form_data, errors=errors or {},
+                           password_change_errors=password_change_errors or {},
+                           notification_pagination=notification_pagination, order_pagination=order_pagination,
                            notifications=notifications, unread=unread, orders=orders, csrf_token=cart_csrf_token())
+
+
+@auth_bp.post("/password")
+@login_required
+def change_password():
+    require_cart_csrf()
+    current_password = request.form.get("current_password", "")
+    new_password = request.form.get("new_password", "")
+    confirmation = request.form.get("new_password_confirmation", "")
+    errors = {}
+    if not current_password:
+        errors["current_password"] = "Ievadiet pašreizējo paroli."
+    elif not current_user.check_password(current_password):
+        errors["current_password"] = "Pašreizējā parole nav pareiza."
+    requirements = password_errors(new_password)
+    if requirements:
+        errors["new_password"] = " ".join(requirements)
+    if not confirmation:
+        errors["new_password_confirmation"] = "Atkārtojiet jauno paroli."
+    elif new_password != confirmation:
+        errors["new_password_confirmation"] = "Paroles nesakrīt."
+    if errors:
+        return _render_profile(password_change_errors=errors), 422
+
+    # Izmantojam tikai sesijas lietotāju; profils un uzņēmuma dati netiek mainīti.
+    current_user.set_password(new_password)
+    try:
+        db.session.commit()
+    except SQLAlchemyError:
+        db.session.rollback()
+        flash("Paroli neizdevās nomainīt. Mēģiniet vēlreiz.", "error")
+        return _render_profile(), 500
+    flash("Parole veiksmīgi nomainīta.", "success")
+    return redirect(url_for("auth.profile"))
 
 
 @auth_bp.post("/notifications/<int:notification_id>/read")

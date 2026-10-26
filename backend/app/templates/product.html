@@ -5,16 +5,18 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>{{ product.name }} — piedāvājumu salīdzinājums | StockFlow</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/storefront.css') }}">
 </head>
-<body class="marketplace-page">
+<body class="marketplace-page product-page">
     {% include '_market_header.html' %}
+    {% from '_icons.html' import icon %}
     <main class="admin-shell" id="main-content">
-        <nav class="breadcrumbs" aria-label="Atrašanās vieta"><a href="{{ url_for('catalog.catalog_page') }}">Katalogs</a><span>/</span><span>{{ product.name }}</span></nav>
+        <nav class="breadcrumbs" aria-label="Atrašanās vieta"><a href="{{ url_for('index') }}">Sākumlapa</a><span aria-hidden="true">/</span><a href="{{ url_for('catalog.catalog_page') }}">Katalogs</a><span aria-hidden="true">/</span><span aria-current="page">{{ product.name }}</span></nav>
         {% include '_messages.html' %}
         <section class="product-detail">
             <div class="detail-image">
-                <span class="image-fallback" aria-hidden="true" {% if product.image_url %}hidden{% endif %}>{{ product.name[:1]|upper }}</span>
-                {% if product.image_url %}<img src="{{ product.image_url }}" alt="{{ product.name }}" referrerpolicy="no-referrer" data-product-image>{% endif %}
+                <span class="image-fallback" {% if product.image_url %}hidden{% endif %}>{{ icon('box', 76) }}<span>Attēls nav pieejams</span></span>
+                {% if product.image_url %}<img src="{{ product.image_url }}" alt="{{ product.name }}" width="520" height="350" referrerpolicy="no-referrer" data-product-image>{% endif %}
             </div>
             <div class="detail-copy">
                 <p class="account-kicker">{{ product.category.name }}</p>
@@ -26,12 +28,13 @@
                     <div><dt>Modelis</dt><dd>{{ product.model or 'Nav norādīts' }}</dd></div>
                     <div><dt>Mērvienība</dt><dd>{{ product.unit }}</dd></div>
                 </dl>
+                <a class="detail-compare-link" href="#comparison-title">Salīdzināt piegādātāju piedāvājumus {{ icon('arrow', 18) }}</a>
                 {% if current_user.is_authenticated and current_user.role == 'admin' %}<a href="{{ url_for('admin.product_detail', product_id=product.id) }}">Pārvaldīt preci →</a>{% endif %}
             </div>
         </section>
         <section class="comparison-section" aria-labelledby="comparison-title">
             <div class="admin-toolbar">
-                <div><p class="account-kicker">Pamatota izvēle</p><h2 id="comparison-title">Piedāvājumu salīdzinājums</h2><p>{{ offers|length }} aktīvi piedāvājumi · vienāds daudzums visiem piegādātājiem</p></div>
+                <div><p class="account-kicker">Pamatota izvēle</p><h2 id="comparison-title">Piedāvājumu salīdzinājums</h2><p>{{ offers|length }} {{ 'aktīvs piedāvājums' if offers|length % 10 == 1 and offers|length % 100 != 11 else 'aktīvi piedāvājumi' }} · vienāds daudzums visiem piegādātājiem</p></div>
                 <a class="admin-secondary-button" href="{{ url_for('cart.cart_page') }}">Atvērt grozu →</a>
             </div>
             <form class="comparison-controls" method="get" id="comparison-form">
@@ -46,6 +49,7 @@
                     </select>
                 </div>
                 <button class="admin-primary-button" type="submit">Salīdzināt</button>
+                <a class="admin-secondary-button" id="clear-comparison-filters" href="{{ url_for('catalog.product_page', product_id=product.id) }}#comparison-title">Attīrīt filtrus</a>
             </form>
             {% if comparison_error %}<p class="flash flash-error" role="alert">{{ comparison_error }}</p>{% endif %}
             <details class="help-disclosure"><summary>Kā tiek aprēķināta salīdzinājuma kopsumma?</summary><p>Visiem piedāvājumiem izmanto vienādu daudzumu. Kopsumma = preču summa ar PVN + norādītā piegādes maksa. Cenām bez PVN nodokli aprēķina pēc piedāvājuma PVN likmes; cenām ar PVN to atkārtoti nepieskaita. Piegādes maksu izmanto kā norādītu gala maksu.</p></details>

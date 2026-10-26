@@ -1,4 +1,4 @@
-"""Read CSV offers into the same normalized format as JSON/API adapters."""
+"""Read CSV offers into the same normalized format as the JSON adapter."""
 
 import csv
 from io import StringIO
