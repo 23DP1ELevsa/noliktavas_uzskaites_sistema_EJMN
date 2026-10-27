@@ -105,6 +105,10 @@ Administratora sadaļā **Imports** ir JSON un CSV cilnes. Piemēri: `data_sampl
 
 Importā piegādātāja atlikums nozīmē kopējo atlikumu pirms StockFlow vietējām rezervācijām.
 
+Vienam piegādātājam var būt tikai **viens aktīvs piedāvājums katrai precei** (neatkarīgi no supplier_sku). Dažādi piegādātāji drīkst piedāvāt vienu preci ar atšķirīgām cenām — tas nepieciešams salīdzināšanai. CSV/JSON imports ir atomārs un noraida atkārtotu aktīvu piedāvājumu, nekustinot jau saglabātos datus. Ja jānomaina cena, izmanto jau esošo `supplier_sku`; ja nepieciešams cits kods, iepriekš deaktivizē veco piedāvājumu.
+
+Lai apskatītu jau saglabātus dublikātus bez izmaiņām, izpildi `python -m flask --app run audit-offer-duplicates`. Komanda parādīs piedāvājumus, kurus atstātu aktīvus. Tikai pēc pārbaudes var izpildīt `python -m flask --app run audit-offer-duplicates --fix`: tā deaktivizē liekos aktīvos piedāvājumus, atstājot jaunāko, bet **nedzēš ierakstus un neskar pasūtījumu vēsturi vai grozus**.
+
 ## Testēšana
 
 ```powershell
