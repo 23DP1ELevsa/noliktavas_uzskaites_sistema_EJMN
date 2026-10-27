@@ -132,3 +132,18 @@ def test_offer_terms_migration_preserves_existing_cart_order_and_prices(panel_in
     assert restored.unit_price == Decimal('12.50') and restored.vat_rate is None and restored.currency == 'EUR'
     assert item.line_total == Decimal('28.50') and item.vat_rate is None and item.currency == 'EUR'
     assert db.session.scalar(db.select(CartItem)).quantity == 2
+
+
+def test_manual_offer_blocks_second_active_code_for_same_supplier_product(panel_inventory):
+    client, supplier, product, data = panel_inventory
+    old = create_offer(panel_inventory)
+    second = dict(data, supplier_sku="SUP-002", unit_price="7.20")
+    response = client.post("/admin/supplier-products/new", data=second)
+    assert response.status_code == 422
+    assert 'id="product_id-error"' in response.get_data(as_text=True)
+    assert db.session.scalar(db.select(db.func.count(Offer.id))) == 1
+    # An inactive historical offer is permitted, and the first can be edited.
+    second.pop("is_active")
+    assert client.post("/admin/supplier-products/new", data=second).status_code == 302
+    assert db.session.scalar(db.select(db.func.count(Offer.id))) == 2
+    assert client.post(f"/admin/supplier-products/{old.id}/edit", data=data).status_code == 302
