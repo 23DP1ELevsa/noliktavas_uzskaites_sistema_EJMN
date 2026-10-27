@@ -100,6 +100,21 @@ def offer_form(offer_id=None):
         price_text = data["unit_price"].replace(",", ".")
         if not re.fullmatch(r"[0-9]{1,8}(?:\.[0-9]{1,2})?", price_text):
             errors["unit_price"] = "Norādiet cenu no 0 līdz 99 999 999,99 €, ar ne vairāk kā divām zīmēm aiz komata."
+        if supplier and product and data["is_active"]:
+            # Different supplier codes must not produce two active prices for the
+            # same supplier and catalog product.
+            duplicate_product = db.select(Offer.id).where(
+                Offer.product_id == product.id, Offer.is_active.is_(True),
+                db.or_(Offer.supplier_id == supplier.id,
+                       db.and_(Offer.supplier_id.is_(None),
+                               Offer.supplier_name == supplier.name)))
+            if offer is not None:
+                duplicate_product = duplicate_product.where(Offer.id != offer.id)
+            if db.session.scalar(duplicate_product.limit(1)) is not None:
+                errors["product_id"] = (
+                    "Šim piegādātājam šai precei jau ir aktīvs piedāvājums. "
+                    "Rediģējiet esošo piedāvājumu vai deaktivizējiet to."
+                )
         if offer:
             if product and product.id != offer.product_id:
                 errors["product_id"] = "Esošam ierakstam nevar mainīt preci. Izveidojiet jaunu ierakstu."
