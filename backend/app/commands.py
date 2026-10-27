@@ -1,4 +1,5 @@
 import click
+from datetime import datetime
 from sqlalchemy import inspect, text
 from sqlalchemy.exc import SQLAlchemyError
 
@@ -26,6 +27,58 @@ def register_commands(app):
                 "Missing tables: " + ", ".join(sorted(missing)) + ". Run flask --app run db upgrade."
             )
         click.echo(f"Database connection OK; all {len(db.metadata.tables)} application tables exist.")
+
+    @app.cli.command("audit-offer-duplicates")
+    @click.option("--fix", is_flag=True, help="Deactivate duplicate active offers, keeping the newest.")
+    def audit_offer_duplicates(fix):
+        """Inspect (or safely deactivate) duplicate supplier/product offers.
+
+        Never deletes offers, carts, or order history. Without --fix this is
+        read-only and prints which offer would remain active.
+        """
+        from .models import Offer, Supplier
+
+        try:
+            suppliers = {item.name_key: item.id
+                         for item in db.session.scalars(db.select(Supplier))}
+            groups = {}
+            active = db.session.scalars(
+                db.select(Offer).where(Offer.is_active.is_(True))
+                .order_by(Offer.product_id, Offer.id)
+            ).all()
+            for offer in active:
+                name_key = " ".join(offer.supplier_name.split()).casefold()
+                supplier_id = offer.supplier_id or suppliers.get(name_key)
+                supplier_key = ("id", supplier_id) if supplier_id else ("name", name_key)
+                groups.setdefault((offer.product_id, supplier_key), []).append(offer)
+            duplicates = [group for group in groups.values() if len(group) > 1]
+            if not duplicates:
+                click.echo("No duplicate active offers for the same supplier and product.")
+                return
+
+            count = 0
+            for group in duplicates:
+                # Most recently updated offer wins, using ID for equal timestamps.
+                ranked = sorted(group, key=lambda item: (item.updated_at or datetime.min, item.id),
+                                reverse=True)
+                keeper, redundant = ranked[0], ranked[1:]
+                count += len(redundant)
+                click.echo(f"Product {keeper.product.sku}; supplier {keeper.supplier_name}: "
+                           f"keep offer #{keeper.id}, deactivate "
+                           + ", ".join(f"#{item.id}" for item in redundant))
+                if fix:
+                    for item in redundant:
+                        item.is_active = False
+            if fix:
+                db.session.commit()
+                click.echo(f"Deactivated {count} duplicate offers across {len(duplicates)} groups. "
+                           "Orders and carts were preserved.")
+            else:
+                click.echo(f"Found {count} duplicate offers in {len(duplicates)} groups. "
+                           "Run with --fix to deactivate them; no data changed.")
+        except SQLAlchemyError as error:
+            db.session.rollback()
+            raise click.ClickException("Could not audit offers; no changes were saved.") from error
 
     @app.cli.command("seed-demo")
     @click.option("--admin-password", envvar="DEMO_ADMIN_PASSWORD", default=DEFAULT_ADMIN_PASSWORD,
