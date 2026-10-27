@@ -2,6 +2,8 @@
 
 StockFlow ir B2B tīmekļa lietotne vairāku piegādātāju preču meklēšanai, piedāvājumu salīdzināšanai un iepirkumu pieteikumu pārvaldībai. Pircējs saglabā uzņēmuma datus, veido grozu un seko pieteikumiem. Administrators pārvalda piegādātājus, kategorijas, preces, piedāvājumus un izskata pieteikumus.
 
+**Publicēta lietotne:** (https://noliktavasuzskaitessistemaejmn-production.up.railway.app/)
+
 ## Komanda
 
 - Eduards Levša
@@ -11,13 +13,13 @@ StockFlow ir B2B tīmekļa lietotne vairāku piegādātāju preču meklēšanai,
 
 ## Tehnoloģijas un prasības
 
-- Python 3.11+, Flask 3 un Flask-Login.
-- SQLAlchemy, Flask-SQLAlchemy un Flask-Migrate/Alembic datubāzes darbībām un migrācijām.
-- MySQL 8.4 un PyMySQL; lokālai demonstrācijai un testiem var izmantot SQLite.
-- HTML/Jinja2, CSS un JavaScript; Node.js būvēšana nav nepieciešama.
-- pytest; pārlūka pārbaudēm Chrome vai Edge.
-- Docker Desktop ar Docker Compose lokālajam MySQL; alternatīva ir instalēts MySQL 8.0.16+.
-- Gunicorn un Railway konfigurācija izvietošanai Linux vidē.
+- Python un Flask — servera puse.
+- MySQL un SQLAlchemy — datubāze un darbs ar datiem.
+- HTML, CSS un JavaScript — lietotāja saskarne.
+- Docker — lokālās datubāzes palaišana.
+- Railway — lietotnes hostings.
+
+Lokālai palaišanai nepieciešams Python 3.11+ un MySQL (atsevišķi vai ar Docker). Demonstrācijai var izmantot SQLite.
 
 ## Projekta struktūra
 
@@ -40,8 +42,6 @@ run.py               Lietotnes palaišana
 requirements.txt     Python atkarības
 .env.example         Konfigurācijas paraugs
 ```
-
-Saskarnes stili sadalīti pēc atbildības: `style.css` satur kopīgos dizaina mainīgos un komponentes, `storefront.css` — sākumlapu, katalogu un piedāvājumu salīdzināšanu, `account.css` — kontu un iepirkumu procesu, `security.css` — paroles maiņas formu, `admin.css` — pārvaldības darba telpu. Visas lapas izmanto vienotu StockFlow krāsu paleti un pielāgojas mobilajiem ekrāniem. Pārstrādes un pārbaudes apraksts: [dizaina atskaite](docs/stockflow-dizaina-parstrade.md).
 
 ## Palaišana
 
@@ -113,8 +113,6 @@ Importā piegādātāja atlikums nozīmē kopējo atlikumu pirms StockFlow viet�
 ```
 
 Testi izmanto atsevišķu SQLite datubāzi. Ar `MYSQL_TEST_URL` var pārbaudīt MySQL, izveidojot un pēc pārbaudes dzēšot atsevišķu testa shēmu.
-
-Pārlūka rīks izmanto Chrome/Edge un pagaidu demonstrācijas datubāzi. Tas pārbauda viesa, pircēja un administratora lapas pie 320, 375, 425, 768, 1024, 1440 un 1920 px, arī 200% mēroga ekvivalentu. Rezultāti un ekrānattēli: `instance/ui-qa/`. Nestandarta pārlūka ceļam norāda `--browser 'C:\ceļš\chrome.exe'`.
 
 ```powershell
 # Konkrētu lapu pārbaude
