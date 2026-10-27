@@ -157,6 +157,7 @@ def save_imported_offers(records, *, source, admin_id):
             db.select(Supplier).where(Supplier.id.in_(sorted({item[2] for item in prepared})))
             .order_by(Supplier.id).with_for_update().execution_options(populate_existing=True))}
         added = updated = 0
+        activated_pairs = set()
         updated_at = datetime.now(timezone.utc).replace(tzinfo=None)
         for row, data, supplier_id, product_id in prepared:
             supplier = suppliers.get(supplier_id)
@@ -173,6 +174,29 @@ def save_imported_offers(records, *, source, admin_id):
             offer = matches[0] if matches else None
             if offer is not None and offer.product_id != product_id:
                 raise OfferImportError("Piegādātāja kods jau piesaistīts citai precei.", row=row, field="product_sku")
+            # A supplier may have multiple historical/inactive offers, but only one
+            # active price for a given catalog product. Different supplier SKUs must
+            # not silently create duplicate live comparison rows.
+            will_be_active = data.get("is_active", offer.is_active if offer is not None else True)
+            if will_be_active:
+                pair = (supplier_id, product_id)
+                if pair in activated_pairs:
+                    raise OfferImportError(
+                        "Vienam piegādātājam nevar importēt divus aktīvus piedāvājumus par vienu preci.",
+                        row=row, field="product_sku")
+                conflict_query = db.select(Offer.id).where(
+                    Offer.product_id == product_id, Offer.is_active.is_(True),
+                    db.or_(Offer.supplier_id == supplier_id,
+                           db.and_(Offer.supplier_id.is_(None),
+                                   Offer.supplier_name == supplier.name)))
+                if offer is not None:
+                    conflict_query = conflict_query.where(Offer.id != offer.id)
+                if session.scalar(conflict_query.limit(1)) is not None:
+                    raise OfferImportError(
+                        "Šim piegādātājam jau ir aktīvs piedāvājums par šo preci. "
+                        "Atjauniniet esošo piegādātāja kodu vai deaktivizējiet dublikātu.",
+                        row=row, field="product_sku")
+                activated_pairs.add(pair)
             if offer is None:
                 offer = Offer(product_id=product_id, created_by_admin_id=actor_id)
                 session.add(offer)
