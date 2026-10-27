@@ -63,12 +63,35 @@ def test_add_repeat_and_update_use_one_identity_and_success_timestamp(inventory,
     assert offers()[0].delivery_price == Decimal("0.00") and offers()[0].data_source == "JSON"
 
 
-def test_same_code_from_different_suppliers_and_multiple_codes_are_distinct(inventory):
+def test_multiple_suppliers_and_products_are_distinct(inventory):
     rows = [record(inventory), record(inventory, supplier_id=inventory[3][1].id),
-            record(inventory, supplier_sku="SUP-002")]
+            record(inventory, supplier_sku="SUP-002", product_sku=inventory[2][1].sku)]
     assert save(inventory, rows) == {"added": 3, "updated": 0}
     assert save(inventory, rows, "JSON") == {"added": 0, "updated": 3}
     assert len(offers()) == 3
+
+
+@pytest.mark.parametrize("source", ["CSV", "JSON"])
+def test_different_codes_for_same_supplier_and_product_are_rejected(inventory, source):
+    with pytest.raises(OfferImportError) as failure:
+        save(inventory, [record(inventory), record(inventory, supplier_sku="SUP-002")], source)
+    assert failure.value.row == 2 and failure.value.field == "product_sku"
+    assert offers() == []
+    save(inventory, [record(inventory)])
+    with pytest.raises(OfferImportError) as failure:
+        save(inventory, [record(inventory, supplier_sku="SUP-002")], source)
+    assert failure.value.field == "product_sku"
+    assert len(offers()) == 1
+
+
+def test_inactive_offer_can_be_replaced_without_deleting_history(inventory):
+    assert save(inventory, [record(inventory, is_active=False)])["added"] == 1
+    first_id = offers()[0].id
+    assert save(inventory, [record(inventory, supplier_sku="SUP-002")]) == {"added": 1, "updated": 0}
+    assert [(o.id, o.is_active) for o in offers()] == [(first_id, False), (offers()[1].id, True)]
+    with pytest.raises(OfferImportError):
+        save(inventory, [record(inventory, is_active=True)])
+    assert not offers()[0].is_active
 
 
 @pytest.mark.parametrize("field,value", [
@@ -163,7 +186,8 @@ def test_commit_failure_rolls_back_update_insert_and_timestamp(inventory, monkey
     with monkeypatch.context() as patch:
         patch.setattr(db.session, "commit", fail_commit)
         with pytest.raises(OfferImportError, match="visas importa izmaiņas atceltas"):
-            save(inventory, [record(inventory, unit_price="99"), record(inventory, supplier_sku="NEW")])
+            save(inventory, [record(inventory, unit_price="99"), record(inventory, supplier_sku="NEW",
+                                                      product_sku=inventory[2][1].sku)])
     assert len(offers()) == 1 and offers()[0].unit_price == Decimal("10.25")
     assert offers()[0].updated_at == datetime(2000, 1, 1)
     assert save(inventory, [record(inventory)]) == {"added": 0, "updated": 1}
@@ -298,3 +322,22 @@ def test_migration_rejects_existing_duplicates_without_removing_them(inventory, 
     db.session.execute(historical.delete().where(historical.c.id == duplicate_id))
     db.session.commit()
     upgrade(directory=MIGRATIONS)
+
+
+def test_audit_duplicates_dry_run_and_fix_preserve_rows(inventory, database_app):
+    save(inventory, [record(inventory)])
+    first = offers()[0]
+    duplicate = Offer(product_id=first.product_id, created_by_admin_id=first.created_by_admin_id,
+                      supplier_id=first.supplier_id, supplier_name=first.supplier_name,
+                      supplier_sku="SUP-OTHER", unit_price=Decimal("20.00"), vat_included=True)
+    db.session.add(duplicate)
+    db.session.commit()
+    runner = database_app.test_cli_runner()
+    dry = runner.invoke(args=["audit-offer-duplicates"])
+    assert dry.exit_code == 0 and "Found 1 duplicate offers" in dry.output
+    assert all(offer.is_active for offer in offers())
+    applied = runner.invoke(args=["audit-offer-duplicates", "--fix"])
+    assert applied.exit_code == 0 and "Deactivated 1 duplicate offers" in applied.output
+    assert len(offers()) == 2
+    assert sum(bool(offer.is_active) for offer in offers()) == 1
+    assert runner.invoke(args=["audit-offer-duplicates"]).exit_code == 0
